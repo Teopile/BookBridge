@@ -1,0 +1,21 @@
+{
+  "name": "bookbridge-monorepo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "BookBridge — book donation platform for Georgian highland schools",
+  "scripts": {
+    "install:all": "npm install && npm --prefix server install && npm --prefix frontend install && npm --prefix admin install",
+    "dev": "concurrently -n server,frontend,admin -c green,cyan,magenta \"npm --prefix server run dev\" \"npm --prefix frontend run dev\" \"npm --prefix admin run dev\"",
+    "dev:server": "npm --prefix server run dev",
+    "dev:frontend": "npm --prefix frontend run dev",
+    "dev:admin": "npm --prefix admin run dev",
+    "build": "npm --prefix frontend run build && npm --prefix admin run build",
+    "start": "npm --prefix server start"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.1"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

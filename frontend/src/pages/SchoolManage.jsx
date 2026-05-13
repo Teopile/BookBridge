@@ -125,6 +125,16 @@ export default function SchoolManage() {
   );
 }
 
+// Map a thrown ApiError to a user-readable string. If the server returned Zod
+// validation issues, list them by field; otherwise fall back to the message.
+function formatApiError(e) {
+  const issues = e?.body?.issues;
+  if (Array.isArray(issues) && issues.length) {
+    return issues.map((i) => `${i.path || 'field'}: ${i.message}`).join(' · ');
+  }
+  return e?.message || 'Unknown error';
+}
+
 function fieldsFromForm(form, photoUrl) {
   const out = { ...form };
   if (photoUrl) out.photo_url = photoUrl;
@@ -158,7 +168,7 @@ function CreateSchoolCard({ onCreated, t }) {
       setForm({ name: '', region: '', city: '', address: '', description: '', contact_email: '', lat: '', lng: '' });
       setPhotoUrl(null);
       onCreated();
-    } catch (e) { setErr(e.message); }
+    } catch (e) { setErr(formatApiError(e)); }
     finally { setBusy(false); }
   }
 
@@ -224,7 +234,7 @@ function EditSchoolCard({ school, onSaved, onCancel, t }) {
       if (Object.keys(out).length === 0) { onCancel(); return; }
       await apiPut('/api/schools/' + school.id, out);
       onSaved();
-    } catch (e) { setErr(e.message); }
+    } catch (e) { setErr(formatApiError(e)); }
     finally { setBusy(false); }
   }
 

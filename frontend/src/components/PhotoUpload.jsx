@@ -12,7 +12,9 @@ export default function PhotoUpload({ bucket = 'school-photos', onUploaded, labe
     if (file.size > 5 * 1024 * 1024) { setErr('Max 5 MB'); return; }
     setBusy(true); setErr(null);
     try {
-      const sig = await apiPost('/api/storage/sign-upload', { bucket, filename: file.name });
+      // Server regex rejects spaces, parens, non-ASCII — strip anything outside [a-zA-Z0-9._\-\/].
+      const safeName = file.name.replace(/[^a-zA-Z0-9._\-\/]/g, '_') || 'upload.bin';
+      const sig = await apiPost('/api/storage/sign-upload', { bucket, filename: safeName });
       const put = await fetch(sig.signed_url, {
         method: 'PUT',
         headers: { 'Content-Type': file.type || 'application/octet-stream' },

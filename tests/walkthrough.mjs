@@ -233,7 +233,10 @@ async function loginViaUI(page) {
     const queueLink = adminPage.locator('a', { hasText: /school queue/i }).first();
     if (await queueLink.count() > 0) {
       await queueLink.click();
-      await adminPage.waitForLoadState('networkidle');
+      // SPA navigation doesn't fire a real "page load", so waitForLoadState('networkidle')
+      // resolves before the new route's useEffect even fires a request. Wait for the
+      // actual rendered output instead (either the table or the loaded empty state).
+      await adminPage.waitForSelector('table, .table-empty:not(:has-text("Loading"))', { timeout: 10000 }).catch(() => {});
       await shoot(adminPage, '18-admin-school-queue');
 
       const approveBtn = adminPage.locator('button', { hasText: /^approve$/i }).first();

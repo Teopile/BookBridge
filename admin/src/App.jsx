@@ -132,43 +132,200 @@ where email = '${email}');`}
 //  Dashboard
 // ============================================================
 function Dashboard() {
-  const [stats, setStats] = useState({ books_delivered: 0, beneficiary_schools: 0, volunteer_schools: 0, donors: 0 });
-  const [pendingCount, setPendingCount] = useState(0);
+  const [data, setData] = useState(null);
+  const [err, setErr] = useState(null);
 
   useEffect(() => {
-    apiGet('/api/stats').then(setStats).catch(() => {});
-    apiGet('/api/admin/schools/pending').then((r) => setPendingCount((r || []).length)).catch(() => {});
+    apiGet('/api/admin/stats').then(setData).catch((e) => setErr(e.message));
   }, []);
+
+  if (err) return <div className="error">{err}</div>;
+  if (!data) return <div className="table-empty">Loading…</div>;
+
+  const t = data.totals;
+  const fmt = (n) => (n ?? 0).toLocaleString();
+  const maxDonationCount = Math.max(1, ...data.donations_by_status.map((d) => d.count));
+  const maxRegionCount   = Math.max(1, ...data.schools_by_region.map((r) => r.count));
 
   return (
     <>
       <div className="main-header">
         <div>
           <h1>Dashboard</h1>
-          <div className="sub">Quick overview of platform activity.</div>
+          <div className="sub">Live overview of every BookBridge surface.</div>
         </div>
       </div>
 
+      {/* Attention banner — only when there's something to act on */}
+      {(t.schools_pending > 0 || t.active_donations > 0) && (
+        <div className="card" style={{ borderLeft: '4px solid var(--teal)', marginTop: 0 }}>
+          <h3 style={{ marginBottom: 8 }}>Needs your attention</h3>
+          <div className="row" style={{ flexWrap: 'wrap', gap: 16 }}>
+            {t.schools_pending > 0 && (
+              <NavLink to="/schools" className="muted" style={{ textDecoration: 'underline' }}>
+                <strong style={{ color: 'var(--teal-dark, var(--teal))' }}>{t.schools_pending}</strong> school{t.schools_pending === 1 ? '' : 's'} awaiting approval →
+              </NavLink>
+            )}
+            {t.active_donations > 0 && (
+              <NavLink to="/donations" className="muted" style={{ textDecoration: 'underline' }}>
+                <strong style={{ color: 'var(--teal-dark, var(--teal))' }}>{t.active_donations}</strong> active donation{t.active_donations === 1 ? '' : 's'} in motion →
+              </NavLink>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Stat grid */}
       <div className="stats-grid">
-        <div className="stat-card"><div className="n">{stats.books_delivered}</div><div className="l">Books delivered</div></div>
-        <div className="stat-card"><div className="n">{stats.beneficiary_schools}</div><div className="l">Beneficiary schools</div></div>
-        <div className="stat-card"><div className="n">{stats.volunteer_schools}</div><div className="l">Volunteer schools</div></div>
-        <div className="stat-card"><div className="n">{stats.donors}</div><div className="l">Donors</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.books_delivered)}</div><div className="l">Books delivered</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.delivered_donations)}</div><div className="l">Donations delivered</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.active_donations)}</div><div className="l">Active donations</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.all_donations)}</div><div className="l">All donations</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.beneficiary_schools)}</div><div className="l">Beneficiary schools</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.volunteer_schools)}</div><div className="l">Volunteer schools</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.all_book_requests)}</div><div className="l">Book requests</div></div>
+        <div className="stat-card"><div className="n">{fmt(t.all_users)}</div><div className="l">Users · {t.donors} donors</div></div>
       </div>
 
-      <div className="card">
-        <h3>Quick actions</h3>
-        <ul style={{ paddingLeft: 18, lineHeight: 1.9, color: 'var(--gray-700)' }}>
-          {pendingCount > 0 && (
-            <li><a href="/schools"><strong>{pendingCount}</strong> school{pendingCount === 1 ? '' : 's'} awaiting approval →</a></li>
+      {/* Two-column: donation status + schools by region */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+        <div className="card" style={{ margin: 0 }}>
+          <h3>Donations by status</h3>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+            {data.donations_by_status.map((d) => (
+              <BarRow key={d.status} label={STATUS_LABEL[d.status] || d.status} count={d.count} max={maxDonationCount} />
+            ))}
+          </div>
+        </div>
+
+        <div className="card" style={{ margin: 0 }}>
+          <h3>Schools by region</h3>
+          {data.schools_by_region.length === 0 ? (
+            <div className="muted" style={{ marginTop: 12 }}>No approved schools yet.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+              {data.schools_by_region.slice(0, 8).map((r) => (
+                <BarRow key={r.region} label={r.region} count={r.count} max={maxRegionCount} />
+              ))}
+            </div>
           )}
-          <li><a href="/donations">Browse donations</a></li>
-          <li><a href="/content">Edit homepage copy</a></li>
-          <li><a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer">Open Supabase Dashboard ↗</a></li>
-        </ul>
+        </div>
+      </div>
+
+      {/* Two-column: recent activity + top donors */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginTop: 16 }}>
+        <div className="card" style={{ margin: 0 }}>
+          <h3>Recent activity</h3>
+          {data.recent_activity.length === 0 ? (
+            <div className="muted" style={{ marginTop: 12 }}>Nothing yet.</div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 12 }}>
+              {data.recent_activity.map((row, i) => {
+                const d = describeActivity(row);
+                return (
+                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14 }}>
+                    <span style={{ fontSize: 16, lineHeight: 1, flexShrink: 0 }}>{d.icon}</span>
+                    <span style={{ flex: 1 }}>{d.text}</span>
+                    {row.happened_at && (
+                      <span className="muted" style={{ flexShrink: 0, fontSize: 12 }}>{relTime(row.happened_at)}</span>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="card" style={{ margin: 0 }}>
+          <h3>Top donors</h3>
+          {data.top_donors.length === 0 ? (
+            <div className="muted" style={{ marginTop: 12 }}>No donors yet.</div>
+          ) : (
+            <ol style={{ paddingLeft: 20, marginTop: 12, lineHeight: 1.8 }}>
+              {data.top_donors.map((d) => (
+                <li key={d.user_id} style={{ fontSize: 14 }}>
+                  <strong>{d.username || '—'}</strong>{' '}
+                  <span className="muted">· {d.total_books} books · {d.donation_count} donation{d.donation_count === 1 ? '' : 's'}</span>
+                </li>
+              ))}
+            </ol>
+          )}
+        </div>
+      </div>
+
+      {/* Recent users */}
+      <div className="card" style={{ marginTop: 16 }}>
+        <h3>Recent users</h3>
+        {data.recent_users.length === 0 ? (
+          <div className="muted" style={{ marginTop: 12 }}>No users yet.</div>
+        ) : (
+          <table className="table" style={{ marginTop: 12 }}>
+            <thead>
+              <tr><th>Username</th><th>Role</th><th>Joined</th></tr>
+            </thead>
+            <tbody>
+              {data.recent_users.map((u) => (
+                <tr key={u.id}>
+                  <td><strong>{u.username || '—'}</strong></td>
+                  <td><span className={'badge ' + (u.role === 'admin' ? 'approved' : '')}>{u.role}</span></td>
+                  <td className="muted">{relTime(u.created_at)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </>
   );
+}
+
+function BarRow({ label, count, max }) {
+  const pct = Math.round((count / max) * 100);
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, marginBottom: 4 }}>
+        <span>{label}</span>
+        <strong>{count}</strong>
+      </div>
+      <div style={{ height: 8, background: 'var(--gray-100)', borderRadius: 4, overflow: 'hidden' }}>
+        <div style={{ width: pct + '%', height: '100%', background: 'var(--teal)', transition: 'width 0.3s' }} />
+      </div>
+    </div>
+  );
+}
+
+function describeActivity(ev) {
+  if (ev.kind === 'donation_created') {
+    const who = ev.actor_username || 'Someone';
+    const qty = ev.quantity || 1;
+    const book = qty === 1 ? 'book' : 'books';
+    const to   = ev.target_name ? ` to ${ev.target_name}` : '';
+    return { icon: '📚', text: `${who} sent ${qty} ${book}${to}` };
+  }
+  if (ev.kind === 'donation_delivered') {
+    const where = ev.target_name || 'A school';
+    const qty   = ev.quantity || 1;
+    const book  = qty === 1 ? 'book' : 'books';
+    return { icon: '✅', text: `${where} received ${qty} ${book}` };
+  }
+  if (ev.kind === 'school_approved') {
+    const name = ev.target_name || 'A school';
+    const reg  = ev.target_region ? ` · ${ev.target_region}` : '';
+    return { icon: '🏫', text: `${name} joined BookBridge${reg}` };
+  }
+  return { icon: '•', text: ev.kind || 'event' };
+}
+
+function relTime(iso) {
+  const t = new Date(iso).getTime();
+  const s = Math.round((Date.now() - t) / 1000);
+  if (s < 60) return s + 's ago';
+  const m = Math.round(s / 60);
+  if (m < 60) return m + 'm ago';
+  const h = Math.round(m / 60);
+  if (h < 24) return h + 'h ago';
+  const d = Math.round(h / 24);
+  return d + 'd ago';
 }
 
 // ============================================================

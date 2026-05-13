@@ -15,6 +15,80 @@ router.get('/content', requireAuth, requireAdmin, async (_req, res, next) => {
   try { res.json(await listSiteContent()); } catch (err) { next(err); }
 });
 
+// Aggregated dashboard data — single round-trip for the admin Home page.
+router.get('/stats', requireAuth, requireAdmin, async (_req, res, next) => {
+  try {
+    const head = { count: 'exact', head: true };
+
+    const [
+      benApproved, benPending, volApproved, volPending,
+      allDonations,
+      pendingD, atVolunteerD, inTransitD, deliveredD, cancelledD,
+      deliveredItems,
+      allBookRequests,
+      donorCount, allUsersCount,
+      regions, recentUsersList,
+      activity, leaderboard,
+    ] = await Promise.all([
+      supabaseAdmin.from('schools').select('id', head).eq('type', 'beneficiary').eq('status', 'approved'),
+      supabaseAdmin.from('schools').select('id', head).eq('type', 'beneficiary').eq('status', 'pending'),
+      supabaseAdmin.from('schools').select('id', head).eq('type', 'volunteer').eq('status', 'approved'),
+      supabaseAdmin.from('schools').select('id', head).eq('type', 'volunteer').eq('status', 'pending'),
+      supabaseAdmin.from('donations').select('id', head),
+      supabaseAdmin.from('donations').select('id', head).eq('status', 'pending'),
+      supabaseAdmin.from('donations').select('id', head).eq('status', 'at_volunteer'),
+      supabaseAdmin.from('donations').select('id', head).eq('status', 'in_transit'),
+      supabaseAdmin.from('donations').select('id', head).eq('status', 'delivered'),
+      supabaseAdmin.from('donations').select('id', head).eq('status', 'cancelled'),
+      supabaseAdmin.from('v_delivered_items').select('quantity'),
+      supabaseAdmin.from('book_requests').select('id', head),
+      supabaseAdmin.from('profiles').select('id', head).eq('role', 'donor'),
+      supabaseAdmin.from('profiles').select('id', head),
+      supabaseAdmin.from('schools').select('region').eq('status', 'approved'),
+      supabaseAdmin.from('profiles').select('id, username, role, created_at').order('created_at', { ascending: false }).limit(8),
+      supabaseAdmin.from('v_activity_feed').select('*').limit(10),
+      supabaseAdmin.from('v_donor_leaderboard').select('user_id, username, total_books, donation_count').limit(5),
+    ]);
+
+    const booksDelivered = (deliveredItems.data || []).reduce((s, r) => s + (r.quantity || 0), 0);
+
+    const regionMap = new Map();
+    for (const row of regions.data || []) {
+      const key = (row.region || '—').trim();
+      regionMap.set(key, (regionMap.get(key) || 0) + 1);
+    }
+    const schoolsByRegion = [...regionMap.entries()]
+      .map(([region, count]) => ({ region, count }))
+      .sort((a, b) => b.count - a.count);
+
+    res.json({
+      totals: {
+        books_delivered:        booksDelivered,
+        beneficiary_schools:    benApproved.count ?? 0,
+        volunteer_schools:      volApproved.count ?? 0,
+        schools_pending:        (benPending.count ?? 0) + (volPending.count ?? 0),
+        donors:                 donorCount.count ?? 0,
+        all_users:              allUsersCount.count ?? 0,
+        all_donations:          allDonations.count ?? 0,
+        active_donations:       (pendingD.count ?? 0) + (atVolunteerD.count ?? 0) + (inTransitD.count ?? 0),
+        delivered_donations:    deliveredD.count ?? 0,
+        all_book_requests:      allBookRequests.count ?? 0,
+      },
+      donations_by_status: [
+        { status: 'pending',      count: pendingD.count      ?? 0 },
+        { status: 'at_volunteer', count: atVolunteerD.count  ?? 0 },
+        { status: 'in_transit',   count: inTransitD.count    ?? 0 },
+        { status: 'delivered',    count: deliveredD.count    ?? 0 },
+        { status: 'cancelled',    count: cancelledD.count    ?? 0 },
+      ],
+      schools_by_region: schoolsByRegion,
+      recent_users:      recentUsersList.data || [],
+      recent_activity:   activity.data || [],
+      top_donors:        leaderboard.data || [],
+    });
+  } catch (err) { next(err); }
+});
+
 router.put('/content', csrfProtection, requireAuth, requireAdmin, validate(SiteContentUpsertSchema), async (req, res, next) => {
   try {
     const row = await upsertSiteContent(req.body.key, req.body.value_en ?? null, req.body.value_ka ?? null, req.user.id);

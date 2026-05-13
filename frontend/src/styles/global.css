@@ -92,9 +92,69 @@ p  { color: var(--gray-700); }
 .nav-actions { display: flex; align-items: center; gap: 8px; }
 .lang-pill {
   font-size: 13px; font-weight: 600; color: var(--gray-700);
-  padding: 6px 10px; border-radius: var(--r-sm);
+  padding: 8px 12px; border-radius: var(--r-sm);
+  min-width: 44px; min-height: 36px;
 }
 .lang-pill:hover { background: var(--gray-100); }
+.lang-pill:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+
+/* Hamburger trigger — hidden on desktop, shown when nav-links collapse */
+.nav-burger {
+  display: none;
+  width: 40px; height: 40px;
+  border-radius: var(--r-sm);
+  flex-direction: column; align-items: center; justify-content: center;
+  gap: 5px;
+}
+.nav-burger:hover { background: var(--gray-100); }
+.nav-burger:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
+.burger-bar {
+  display: block;
+  width: 20px; height: 2px;
+  background: var(--ink);
+  transition: transform 0.18s, opacity 0.18s;
+  border-radius: 2px;
+}
+.burger-bar.x1 { transform: translateY(7px) rotate(45deg); }
+.burger-bar.x2 { opacity: 0; }
+.burger-bar.x3 { transform: translateY(-7px) rotate(-45deg); }
+
+/* Off-canvas drawer */
+.nav-backdrop {
+  position: fixed; inset: 0; z-index: 40;
+  background: rgba(28, 43, 39, 0.4);
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+}
+.nav-drawer {
+  position: fixed; top: var(--nav-h); right: 0; bottom: 0;
+  width: min(320px, 88vw);
+  z-index: 45;
+  background: var(--surface);
+  border-left: 1px solid var(--gray-200);
+  padding: 20px;
+  transform: translateX(100%);
+  transition: transform 0.22s ease;
+  display: flex; flex-direction: column;
+  gap: 4px;
+  box-shadow: -8px 0 24px rgba(28, 43, 39, 0.08);
+  overflow-y: auto;
+}
+.nav-drawer.open { transform: translateX(0); }
+.nav-drawer a, .nav-drawer-btn {
+  display: flex; align-items: center;
+  padding: 14px 12px; border-radius: var(--r-md);
+  color: var(--ink); font-size: 16px; font-weight: 500;
+  min-height: 48px;
+  background: none; border: none; text-align: left; width: 100%; cursor: pointer;
+}
+.nav-drawer a:hover, .nav-drawer-btn:hover { background: var(--gray-100); text-decoration: none; }
+.nav-drawer a:focus-visible, .nav-drawer-btn:focus-visible { outline: 2px solid var(--teal); outline-offset: -2px; }
+.nav-drawer a.active { color: var(--teal); background: var(--teal-soft); }
+.nav-drawer-divider {
+  height: 1px; background: var(--gray-200);
+  margin: 8px 4px;
+}
 
 main { padding-top: var(--nav-h); }
 
@@ -299,10 +359,12 @@ footer {
   color: white; margin-bottom: 16px;
 }
 .footer-col a {
-  display: block; padding: 4px 0;
+  display: block; padding: 10px 0;
   color: rgba(255, 255, 255, 0.65); font-size: 14px;
+  min-height: 36px;
 }
 .footer-col a:hover { color: var(--teal-soft); text-decoration: none; }
+.footer-col a:focus-visible { outline: 2px solid var(--teal-soft); outline-offset: 2px; }
 .footer-bottom {
   max-width: var(--container); margin: 0 auto;
   padding-top: 20px;
@@ -321,6 +383,9 @@ footer {
 }
 .form input:focus, .form textarea:focus, .form select:focus {
   outline: none; border-color: var(--teal);
+}
+.form input:focus-visible, .form textarea:focus-visible, .form select:focus-visible {
+  outline: 2px solid var(--teal); outline-offset: 1px;
 }
 .form input::placeholder { color: var(--gray-500); }
 
@@ -358,6 +423,7 @@ footer {
   transition: all 0.12s;
 }
 .pill:hover { border-color: var(--teal); color: var(--teal); }
+.pill:focus-visible { outline: 2px solid var(--teal); outline-offset: 2px; }
 .pill.active { background: var(--teal); border-color: var(--teal); color: white; }
 
 /* =============== ACTIVITY FEED =============== */
@@ -608,8 +674,13 @@ footer {
 /* =============== RESPONSIVE =============== */
 @media (max-width: 880px) {
   .nav-links { display: none; }
+  .nav-desktop-only { display: none; }
+  .nav-burger { display: flex; }
   .steps, .school-grid { grid-template-columns: 1fr 1fr; }
   .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (min-width: 881px) {
+  .nav-burger, .nav-drawer, .nav-backdrop { display: none !important; }
 }
 @media (max-width: 600px) {
   h1 { font-size: 28px; }

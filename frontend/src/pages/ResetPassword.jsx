@@ -37,7 +37,7 @@ export default function ResetPassword() {
       <section className="section">
         <div className="card">
           <h1 style={{ fontSize: 32 }}>✅ {t('auth.passwordUpdated')}</h1>
-          <p style={{ color: 'var(--soft-gray)', marginTop: 16 }}>{t('auth.redirectingToSignin')}</p>
+          <p style={{ color: 'var(--gray-500)', marginTop: 16 }}>{t('auth.redirectingToSignin')}</p>
         </div>
       </section>
     );
@@ -49,31 +49,32 @@ export default function ResetPassword() {
         <h1 style={{ fontSize: 32, marginBottom: 8 }}>
           {t('auth.resetTitle')}
         </h1>
-        <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
+        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
           {t('auth.resetSub')}
         </p>
         <form className="form" onSubmit={submit}>
-          <label>{t('auth.email')}</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+          <label htmlFor="reset-email">{t('auth.email')}</label>
+          <input id="reset-email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
 
-          <label>{t('auth.otpCode')}</label>
+          <label htmlFor="reset-otp">{t('auth.otpCode')}</label>
           <input
+            id="reset-otp"
             type="text" inputMode="numeric" pattern="[0-9]{6,10}" minLength={6} maxLength={10} required
             value={token} onChange={(e) => setToken(e.target.value.replace(/\D/g, ''))}
             style={{ letterSpacing: 6, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
           />
 
-          <label>{t('auth.newPassword')}</label>
-          <input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
+          <label htmlFor="reset-new">{t('auth.newPassword')}</label>
+          <input id="reset-new" type="password" autoComplete="new-password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} />
 
-          <label>{t('auth.confirmPassword')}</label>
-          <input type="password" required minLength={8} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
+          <label htmlFor="reset-confirm">{t('auth.confirmPassword')}</label>
+          <input id="reset-confirm" type="password" autoComplete="new-password" required minLength={8} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
 
           {err && <div className="error">{err}</div>}
-          <button className="btn-primary" disabled={busy || token.length < 6} type="submit">
+          <button className="btn btn-primary" disabled={busy || token.length < 6} type="submit">
             {busy ? '…' : t('auth.updatePassword')}
           </button>
-          <Link to={'/' + lang + '/auth'} style={{ color: 'var(--soft-gray)', textAlign: 'center', fontSize: 13 }}>
+          <Link to={'/' + lang + '/auth'} style={{ color: 'var(--gray-500)', textAlign: 'center', fontSize: 13, padding: '8px 0' }}>
             ← {t('auth.backToSignin')}
           </Link>
         </form>

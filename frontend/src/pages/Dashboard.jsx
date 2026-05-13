@@ -39,7 +39,7 @@ export default function Dashboard() {
             ))}
             {regions.length === 0 && (
               <div className="card" style={{ gridColumn: '1/-1' }}>
-                <p style={{ color: 'var(--soft-gray)', textAlign: 'center' }}>
+                <p style={{ color: 'var(--gray-500)', textAlign: 'center' }}>
                   No regions yet — once schools are approved they'll appear here.
                 </p>
               </div>

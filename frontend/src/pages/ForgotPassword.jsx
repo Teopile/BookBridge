@@ -27,17 +27,17 @@ export default function ForgotPassword() {
         <h1 style={{ fontSize: 32, marginBottom: 8 }}>
           {t('auth.forgotTitle')}
         </h1>
-        <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
+        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
           {t('auth.forgotSub')}
         </p>
         <form className="form" onSubmit={submit}>
-          <label>{t('auth.email')}</label>
-          <input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
+          <label htmlFor="forgot-email">{t('auth.email')}</label>
+          <input id="forgot-email" type="email" autoComplete="email" required value={email} onChange={(e) => setEmail(e.target.value)} autoFocus />
           {err && <div className="error">{err}</div>}
-          <button className="btn-primary" disabled={busy} type="submit">
+          <button className="btn btn-primary" disabled={busy} type="submit">
             {busy ? '…' : t('auth.sendResetCode')}
           </button>
-          <Link to={'/' + lang + '/auth'} style={{ color: 'var(--soft-gray)', textAlign: 'center', fontSize: 13 }}>
+          <Link to={'/' + lang + '/auth'} style={{ color: 'var(--gray-500)', textAlign: 'center', fontSize: 13, padding: '8px 0' }}>
             ← {t('auth.backToSignin')}
           </Link>
         </form>

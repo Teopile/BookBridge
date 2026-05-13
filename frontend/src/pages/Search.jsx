@@ -26,7 +26,7 @@ export default function Search() {
         </div>
 
         <div className="demo-search-bar">
-          <input type="text" placeholder={t('schools.placeholder')} value={q} onChange={(e) => setQ(e.target.value)} />
+          <input type="text" placeholder={t('schools.placeholder')} aria-label={t('schools.placeholder')} value={q} onChange={(e) => setQ(e.target.value)} />
           <div className="filter-pills">
             {['all', 'beneficiary', 'volunteer', 'book'].map((k) => (
               <button key={k} className={'pill' + (type === k ? ' active' : '')} onClick={() => setType(k)}>
@@ -65,7 +65,7 @@ export default function Search() {
                   {results.books.map((b) => (
                     <Link key={b.id} to={'/' + lang + '/schools/' + b.school_id} className="card" style={{ marginTop: 0, padding: 16 }}>
                       <strong>{b.title || b.author || b.genre}</strong>
-                      <p style={{ color: 'var(--soft-gray)', fontSize: 13, marginTop: 4 }}>
+                      <p style={{ color: 'var(--gray-500)', fontSize: 13, marginTop: 4 }}>
                         {b.schools?.name} · {b.schools?.region}
                       </p>
                     </Link>
@@ -78,7 +78,7 @@ export default function Search() {
               <div className="card" style={{ textAlign: 'center' }}>
                 <div style={{ fontSize: 60, marginBottom: 12 }}>🔍</div>
                 <h3>{t('schools.empty')}</h3>
-                <p style={{ color: 'var(--soft-gray)' }}>{t('schools.emptyHint')}</p>
+                <p style={{ color: 'var(--gray-500)' }}>{t('schools.emptyHint')}</p>
               </div>
             )}
           </>

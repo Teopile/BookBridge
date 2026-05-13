@@ -8,8 +8,8 @@ export default function NotFound() {
       <div className="card" style={{ textAlign: 'center' }}>
         <div style={{ fontSize: 80, marginBottom: 16 }}>🏔️</div>
         <h1 style={{ fontSize: 36, marginBottom: 12 }}>404</h1>
-        <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>This page got lost in the mountains.</p>
-        <Link className="btn-primary" to={'/' + lang}>← {t('nav.home')}</Link>
+        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>{t('notFound.body')}</p>
+        <Link className="btn btn-primary" to={'/' + lang}>← {t('nav.home')}</Link>
       </div>
     </section>
   );

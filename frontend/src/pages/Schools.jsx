@@ -58,12 +58,14 @@ export default function Schools({ type }) {
           <input
             type="text"
             placeholder={t('schools.placeholder')}
+            aria-label={t('schools.placeholder')}
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
           <select
             value={region}
             onChange={(e) => setRegion(e.target.value)}
+            aria-label={t('schools.allRegions')}
             style={{ padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', background: 'white', fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' }}
           >
             <option value="">{t('schools.allRegions')}</option>

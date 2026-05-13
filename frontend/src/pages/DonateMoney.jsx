@@ -37,31 +37,31 @@ export default function DonateMoney() {
     <section className="section">
       <div className="card">
         <h1 style={{ fontSize: 32, marginBottom: 8 }}>💝 Donate money</h1>
-        <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
+        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
           A monetary donation helps us cover shipping, courier fees, and school outreach.
         </p>
 
         {result ? (
           <div style={{ background: 'rgba(45,139,122,0.1)', padding: 24, borderRadius: 12 }}>
             <h3>✅ Thank you!</h3>
-            <p style={{ color: 'var(--soft-gray)', marginTop: 8 }}>
+            <p style={{ color: 'var(--gray-500)', marginTop: 8 }}>
               Donation #{result.donation_id} · status: {result.status}
             </p>
           </div>
         ) : (
           <form className="form" onSubmit={submit}>
-            <label>Amount (GEL)</label>
-            <input type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} required />
+            <label htmlFor="dm-amount">Amount (GEL)</label>
+            <input id="dm-amount" type="number" min="1" value={amount} onChange={(e) => setAmount(e.target.value)} required />
 
-            <label>Email for receipt (optional)</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label htmlFor="dm-email">Email for receipt (optional)</label>
+            <input id="dm-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
 
-            <label>Name on receipt (optional)</label>
-            <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+            <label htmlFor="dm-name">Name on receipt (optional)</label>
+            <input id="dm-name" type="text" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
 
             {err && <div className="error">{err}</div>}
 
-            <button className="btn-primary" disabled={busy} type="submit">
+            <button className="btn btn-primary" disabled={busy} type="submit">
               {busy ? '…' : '💳 Continue to payment'}
             </button>
           </form>

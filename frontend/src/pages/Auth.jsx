@@ -25,7 +25,6 @@ export default function Auth() {
       await login(form.email, form.password);
       navigate('/' + lang + '/account');
     } catch (e) {
-      // If the email isn't confirmed yet, jump to the OTP step.
       if (e.message === 'email_not_confirmed') {
         setPendingEmail(form.email);
         try { await apiPost('/api/auth/resend-otp', { email: form.email }); } catch {}
@@ -70,7 +69,6 @@ export default function Auth() {
     }
   }
 
-  // ----- verify-otp screen -----
   if (mode === 'verify-otp') {
     return (
       <section className="section">
@@ -78,33 +76,34 @@ export default function Auth() {
           <h1 style={{ fontSize: 32, marginBottom: 8 }}>
             {t('auth.verifyTitle')}
           </h1>
-          <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
+          <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
             {t('auth.verifySub')} <strong>{pendingEmail}</strong>
           </p>
 
           <form className="form" onSubmit={submitVerifyOtp}>
-            <label>{t('auth.otpCode')}</label>
+            <label htmlFor="auth-otp">{t('auth.otpCode')}</label>
             <input
+              id="auth-otp"
               type="text" inputMode="numeric" pattern="[0-9]{6,10}" minLength={6} maxLength={10} required
               value={form.otp} onChange={(e) => set('otp', e.target.value.replace(/\D/g, ''))}
               style={{ letterSpacing: 6, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
               autoFocus
             />
             {err && <div className="error">{err}</div>}
-            <button className="btn-primary" disabled={busy || form.otp.length < 6} type="submit">
+            <button className="btn btn-primary" disabled={busy || form.otp.length < 6} type="submit">
               {busy ? '…' : t('auth.verifyButton')}
             </button>
             <button
               type="button"
               onClick={resendOtp}
-              style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 600, cursor: 'pointer', padding: '8px 0' }}
             >
               {t('auth.resendCode')}
             </button>
             <button
               type="button"
               onClick={() => { setMode('signin'); setPendingEmail(null); setErr(null); }}
-              style={{ background: 'none', border: 'none', color: 'var(--soft-gray)', fontSize: 13, cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: 'var(--gray-500)', fontSize: 13, cursor: 'pointer', padding: '8px 0' }}
             >
               ← {t('auth.backToSignin')}
             </button>
@@ -114,18 +113,17 @@ export default function Auth() {
     );
   }
 
-  // ----- signin / signup screen -----
   return (
     <section className="section">
       <div className="card">
         <h1 style={{ fontSize: 32, marginBottom: 8 }}>
           {mode === 'signin' ? t('auth.signin') : t('auth.signup')}
         </h1>
-        <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
+        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
           {mode === 'signin' ? t('auth.noAccount') : t('auth.haveAccount')}{' '}
           <button
             onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setErr(null); }}
-            style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 700, cursor: 'pointer' }}
+            style={{ background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 700, cursor: 'pointer', padding: '4px 2px' }}
           >
             {mode === 'signin' ? t('auth.signup') : t('auth.signin')}
           </button>
@@ -133,42 +131,43 @@ export default function Auth() {
 
         {mode === 'signin' ? (
           <form className="form" onSubmit={submitSignin}>
-            <label>{t('auth.email')}</label>
-            <input type="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
+            <label htmlFor="signin-email">{t('auth.email')}</label>
+            <input id="signin-email" type="email" autoComplete="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
 
-            <label>{t('auth.password')}</label>
-            <input type="password" required value={form.password} onChange={(e) => set('password', e.target.value)} />
+            <label htmlFor="signin-password">{t('auth.password')}</label>
+            <input id="signin-password" type="password" autoComplete="current-password" required value={form.password} onChange={(e) => set('password', e.target.value)} />
 
             {err && <div className="error">{err}</div>}
 
-            <button className="btn-primary" disabled={busy} type="submit">
+            <button className="btn btn-primary" disabled={busy} type="submit">
               {busy ? '…' : t('auth.signin')}
             </button>
 
-            <Link to={'/' + lang + '/auth/forgot'} style={{ color: 'var(--soft-gray)', fontSize: 13, textAlign: 'center' }}>
+            <Link to={'/' + lang + '/auth/forgot'} style={{ color: 'var(--gray-500)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>
               {t('auth.forgotPassword')}
             </Link>
           </form>
         ) : (
           <form className="form" onSubmit={submitSignup}>
-            <label>{t('auth.email')}</label>
-            <input type="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
+            <label htmlFor="signup-email">{t('auth.email')}</label>
+            <input id="signup-email" type="email" autoComplete="email" required value={form.email} onChange={(e) => set('email', e.target.value)} />
 
-            <label>{t('auth.username')}</label>
+            <label htmlFor="signup-username">{t('auth.username')}</label>
             <input
-              type="text" required minLength={3} maxLength={30}
+              id="signup-username"
+              type="text" autoComplete="username" required minLength={3} maxLength={30}
               pattern="[A-Za-z0-9_\-]{3,30}"
               value={form.username}
               onChange={(e) => set('username', e.target.value)}
               placeholder={t('auth.usernameHint')}
             />
 
-            <label>{t('auth.password')}</label>
-            <input type="password" required minLength={8} value={form.password} onChange={(e) => set('password', e.target.value)} />
+            <label htmlFor="signup-password">{t('auth.password')}</label>
+            <input id="signup-password" type="password" autoComplete="new-password" required minLength={8} value={form.password} onChange={(e) => set('password', e.target.value)} />
 
             {err && <div className="error">{err}</div>}
 
-            <button className="btn-primary" disabled={busy} type="submit">
+            <button className="btn btn-primary" disabled={busy} type="submit">
               {busy ? '…' : t('auth.createAccount')}
             </button>
           </form>

@@ -12,4 +12,5 @@ coverage/
 .turbo/
 *.tsbuildinfo
 /test-screenshots/
+tests/mobile-screenshots/
 tests/fixtures/

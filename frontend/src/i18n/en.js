@@ -3,6 +3,7 @@ export default {
     home: 'Home', how: 'How it works', schools: 'Schools', donate: 'Donate',
     search: 'Search', about: 'About', join: 'Join us',
     login: 'Sign in', register: 'Register', account: 'My account', logout: 'Sign out',
+    menu: 'Menu', switchToKa: 'Switch to Georgian', switchToEn: 'Switch to English',
   },
   hero: {
     slogan: 'Your book is awaited in the mountains',
@@ -291,5 +292,8 @@ export default {
     markReceived: 'Received at school',
     markShipped: 'Shipped to beneficiary',
     viewTrack: 'View tracker',
+  },
+  notFound: {
+    body: 'This page got lost in the mountains.',
   },
 };

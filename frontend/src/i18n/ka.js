@@ -3,6 +3,7 @@ export default {
     home: 'მთავარი', how: 'როგორ მუშაობს', schools: 'სკოლები', donate: 'გაჩუქება',
     search: 'ძებნა', about: 'ჩვენ შესახებ', join: 'შემოგვიერთდი',
     login: 'შესვლა', register: 'რეგისტრაცია', account: 'ჩემი კაბინეტი', logout: 'გასვლა',
+    menu: 'მენიუ', switchToKa: 'ქართულზე გადართვა', switchToEn: 'ინგლისურზე გადართვა',
   },
   hero: {
     slogan: 'შენს წიგნს ელიან მთაში',
@@ -291,5 +292,8 @@ export default {
     markReceived: 'მიღებულია სკოლაში',
     markShipped: 'გაიგზავნა ბენეფიციართან',
     viewTrack: 'ტრეკერი',
+  },
+  notFound: {
+    body: 'ეს გვერდი მთებში დაიკარგა.',
   },
 };

@@ -5,7 +5,7 @@ import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/rbac.js';
 import {
   listApprovedSchools, getSchoolById, createSchool, updateSchool, listPendingSchools,
-  listBookRequests, createBookRequest, deleteBookRequest,
+  listBookRequests, createBookRequest, deleteBookRequest, listSchoolsByOwner,
 } from '../db/store.js';
 import { SchoolCreateSchema, SchoolApproveSchema, BookRequestSchema } from '../schemas.js';
 
@@ -15,6 +15,15 @@ router.get('/', async (req, res, next) => {
   try {
     const { type, region } = req.query;
     res.json(await listApprovedSchools({ type, region }));
+  } catch (err) { next(err); }
+});
+
+// All schools owned by the current user — both beneficiary and volunteer types,
+// regardless of approval status. Used by /school/manage.
+// Must come BEFORE /:id so the literal path wins over the param route.
+router.get('/mine', requireAuth, async (req, res, next) => {
+  try {
+    res.json(await listSchoolsByOwner(req.user.id));
   } catch (err) { next(err); }
 });
 

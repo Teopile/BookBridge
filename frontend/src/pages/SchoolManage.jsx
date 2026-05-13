@@ -21,7 +21,8 @@ export default function SchoolManage() {
   async function load() {
     setError(null);
     try {
-      const list = await apiGet('/api/volunteer/my-schools').catch(() => []);
+      // All schools owned by the current user (beneficiary + volunteer, any status).
+      const list = await apiGet('/api/schools/mine').catch(() => []);
       setSchools(list);
       if (list.length > 0 && !selected) setSelected(list[0].id);
     } catch (e) { setError(e.message); }

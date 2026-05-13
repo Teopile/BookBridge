@@ -27,7 +27,7 @@ export default function Track() {
   return (
     <section className="section">
       <div className="card" style={{ maxWidth: 720 }}>
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32, marginBottom: 8 }}>{t('track.title')}</h1>
+        <h1 style={{ fontSize: 32, marginBottom: 8 }}>{t('track.title')}</h1>
         <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>Donation #{d.id.slice(0, 8)}</p>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
@@ -55,7 +55,7 @@ export default function Track() {
           </p>
         )}
 
-        <h3 style={{ marginTop: 24, marginBottom: 12, fontFamily: 'Cormorant Garamond, serif' }}>📚 Books</h3>
+        <h3 style={{ marginTop: 24, marginBottom: 12 }}>📚 Books</h3>
         <ul style={{ listStyle: 'none' }}>
           {(d.donation_items || []).map((i) => (
             <li key={i.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--mist)' }}>

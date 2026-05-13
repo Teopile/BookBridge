@@ -36,7 +36,7 @@ export default function DonateMoney() {
   return (
     <section className="section">
       <div className="card">
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32, marginBottom: 8 }}>💝 Donate money</h1>
+        <h1 style={{ fontSize: 32, marginBottom: 8 }}>💝 Donate money</h1>
         <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
           A monetary donation helps us cover shipping, courier fees, and school outreach.
         </p>

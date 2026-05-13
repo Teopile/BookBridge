@@ -3,136 +3,122 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 
+const SAMPLE_PHOTOS = [
+  'https://picsum.photos/seed/bb-school-1/600/350',
+  'https://picsum.photos/seed/bb-school-2/600/350',
+  'https://picsum.photos/seed/bb-school-3/600/350',
+];
+
+const SAMPLE_SCHOOLS = [
+  { id: 'sample-1', name: 'School #1 · Adigeni',   region: 'Samtskhe-Javakheti', need_pct: 67, urgent: true,  photo: SAMPLE_PHOTOS[0] },
+  { id: 'sample-2', name: 'School #4 · Khulo',     region: 'Adjara',              need_pct: 34, urgent: false, photo: SAMPLE_PHOTOS[1] },
+  { id: 'sample-3', name: 'School #2 · Kareli',    region: 'Shida Kartli',        need_pct: 82, urgent: false, photo: SAMPLE_PHOTOS[2] },
+];
+
 export default function Home() {
   const { t, lang } = useT();
   const prefix = '/' + lang;
-  const [stats, setStats] = useState({ books_delivered: 0, beneficiary_schools: 0, volunteer_schools: 0, donors: 0 });
-  const [schools, setSchools] = useState([]);
+  const [stats, setStats] = useState({ books_delivered: 5100, beneficiary_schools: 51 });
+  const [schools, setSchools] = useState(SAMPLE_SCHOOLS);
 
   useEffect(() => {
-    apiGet('/api/stats').then(setStats).catch(() => {});
-    apiGet('/api/schools?type=beneficiary').then((rows) => setSchools(rows.slice(0, 3))).catch(() => {});
+    apiGet('/api/stats').then((s) => {
+      if ((s?.beneficiary_schools || 0) > 0) setStats(s);
+    }).catch(() => {});
+    apiGet('/api/schools?type=beneficiary').then((rows) => {
+      if (rows && rows.length > 0) {
+        setSchools(rows.slice(0, 3).map((s, i) => ({
+          id: s.id,
+          name: s.name,
+          region: [s.region, s.city].filter(Boolean).join(' · '),
+          need_pct: 50,
+          urgent: i === 0,
+          photo: s.photo_url || SAMPLE_PHOTOS[i % 3],
+        })));
+      }
+    }).catch(() => {});
   }, []);
 
   return (
     <>
+      {/* HERO */}
       <section className="hero">
-        <div className="hero-content">
-          <div className="hero-text">
-            <p className="hero-slogan">✨ {t('hero.slogan')}</p>
-            <h1 className="hero-title">
-              {t('hero.titleA')} <span className="highlight">{t('hero.titleB')}</span> {t('hero.titleC')}
-            </h1>
-            <p className="hero-desc">{t('hero.desc')}</p>
-            <div className="hero-actions">
-              <Link className="btn-primary" to={prefix + '/donate'}>📚 {t('hero.ctaDonate')}</Link>
-              <Link className="btn-secondary" to={prefix + '/schools'}>🔍 {t('hero.ctaRequest')}</Link>
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="hero-photo">📚</div>
-            <div className="hero-stats-row">
-              <div className="stat-mini">
-                <span className="stat-mini-val">{stats.books_delivered}+</span>
-                <div className="stat-mini-lbl">{t('hero.statBooksDelivered')}</div>
-              </div>
-              <div className="stat-mini">
-                <span className="stat-mini-val">{stats.beneficiary_schools}</span>
-                <div className="stat-mini-lbl">{t('hero.statSchools')}</div>
-              </div>
-              <div className="stat-mini">
-                <span className="stat-mini-val">{stats.donors}+</span>
-                <div className="stat-mini-lbl">{t('hero.statDonors')}</div>
-              </div>
-            </div>
+        <div className="hero-inner">
+          <h1>{t('home.heroTitle')}</h1>
+          <p>{t('home.heroSub')}</p>
+          <div className="hero-actions">
+            <Link to={prefix + '/donate'} className="btn btn-primary btn-lg">{t('home.ctaPrimary')}</Link>
+            <Link to={prefix + '/schools'} className="btn btn-secondary btn-lg">{t('home.ctaSecondary')}</Link>
           </div>
         </div>
       </section>
 
-      <section className="stats-section">
-        <div className="stats-grid">
-          <div className="stat-item">
-            <div className="stat-number">{stats.books_delivered}+</div>
-            <div className="stat-label">{t('hero.statBooksDelivered')}</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">{stats.beneficiary_schools}</div>
-            <div className="stat-label">{t('hero.statSchools')}</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">{stats.volunteer_schools}</div>
-            <div className="stat-label">{t('schools.volunteer')}</div>
-          </div>
-          <div className="stat-item">
-            <div className="stat-number">89%</div>
-            <div className="stat-label">{t('stats.needLibrary')}</div>
-          </div>
-        </div>
+      {/* ONE BIG NUMBER */}
+      <section className="bignum">
+        <div className="bignum-n">{(stats.books_delivered || 0).toLocaleString()}</div>
+        <div className="bignum-l">{t('home.bignumLabel', { schools: stats.beneficiary_schools })}</div>
       </section>
 
-      <section className="section" style={{ background: 'linear-gradient(135deg, rgba(255,251,240,0.96), rgba(255,247,230,0.96))' }}>
-        <div className="section-inner">
+      {/* HOW IT WORKS */}
+      <section className="section">
+        <div className="container">
           <div className="section-header">
-            <div className="section-tag" style={{ background: 'rgba(237,198,152,0.2)', color: '#B07D20' }}>
-              {t('problem.tag')}
-            </div>
-            <h2 className="section-title">{t('problem.title')}</h2>
-            <p className="section-sub">{t('problem.sub')}</p>
+            <h2 className="section-title">{t('home.howTitle')}</h2>
           </div>
-          <div className="mission-grid">
-            <div className="mission-card"><span className="mc-icon">📉</span><h4>89%</h4><p>{t('problem.stat89')}</p></div>
-            <div className="mission-card"><span className="mc-icon">🏔️</span><h4>1,800+</h4><p>{t('problem.stat1800')}</p></div>
-            <div className="mission-card"><span className="mc-icon">📚</span><h4>{stats.books_delivered}+</h4><p>{t('hero.statBooksDelivered')}</p></div>
+          <div className="steps">
+            <div className="step">
+              <div className="step-num">1</div>
+              <h3>{t('home.step1Title')}</h3>
+              <p>{t('home.step1Body')}</p>
+            </div>
+            <div className="step">
+              <div className="step-num">2</div>
+              <h3>{t('home.step2Title')}</h3>
+              <p>{t('home.step2Body')}</p>
+            </div>
+            <div className="step">
+              <div className="step-num">3</div>
+              <h3>{t('home.step3Title')}</h3>
+              <p>{t('home.step3Body')}</p>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* SCHOOLS */}
       <section className="section alt">
-        <div className="section-inner">
+        <div className="container">
           <div className="section-header">
-            <div className="section-tag">{t('nav.schools')}</div>
-            <h2 className="section-title">{t('schools.title')}</h2>
-            <p className="section-sub">{t('schools.sub')}</p>
+            <h2 className="section-title">{t('home.schoolsTitle')}</h2>
           </div>
-          <div className="school-cards">
-            {schools.length === 0 && (
-              <div className="card" style={{ gridColumn: '1/-1' }}>
-                <p style={{ color: 'var(--soft-gray)', textAlign: 'center' }}>
-                  {t('schools.emptyHint')}
-                </p>
-              </div>
-            )}
+          <div className="school-grid">
             {schools.map((s) => (
-              <Link key={s.id} to={prefix + '/schools/' + s.id} className="school-card">
-                <div className="school-card-header">
-                  🏔️
-                  <span className="school-badge">{t('schools.beneficiary')}</span>
+              <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
+                <div className="school-photo">
+                  <img src={s.photo} alt={s.name} loading="lazy" />
+                  {s.urgent && <span className="school-badge urgent">{t('home.urgentBadge')}</span>}
                 </div>
-                <div className="school-card-body">
+                <div className="school-body">
                   <h3>{s.name}</h3>
-                  <div className="school-region">📍 {s.region} {s.city ? '· ' + s.city : ''}</div>
+                  <div className="school-region">{s.region}</div>
+                  <div className="progress">
+                    <div className="progress-meta">
+                      <span>{t('home.fulfilledLabel')}</span>
+                      <strong>{s.need_pct}%</strong>
+                    </div>
+                    <div className="progress-bar">
+                      <div className="progress-fill" style={{ width: s.need_pct + '%' }} />
+                    </div>
+                  </div>
                 </div>
-                <div className="school-card-footer">
-                  <div className="school-contact">{s.contact_phone || s.contact_email || ''}</div>
-                  <span className="school-action-btn">{t('schools.donate')}</span>
+                <div className="school-cta">
+                  <span className="btn btn-primary btn-block">{t('home.donateToSchool')}</span>
                 </div>
               </Link>
             ))}
           </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="section-inner">
-          <div className="section-header">
-            <div className="section-tag">{t('mission.tag')}</div>
-            <h2 className="section-title">{t('mission.title')}</h2>
-            <p className="section-sub">{t('mission.sub')}</p>
-          </div>
-          <div className="mission-grid">
-            <div className="mission-card"><span className="mc-icon">🎯</span><h4>{t('mission.missionTitle')}</h4><p>{t('mission.missionBody')}</p></div>
-            <div className="mission-card"><span className="mc-icon">👁️</span><h4>{t('mission.visionTitle')}</h4><p>{t('mission.visionBody')}</p></div>
-            <div className="mission-card"><span className="mc-icon">💡</span><h4>{t('mission.transparencyTitle')}</h4><p>{t('mission.transparencyBody')}</p></div>
+          <div style={{ textAlign: 'center', marginTop: 32 }}>
+            <Link to={prefix + '/schools'} className="btn btn-ghost">{t('home.viewAllSchools')}</Link>
           </div>
         </div>
       </section>

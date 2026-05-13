@@ -75,7 +75,7 @@ export default function Auth() {
     return (
       <section className="section">
         <div className="card">
-          <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32, marginBottom: 8 }}>
+          <h1 style={{ fontSize: 32, marginBottom: 8 }}>
             {t('auth.verifyTitle')}
           </h1>
           <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
@@ -85,13 +85,13 @@ export default function Auth() {
           <form className="form" onSubmit={submitVerifyOtp}>
             <label>{t('auth.otpCode')}</label>
             <input
-              type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required
+              type="text" inputMode="numeric" pattern="[0-9]{6,10}" minLength={6} maxLength={10} required
               value={form.otp} onChange={(e) => set('otp', e.target.value.replace(/\D/g, ''))}
-              style={{ letterSpacing: 8, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
+              style={{ letterSpacing: 6, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
               autoFocus
             />
             {err && <div className="error">{err}</div>}
-            <button className="btn-primary" disabled={busy || form.otp.length !== 6} type="submit">
+            <button className="btn-primary" disabled={busy || form.otp.length < 6} type="submit">
               {busy ? '…' : t('auth.verifyButton')}
             </button>
             <button
@@ -118,7 +118,7 @@ export default function Auth() {
   return (
     <section className="section">
       <div className="card">
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32, marginBottom: 8 }}>
+        <h1 style={{ fontSize: 32, marginBottom: 8 }}>
           {mode === 'signin' ? t('auth.signin') : t('auth.signup')}
         </h1>
         <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>

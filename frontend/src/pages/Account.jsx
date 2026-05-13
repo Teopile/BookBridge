@@ -34,7 +34,7 @@ export default function Account() {
   return (
     <section className="section">
       <div className="section-inner">
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 36, marginBottom: 24 }}>
+        <h1 style={{ fontSize: 36, marginBottom: 24 }}>
           {t('account.title')} — {user.full_name || user.email}
         </h1>
 

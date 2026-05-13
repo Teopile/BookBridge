@@ -10,18 +10,19 @@ export default function Footer() {
       <section className="footer-cta">
         <h2>{t('footerCta.title')}</h2>
         <p>{t('footerCta.sub')}</p>
-        <div className="join-actions">
-          <Link className="btn-white" to={prefix + '/donate'}>📚 {t('footerCta.start')}</Link>
-          <Link className="btn-outline-white" to={prefix + '/auth'}>🏫 {t('footerCta.register')}</Link>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link className="btn btn-white btn-lg" to={prefix + '/donate'}>{t('footerCta.start')}</Link>
         </div>
       </section>
 
       <footer>
-        <div className="footer-inner">
+        <div className="footer-grid">
           <div className="footer-brand">
             <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="logo-icon">📚</div>
-              <span style={{ color: 'white', fontSize: 22, fontWeight: 700, fontFamily: 'Cormorant Garamond, serif' }}>BookBridge</span>
+              <div className="logo-mark" style={{ width: 32, height: 32 }}>
+                <span style={{ color: 'white', fontSize: 18 }}>📚</span>
+              </div>
+              <span style={{ color: 'white', fontSize: 18, fontWeight: 700 }}>BookBridge</span>
             </div>
             <p>{t('footer.tagline')}</p>
           </div>
@@ -30,13 +31,12 @@ export default function Footer() {
             <h5>{t('footer.platform')}</h5>
             <Link to={prefix + '/donate'}>{t('footer.donate')}</Link>
             <Link to={prefix + '/schools'}>{t('footer.findSchools')}</Link>
-            <Link to={prefix + '/search'}>{t('footer.request')}</Link>
+            <Link to={prefix + '/how-it-works'}>{t('nav.how')}</Link>
           </div>
 
           <div className="footer-col">
             <h5>{t('footer.company')}</h5>
             <Link to={prefix + '/about'}>{t('footer.about')}</Link>
-            <Link to={prefix + '/how-it-works'}>{t('footer.mission')}</Link>
             <a href="mailto:info@bookbridge.ge">{t('footer.contact')}</a>
           </div>
 
@@ -50,7 +50,7 @@ export default function Footer() {
 
         <div className="footer-bottom">
           <span>{t('footer.rights')}</span>
-          <span>{t('footer.tagline')} ✨</span>
+          <span>{t('footer.tagline')}</span>
         </div>
       </footer>
     </>

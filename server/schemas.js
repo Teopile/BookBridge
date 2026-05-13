@@ -79,17 +79,17 @@ export const ForgotPasswordSchema = z.object({
   email: z.string().email(),
 });
 
-// Code-based reset: { email, token (6-digit OTP), new_password }
+// Code-based reset: { email, token (6–10 digit OTP — Supabase default is 8), new_password }
 export const ResetPasswordSchema = z.object({
   email: z.string().email(),
-  token: z.string().regex(/^[0-9]{6}$/),
+  token: z.string().regex(/^[0-9]{6,10}$/),
   new_password: z.string().min(8).max(200),
 });
 
-// Signup email verification (6-digit OTP)
+// Signup email verification (6–10 digit OTP)
 export const VerifyOtpSchema = z.object({
   email: z.string().email(),
-  token: z.string().regex(/^[0-9]{6}$/),
+  token: z.string().regex(/^[0-9]{6,10}$/),
 });
 
 // Resend signup OTP (same payload as forgot-password)

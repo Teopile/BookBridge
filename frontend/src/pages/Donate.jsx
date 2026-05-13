@@ -4,6 +4,17 @@ import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost } from '../api.js';
 
+const SAMPLE_PHOTOS = [
+  'https://picsum.photos/seed/bb-school-1/1200/400',
+  'https://picsum.photos/seed/bb-school-2/1200/400',
+  'https://picsum.photos/seed/bb-school-3/1200/400',
+];
+const photoFor = (id) => {
+  if (!id) return SAMPLE_PHOTOS[0];
+  let h = 0; for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) >>> 0;
+  return SAMPLE_PHOTOS[h % SAMPLE_PHOTOS.length];
+};
+
 export default function Donate() {
   const { t, lang } = useT();
   const { user } = useAuth();
@@ -33,6 +44,8 @@ export default function Donate() {
     }
   }, [chosenSchool]);
 
+  const chosenSchoolObj = schools.find((s) => s.id === chosenSchool) || null;
+
   function toggleItem(req) {
     setItems((curr) => {
       const exists = curr.find((i) => i.matched_request_id === req.id);
@@ -54,137 +67,224 @@ export default function Donate() {
     if (!user) { navigate('/' + lang + '/auth?next=/donate'); return; }
     setSubmitting(true); setError(null);
     try {
-      const payload = {
-        beneficiary_school_id: chosenSchool || undefined,
-        volunteer_school_id: delivery === 'self' ? chosenVolunteer : undefined,
-        delivery_method: delivery,
-        donor_address: delivery === 'courier' ? donorAddress : undefined,
-        items: items.map((i) => ({ ...i, quantity: Number(i.quantity) || 1 })),
-      };
+      const cleanItems = items.map((i) => {
+        const out = { quantity: Number(i.quantity) || 1 };
+        if (i.matched_request_id) out.matched_request_id = i.matched_request_id;
+        if (i.book_title)         out.book_title = i.book_title;
+        if (i.book_author)        out.book_author = i.book_author;
+        if (i.book_genre)         out.book_genre = i.book_genre;
+        return out;
+      });
+
+      const payload = { delivery_method: delivery, items: cleanItems };
+      if (chosenSchool)                           payload.beneficiary_school_id = chosenSchool;
+      if (delivery === 'self' && chosenVolunteer) payload.volunteer_school_id   = chosenVolunteer;
+      if (delivery === 'courier' && donorAddress) payload.donor_address         = donorAddress;
+
       const created = await apiPost('/api/donations', payload);
       navigate('/' + lang + '/track/' + created.track_token);
     } catch (e) {
-      setError(e.message);
+      if (e.body?.issues?.length) {
+        setError(e.body.issues.map((i) => `${i.path}: ${i.message}`).join(' · '));
+      } else {
+        setError(e.message);
+      }
     } finally {
       setSubmitting(false);
     }
   }
 
+  const stepLabels = [
+    t('donate.step1'),
+    t('donate.step2'),
+    t('donate.step3'),
+    t('donate.step4'),
+  ];
+
   return (
     <section className="section">
-      <div className="section-inner">
-        <div className="wizard-steps">
-          {[t('donate.step1'), t('donate.step2'), t('donate.step3'), t('donate.step4')].map((label, i) => (
-            <div key={i} className={'wizard-step' + (step === i + 1 ? ' active' : step > i + 1 ? ' done' : '')}>
-              {i + 1}. {label}
+      <div className="container" style={{ maxWidth: 720 }}>
+        {/* Soft banner with school photo placeholder */}
+        <div style={{
+          aspectRatio: '4 / 1',
+          borderRadius: 14,
+          overflow: 'hidden',
+          marginBottom: 24,
+          background: 'linear-gradient(135deg, var(--teal-soft), #fff5e6)',
+          position: 'relative',
+        }}>
+          <img
+            src={photoFor(chosenSchool)}
+            alt=""
+            style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.92 }}
+          />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: 'linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.5))',
+          }} />
+          <div style={{
+            position: 'absolute', left: 24, bottom: 20, right: 24,
+            color: 'white',
+          }}>
+            <div style={{ fontSize: 13, opacity: 0.9 }}>
+              {t('donate.stepOf', { current: step, total: 4 })}
             </div>
+            <div style={{ fontSize: 22, fontWeight: 700, marginTop: 2 }}>
+              {stepLabels[step - 1]}
+            </div>
+            {chosenSchoolObj && (
+              <div style={{ fontSize: 13, marginTop: 4, opacity: 0.92 }}>
+                {t('donate.donatingTo')} <strong>{chosenSchoolObj.name}</strong>
+                {chosenSchoolObj.region ? ' · ' + chosenSchoolObj.region : ''}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Progress bar */}
+        <div className="wizard-progress">
+          {[1, 2, 3, 4].map((n) => (
+            <div key={n} className={'wizard-step-pill' + (step >= n ? ' done' : '')} />
           ))}
         </div>
 
-        <div className="card" style={{ maxWidth: 800 }}>
+        <div className="card" style={{ maxWidth: 'none', margin: 0 }}>
           {step === 1 && (
             <>
-              <h2 style={{ marginBottom: 16, fontFamily: 'Cormorant Garamond, serif' }}>{t('donate.step1')}</h2>
-              <select style={{ width: '100%', padding: 12, borderRadius: 12, border: '2px solid var(--mist)', fontSize: 15 }}
-                value={chosenSchool || ''} onChange={(e) => setChosenSchool(e.target.value || null)}>
-                <option value="">— {t('donate.step1')} —</option>
-                {schools.map((s) => <option key={s.id} value={s.id}>{s.name} · {s.region}</option>)}
+              <h2 style={{ marginBottom: 12 }}>{t('donate.step1')}</h2>
+              <p style={{ color: 'var(--gray-700)', marginBottom: 16 }}>{t('donate.step1Help')}</p>
+              <select
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                value={chosenSchool || ''} onChange={(e) => setChosenSchool(e.target.value || null)}
+              >
+                <option value="">— {t('donate.pickSchool')} —</option>
+                {schools.map((s) => <option key={s.id} value={s.id}>{s.name} {s.region ? '· ' + s.region : ''}</option>)}
               </select>
               <div style={{ marginTop: 24 }}>
-                <button className="btn-primary" onClick={() => setStep(2)}>Next →</button>
+                <button className="btn btn-primary" disabled={!chosenSchool} onClick={() => setStep(2)}>
+                  {t('donate.next')}
+                </button>
               </div>
             </>
           )}
 
           {step === 2 && (
             <>
-              <h2 style={{ marginBottom: 16, fontFamily: 'Cormorant Garamond, serif' }}>{t('donate.step2')}</h2>
+              <h2 style={{ marginBottom: 16 }}>{t('donate.step2')}</h2>
               {bookRequests.length > 0 && (
                 <div style={{ marginBottom: 24 }}>
-                  <h4 style={{ marginBottom: 12 }}>Requested by this school:</h4>
+                  <h4 style={{ marginBottom: 12 }}>{t('donate.requestedBySchool')}</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     {bookRequests.map((r) => {
                       const checked = !!items.find((i) => i.matched_request_id === r.id);
                       return (
-                        <label key={r.id} style={{ background: checked ? 'rgba(45,139,122,0.1)' : 'var(--mist)', padding: 12, borderRadius: 12, display: 'flex', gap: 12, alignItems: 'center', cursor: 'pointer' }}>
+                        <label key={r.id} style={{
+                          background: checked ? 'var(--teal-soft)' : 'var(--gray-100)',
+                          border: '1.5px solid ' + (checked ? 'var(--teal)' : 'transparent'),
+                          padding: 12, borderRadius: 10,
+                          display: 'flex', gap: 12, alignItems: 'center', cursor: 'pointer',
+                        }}>
                           <input type="checkbox" checked={checked} onChange={() => toggleItem(r)} />
-                          <span><strong>{r.title || r.author || r.genre}</strong> <small style={{ color: 'var(--soft-gray)' }}>({r.request_type}, need {r.quantity_needed})</small></span>
+                          <span>
+                            <strong>{r.title || r.author || r.genre}</strong>
+                            <small style={{ color: 'var(--gray-500)', marginLeft: 8 }}>
+                              ({r.request_type}, {t('donate.need')} {r.quantity_needed})
+                            </small>
+                          </span>
                         </label>
                       );
                     })}
                   </div>
                 </div>
               )}
-              <h4 style={{ marginBottom: 12 }}>Custom items:</h4>
+              <h4 style={{ marginBottom: 12 }}>{t('donate.customBooks')}</h4>
               {items.filter((i) => !i.matched_request_id).map((it) => {
                 const realIdx = items.indexOf(it);
                 return (
                   <div key={realIdx} style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
-                    <input placeholder="Title" value={it.book_title || ''} onChange={(e) => updateItem(realIdx, 'book_title', e.target.value)} style={{ flex: 2, padding: 10, borderRadius: 10, border: '2px solid var(--mist)' }} />
-                    <input placeholder="Author" value={it.book_author || ''} onChange={(e) => updateItem(realIdx, 'book_author', e.target.value)} style={{ flex: 2, padding: 10, borderRadius: 10, border: '2px solid var(--mist)' }} />
-                    <input type="number" min="1" value={it.quantity} onChange={(e) => updateItem(realIdx, 'quantity', e.target.value)} style={{ width: 70, padding: 10, borderRadius: 10, border: '2px solid var(--mist)' }} />
-                    <button onClick={() => removeItem(realIdx)} className="btn-secondary" style={{ padding: '6px 12px' }}>✕</button>
+                    <input placeholder={t('donate.titlePlaceholder')} value={it.book_title || ''} onChange={(e) => updateItem(realIdx, 'book_title', e.target.value)} style={{ flex: 2, padding: 10, borderRadius: 10, border: '1.5px solid var(--gray-200)' }} />
+                    <input placeholder={t('donate.authorPlaceholder')} value={it.book_author || ''} onChange={(e) => updateItem(realIdx, 'book_author', e.target.value)} style={{ flex: 2, padding: 10, borderRadius: 10, border: '1.5px solid var(--gray-200)' }} />
+                    <input type="number" min="1" value={it.quantity} onChange={(e) => updateItem(realIdx, 'quantity', e.target.value)} style={{ width: 70, padding: 10, borderRadius: 10, border: '1.5px solid var(--gray-200)' }} />
+                    <button onClick={() => removeItem(realIdx)} className="btn btn-secondary btn-sm">✕</button>
                   </div>
                 );
               })}
-              <button onClick={addCustom} className="btn-secondary" style={{ marginTop: 8 }}>+ Add a custom book</button>
+              <button onClick={addCustom} className="btn btn-secondary btn-sm" style={{ marginTop: 8 }}>
+                + {t('donate.addCustomBook')}
+              </button>
               <div style={{ marginTop: 24, display: 'flex', gap: 12 }}>
-                <button className="btn-secondary" onClick={() => setStep(1)}>← Back</button>
-                <button className="btn-primary" disabled={items.length === 0} onClick={() => setStep(3)}>Next →</button>
+                <button className="btn btn-secondary" onClick={() => setStep(1)}>{t('donate.back')}</button>
+                <button className="btn btn-primary" disabled={items.length === 0} onClick={() => setStep(3)}>
+                  {t('donate.next')}
+                </button>
               </div>
             </>
           )}
 
           {step === 3 && (
             <>
-              <h2 style={{ marginBottom: 16, fontFamily: 'Cormorant Garamond, serif' }}>{t('donate.step3')}</h2>
+              <h2 style={{ marginBottom: 16 }}>{t('donate.step3')}</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <label style={{ padding: 16, borderRadius: 12, border: '2px solid ' + (delivery === 'self' ? 'var(--primary)' : 'var(--mist)'), background: delivery === 'self' ? 'rgba(45,139,122,0.08)' : 'white', cursor: 'pointer' }}>
+                <label style={{
+                  padding: 16, borderRadius: 10,
+                  border: '1.5px solid ' + (delivery === 'self' ? 'var(--teal)' : 'var(--gray-200)'),
+                  background: delivery === 'self' ? 'var(--teal-soft)' : 'white',
+                  cursor: 'pointer',
+                }}>
                   <input type="radio" name="delivery" checked={delivery === 'self'} onChange={() => setDelivery('self')} style={{ marginRight: 12 }} />
                   <strong>{t('donate.methodSelf')}</strong>
-                  <p style={{ color: 'var(--soft-gray)', marginLeft: 32, marginTop: 4 }}>{t('donate.methodSelfDesc')}</p>
+                  <p style={{ color: 'var(--gray-700)', marginLeft: 32, marginTop: 4, fontSize: 14 }}>{t('donate.methodSelfDesc')}</p>
                 </label>
-                <label style={{ padding: 16, borderRadius: 12, border: '2px solid ' + (delivery === 'courier' ? 'var(--primary)' : 'var(--mist)'), background: delivery === 'courier' ? 'rgba(45,139,122,0.08)' : 'white', cursor: 'pointer' }}>
+                <label style={{
+                  padding: 16, borderRadius: 10,
+                  border: '1.5px solid ' + (delivery === 'courier' ? 'var(--teal)' : 'var(--gray-200)'),
+                  background: delivery === 'courier' ? 'var(--teal-soft)' : 'white',
+                  cursor: 'pointer',
+                }}>
                   <input type="radio" name="delivery" checked={delivery === 'courier'} onChange={() => setDelivery('courier')} style={{ marginRight: 12 }} />
                   <strong>{t('donate.methodCourier')}</strong>
-                  <p style={{ color: 'var(--soft-gray)', marginLeft: 32, marginTop: 4 }}>{t('donate.methodCourierDesc')}</p>
+                  <p style={{ color: 'var(--gray-700)', marginLeft: 32, marginTop: 4, fontSize: 14 }}>{t('donate.methodCourierDesc')}</p>
                 </label>
               </div>
 
               {delivery === 'self' && (
                 <div style={{ marginTop: 16 }}>
-                  <label style={{ fontSize: 13, fontWeight: 600 }}>Volunteer school</label>
-                  <select value={chosenVolunteer || ''} onChange={(e) => setChosenVolunteer(e.target.value || null)} style={{ display: 'block', width: '100%', padding: 12, borderRadius: 12, border: '2px solid var(--mist)', marginTop: 6 }}>
-                    <option value="">— pick one —</option>
-                    {volunteers.map((v) => <option key={v.id} value={v.id}>{v.name} · {v.address}</option>)}
+                  <label style={{ fontSize: 13, fontWeight: 600 }}>{t('donate.pickVolunteer')}</label>
+                  <select value={chosenVolunteer || ''} onChange={(e) => setChosenVolunteer(e.target.value || null)}
+                    style={{ display: 'block', width: '100%', padding: 12, borderRadius: 10, border: '1.5px solid var(--gray-200)', marginTop: 6 }}>
+                    <option value="">— {t('donate.pickOne')} —</option>
+                    {volunteers.map((v) => <option key={v.id} value={v.id}>{v.name} {v.address ? '· ' + v.address : ''}</option>)}
                   </select>
                 </div>
               )}
 
               {delivery === 'courier' && (
                 <div style={{ marginTop: 16 }}>
-                  <label style={{ fontSize: 13, fontWeight: 600 }}>Pickup address</label>
-                  <input value={donorAddress} onChange={(e) => setDonorAddress(e.target.value)} style={{ display: 'block', width: '100%', padding: 12, borderRadius: 12, border: '2px solid var(--mist)', marginTop: 6 }} />
+                  <label style={{ fontSize: 13, fontWeight: 600 }}>{t('donate.pickupAddress')}</label>
+                  <input value={donorAddress} onChange={(e) => setDonorAddress(e.target.value)}
+                    style={{ display: 'block', width: '100%', padding: 12, borderRadius: 10, border: '1.5px solid var(--gray-200)', marginTop: 6 }} />
                 </div>
               )}
 
               <div style={{ marginTop: 24, display: 'flex', gap: 12 }}>
-                <button className="btn-secondary" onClick={() => setStep(2)}>← Back</button>
-                <button className="btn-primary" onClick={() => setStep(4)}>Next →</button>
+                <button className="btn btn-secondary" onClick={() => setStep(2)}>{t('donate.back')}</button>
+                <button className="btn btn-primary" onClick={() => setStep(4)}>{t('donate.next')}</button>
               </div>
             </>
           )}
 
           {step === 4 && (
             <>
-              <h2 style={{ marginBottom: 16, fontFamily: 'Cormorant Garamond, serif' }}>{t('donate.step4')}</h2>
-              <p><strong>School:</strong> {schools.find((s) => s.id === chosenSchool)?.name || '— auto-pick —'}</p>
-              <p style={{ marginTop: 8 }}><strong>Items:</strong> {items.length}</p>
-              <p style={{ marginTop: 8 }}><strong>Delivery:</strong> {delivery === 'self' ? t('donate.methodSelf') : t('donate.methodCourier')}</p>
+              <h2 style={{ marginBottom: 16 }}>{t('donate.step4')}</h2>
+              <ul style={{ listStyle: 'none', padding: 0, lineHeight: 1.8, color: 'var(--gray-700)' }}>
+                <li><strong>{t('donate.summarySchool')}:</strong> {chosenSchoolObj?.name || '—'}</li>
+                <li><strong>{t('donate.summaryItems')}:</strong> {items.length}</li>
+                <li><strong>{t('donate.summaryDelivery')}:</strong> {delivery === 'self' ? t('donate.methodSelf') : t('donate.methodCourier')}</li>
+              </ul>
               {error && <div className="error" style={{ marginTop: 16 }}>{error}</div>}
               <div style={{ marginTop: 24, display: 'flex', gap: 12 }}>
-                <button className="btn-secondary" onClick={() => setStep(3)}>← Back</button>
-                <button className="btn-primary" disabled={submitting} onClick={submit}>
+                <button className="btn btn-secondary" onClick={() => setStep(3)}>{t('donate.back')}</button>
+                <button className="btn btn-primary" disabled={submitting} onClick={submit}>
                   {submitting ? '…' : t('donate.confirm')}
                 </button>
               </div>

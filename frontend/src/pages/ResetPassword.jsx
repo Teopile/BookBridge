@@ -36,7 +36,7 @@ export default function ResetPassword() {
     return (
       <section className="section">
         <div className="card">
-          <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32 }}>✅ {t('auth.passwordUpdated')}</h1>
+          <h1 style={{ fontSize: 32 }}>✅ {t('auth.passwordUpdated')}</h1>
           <p style={{ color: 'var(--soft-gray)', marginTop: 16 }}>{t('auth.redirectingToSignin')}</p>
         </div>
       </section>
@@ -46,7 +46,7 @@ export default function ResetPassword() {
   return (
     <section className="section">
       <div className="card">
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32, marginBottom: 8 }}>
+        <h1 style={{ fontSize: 32, marginBottom: 8 }}>
           {t('auth.resetTitle')}
         </h1>
         <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>
@@ -58,9 +58,9 @@ export default function ResetPassword() {
 
           <label>{t('auth.otpCode')}</label>
           <input
-            type="text" inputMode="numeric" pattern="[0-9]{6}" maxLength={6} required
+            type="text" inputMode="numeric" pattern="[0-9]{6,10}" minLength={6} maxLength={10} required
             value={token} onChange={(e) => setToken(e.target.value.replace(/\D/g, ''))}
-            style={{ letterSpacing: 8, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
+            style={{ letterSpacing: 6, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
           />
 
           <label>{t('auth.newPassword')}</label>
@@ -70,7 +70,7 @@ export default function ResetPassword() {
           <input type="password" required minLength={8} value={confirm} onChange={(e) => setConfirm(e.target.value)} />
 
           {err && <div className="error">{err}</div>}
-          <button className="btn-primary" disabled={busy || token.length !== 6} type="submit">
+          <button className="btn-primary" disabled={busy || token.length < 6} type="submit">
             {busy ? '…' : t('auth.updatePassword')}
           </button>
           <Link to={'/' + lang + '/auth'} style={{ color: 'var(--soft-gray)', textAlign: 'center', fontSize: 13 }}>

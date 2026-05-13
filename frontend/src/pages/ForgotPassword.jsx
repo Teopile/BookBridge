@@ -24,7 +24,7 @@ export default function ForgotPassword() {
   return (
     <section className="section">
       <div className="card">
-        <h1 style={{ fontFamily: 'Cormorant Garamond, serif', fontSize: 32, marginBottom: 8 }}>
+        <h1 style={{ fontSize: 32, marginBottom: 8 }}>
           {t('auth.forgotTitle')}
         </h1>
         <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>

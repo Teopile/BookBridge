@@ -14,12 +14,14 @@ import { supabaseAuth, supabaseAdmin } from '../lib/supabase.js';
 const router = Router();
 
 // Strict per-route limiter for auth-sensitive endpoints.
+// Skipped in development so local manual testing isn't blocked after a handful of attempts.
 const authStrictLimiter = rateLimit({
   windowMs: 60_000,
   limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'rate_limited' },
+  skip: () => process.env.NODE_ENV !== 'production',
 });
 
 const cookieOpts = () => ({

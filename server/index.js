@@ -67,6 +67,7 @@ const limiter = rateLimit({
   limit: Number(process.env.RATE_LIMIT_PER_MIN) || 120,
   standardHeaders: true,
   legacyHeaders: false,
+  skip: () => process.env.NODE_ENV !== 'production',
 });
 app.use('/api/', (req, res, next) => {
   if (req.path.endsWith('/webhook')) return next();

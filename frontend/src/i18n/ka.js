@@ -30,6 +30,12 @@ export default {
     fulfilledLabel: 'შესრულდა',
     donateToSchool: 'შესწირე',
     viewAllSchools: 'ყველა სკოლა',
+
+    topDonorsTitle: 'საუკეთესო დონორები',
+    topDonorsSub: 'ყველაზე მეტი მიტანილი წიგნი.',
+    leaderboardEmpty: 'ჯერ დონაცია არ არის — გახდი პირველი.',
+    leaderboardBookOne: 'წიგნი',
+    leaderboardBookMany: 'წიგნი',
   },
   stats: {
     booksFor: 'წიგნი {count} სკოლისთვის',
@@ -99,6 +105,8 @@ export default {
     summarySchool: 'სკოლა',
     summaryItems: 'წიგნი',
     summaryDelivery: 'მიწოდება',
+    noSchoolsYet: 'ჯერ ერთიც სკოლა არ არის რეგისტრირებული. დაარეგისტრირე, რომ დონაცია გააკეთო.',
+    registerSchool: 'სკოლის რეგისტრაცია',
   },
   mission: {
     tag: 'ჩვენ შესახებ', title: 'BookBridge-ის ღირებულებები',

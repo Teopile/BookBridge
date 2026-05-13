@@ -323,3 +323,14 @@ export async function upsertSiteContent(key, valueEn, valueKa, byUserId) {
   if (error) throw error;
   return data;
 }
+
+// ---------- leaderboard ----------
+
+export async function getLeaderboard(limit = 10) {
+  const { data, error } = await supabaseAdmin
+    .from('v_donor_leaderboard')
+    .select('user_id, username, total_books, donation_count')
+    .limit(limit);
+  if (error) throw error;
+  return data || [];
+}

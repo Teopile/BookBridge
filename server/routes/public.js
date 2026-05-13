@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validate.js';
 import { SearchSchema } from '../schemas.js';
-import { getPublicStats, search, listApprovedSchools } from '../db/store.js';
+import { getPublicStats, search, listApprovedSchools, getLeaderboard } from '../db/store.js';
 import { supabaseAdmin } from '../lib/supabase.js';
 
 const router = Router();
@@ -24,6 +24,13 @@ router.get('/site-content', async (_req, res, next) => {
     if (error) throw error;
     const byKey = Object.fromEntries((data || []).map((r) => [r.key, { en: r.value_en, ka: r.value_ka }]));
     res.json(byKey);
+  } catch (err) { next(err); }
+});
+
+router.get('/leaderboard', async (req, res, next) => {
+  try {
+    const limit = Math.max(1, Math.min(50, Number(req.query.limit) || 10));
+    res.json(await getLeaderboard(limit));
   } catch (err) { next(err); }
 });
 

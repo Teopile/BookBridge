@@ -30,6 +30,12 @@ export default {
     fulfilledLabel: 'Fulfilled',
     donateToSchool: 'Donate',
     viewAllSchools: 'See all schools',
+
+    topDonorsTitle: 'Top donors',
+    topDonorsSub: 'Most books delivered, all-time.',
+    leaderboardEmpty: 'No donations yet — be the first.',
+    leaderboardBookOne: 'book',
+    leaderboardBookMany: 'books',
   },
   stats: {
     booksFor: 'Books for {count} schools',
@@ -99,6 +105,8 @@ export default {
     summarySchool: 'School',
     summaryItems: 'Items',
     summaryDelivery: 'Delivery',
+    noSchoolsYet: 'No schools are registered yet. Register one to donate.',
+    registerSchool: 'Register a school',
   },
   mission: {
     tag: 'About us', title: 'BookBridge values',

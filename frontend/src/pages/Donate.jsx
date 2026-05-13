@@ -20,6 +20,7 @@ export default function Donate() {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [params] = useSearchParams();
+  const prefix = '/' + lang;
 
   const [step, setStep] = useState(1);
   const [schools, setSchools] = useState([]);
@@ -153,18 +154,30 @@ export default function Donate() {
             <>
               <h2 style={{ marginBottom: 12 }}>{t('donate.step1')}</h2>
               <p style={{ color: 'var(--gray-700)', marginBottom: 16 }}>{t('donate.step1Help')}</p>
-              <select
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
-                value={chosenSchool || ''} onChange={(e) => setChosenSchool(e.target.value || null)}
-              >
-                <option value="">— {t('donate.pickSchool')} —</option>
-                {schools.map((s) => <option key={s.id} value={s.id}>{s.name} {s.region ? '· ' + s.region : ''}</option>)}
-              </select>
-              <div style={{ marginTop: 24 }}>
-                <button className="btn btn-primary" disabled={!chosenSchool} onClick={() => setStep(2)}>
-                  {t('donate.next')}
-                </button>
-              </div>
+
+              {schools.length === 0 ? (
+                <div style={{ padding: 20, background: 'var(--bg-subtle, var(--gray-100))', borderRadius: 10, borderLeft: '3px solid var(--teal)' }}>
+                  <p style={{ marginBottom: 12, color: 'var(--gray-700)' }}>{t('donate.noSchoolsYet')}</p>
+                  <a href={prefix + '/school/manage'} className="btn btn-primary btn-sm">
+                    {t('donate.registerSchool')} →
+                  </a>
+                </div>
+              ) : (
+                <>
+                  <select
+                    style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                    value={chosenSchool || ''} onChange={(e) => setChosenSchool(e.target.value || null)}
+                  >
+                    <option value="">— {t('donate.pickSchool')} —</option>
+                    {schools.map((s) => <option key={s.id} value={s.id}>{s.name} {s.region ? '· ' + s.region : ''}</option>)}
+                  </select>
+                  <div style={{ marginTop: 24 }}>
+                    <button className="btn btn-primary" disabled={!chosenSchool} onClick={() => setStep(2)}>
+                      {t('donate.next')}
+                    </button>
+                  </div>
+                </>
+              )}
             </>
           )}
 

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import Leaderboard from '../components/Leaderboard.jsx';
 
 const SAMPLE_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -120,6 +121,17 @@ export default function Home() {
           <div style={{ textAlign: 'center', marginTop: 32 }}>
             <Link to={prefix + '/schools'} className="btn btn-ghost">{t('home.viewAllSchools')}</Link>
           </div>
+        </div>
+      </section>
+
+      {/* TOP DONORS */}
+      <section className="section">
+        <div className="container">
+          <div className="section-header">
+            <h2 className="section-title">{t('home.topDonorsTitle')}</h2>
+            <p className="section-lede">{t('home.topDonorsSub')}</p>
+          </div>
+          <Leaderboard />
         </div>
       </section>
     </>

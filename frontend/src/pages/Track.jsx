@@ -1,68 +1,142 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
 
+const STATUS_ORDER = ['pending', 'at_volunteer', 'in_transit', 'delivered'];
 const STATUS_KEY = {
-  pending: 'track.statusPending',
-  at_volunteer: 'track.statusAtVolunteer',
-  in_transit: 'track.statusInTransit',
-  delivered: 'track.statusDelivered',
-  cancelled: 'track.statusCancelled',
+  pending:       'track.statusPending',
+  at_volunteer:  'track.statusAtVolunteer',
+  in_transit:    'track.statusInTransit',
+  delivered:     'track.statusDelivered',
+  cancelled:     'track.statusCancelled',
 };
+
+const BANNER = 'https://picsum.photos/seed/bb-track/1200/420';
 
 export default function Track() {
   const { token } = useParams();
-  const { t } = useT();
+  const { t, lang } = useT();
+  const prefix = '/' + lang;
   const [d, setD] = useState(null);
   const [err, setErr] = useState(null);
 
-  useEffect(() => {
+  function load() {
+    setErr(null);
     apiGet('/api/donations/track/' + token).then(setD).catch((e) => setErr(e.message));
-  }, [token]);
+  }
 
-  if (err) return <section className="section"><div className="card"><h2>Not found</h2><p>{err}</p></div></section>;
-  if (!d) return <section className="section"><div className="card">Loading…</div></section>;
+  useEffect(load, [token]);
+
+  if (err) {
+    return (
+      <section className="section">
+        <div className="container" style={{ maxWidth: 720 }}>
+          <ErrorState message={err} onRetry={load} />
+        </div>
+      </section>
+    );
+  }
+  if (!d) {
+    return (
+      <section className="section">
+        <div className="container" style={{ maxWidth: 720 }}>
+          <Loading kind="banner" />
+          <Loading kind="list" />
+        </div>
+      </section>
+    );
+  }
+
+  const currentStatusIdx = STATUS_ORDER.indexOf(d.status);
+  const isCancelled = d.status === 'cancelled';
+  const itemCount = (d.donation_items || []).length;
+  const bookCount = (d.donation_items || []).reduce((s, i) => s + (i.quantity || 0), 0);
 
   return (
     <section className="section">
-      <div className="card" style={{ maxWidth: 720 }}>
-        <h1 style={{ fontSize: 32, marginBottom: 8 }}>{t('track.title')}</h1>
-        <p style={{ color: 'var(--soft-gray)', marginBottom: 24 }}>Donation #{d.id.slice(0, 8)}</p>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 24 }}>
-          {Object.keys(STATUS_KEY).map((k) => {
-            const idx = Object.keys(STATUS_KEY).indexOf(k);
-            const currIdx = Object.keys(STATUS_KEY).indexOf(d.status);
-            const reached = idx <= currIdx;
-            return (
-              <div key={k} style={{
-                display: 'flex', gap: 12, alignItems: 'center',
-                padding: 12, borderRadius: 10,
-                background: reached ? 'rgba(45,139,122,0.08)' : 'var(--mist)',
-                color: reached ? 'var(--ink)' : 'var(--soft-gray)',
-              }}>
-                <span style={{ fontSize: 20 }}>{reached ? '✅' : '⚪'}</span>
-                <span style={{ fontWeight: idx === currIdx ? 700 : 400 }}>{t(STATUS_KEY[k])}</span>
-              </div>
-            );
-          })}
+      <div className="container" style={{ maxWidth: 760 }}>
+        <div className="page-banner">
+          <img src={BANNER} alt="" />
+          <div className="page-banner-overlay" />
+          <div className="page-banner-content">
+            <div className="page-banner-eyebrow">{t('track.eyebrow')}</div>
+            <h1>{t('track.title')}</h1>
+            <div className="page-banner-meta">
+              #{d.id.slice(0, 8)} · {bookCount} {bookCount === 1 ? t('home.leaderboardBookOne') : t('home.leaderboardBookMany')}
+            </div>
+          </div>
         </div>
 
-        {d.courier_tracking_id && (
-          <p style={{ background: 'var(--mist)', padding: 12, borderRadius: 12, fontSize: 14 }}>
-            📦 Courier tracking: <strong>{d.courier_tracking_id}</strong> ({d.courier_provider})
-          </p>
+        <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px', textAlign: 'center' }}>
+          <div style={{ fontSize: 13, color: 'var(--gray-700)', marginBottom: 8 }}>
+            {t('track.currentStatus')}
+          </div>
+          <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--teal-dark)', marginBottom: 4 }}>
+            {t(STATUS_KEY[d.status])}
+          </div>
+          {d.courier_tracking_id && (
+            <div style={{ fontSize: 13, color: 'var(--gray-700)' }}>
+              📦 {d.courier_provider}: <strong>{d.courier_tracking_id}</strong>
+            </div>
+          )}
+        </div>
+
+        <h2 style={{ fontSize: 20, marginBottom: 12 }}>{t('track.timeline')}</h2>
+        <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+          <div className="timeline">
+            {STATUS_ORDER.map((s, i) => {
+              const stateClass =
+                isCancelled
+                  ? 'future'
+                  : i < currentStatusIdx ? 'done'
+                  : i === currentStatusIdx ? 'done active'
+                  : 'future';
+              const history = (d.donation_status_history || []).find((h) => h.to_status === s);
+              return (
+                <div key={s} className={'timeline-item ' + stateClass}>
+                  <div className="timeline-dot">{i < currentStatusIdx || (i === currentStatusIdx && !isCancelled) ? '✓' : i + 1}</div>
+                  <div className="timeline-body">
+                    <div className="timeline-label">{t(STATUS_KEY[s])}</div>
+                    {history?.changed_at && (
+                      <div className="timeline-meta">{new Date(history.changed_at).toLocaleString()}</div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+            {isCancelled && (
+              <div className="timeline-item done">
+                <div className="timeline-dot">✕</div>
+                <div className="timeline-body">
+                  <div className="timeline-label">{t(STATUS_KEY.cancelled)}</div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <h2 style={{ fontSize: 20, marginBottom: 12 }}>📚 {t('track.books')}</h2>
+        {itemCount === 0 ? (
+          <EmptyState icon="📚" title={t('track.noBooks')} />
+        ) : (
+          <div className="row-list">
+            {(d.donation_items || []).map((i) => (
+              <div className="row-item" key={i.id}>
+                <div className="row-item-main">
+                  <div className="row-item-title">{i.book_title || i.book_author || i.book_genre || '—'}</div>
+                  <div className="row-item-sub">{i.book_author || i.book_genre || ''}</div>
+                </div>
+                <div style={{ fontWeight: 700, color: 'var(--teal-dark)' }}>× {i.quantity}</div>
+              </div>
+            ))}
+          </div>
         )}
 
-        <h3 style={{ marginTop: 24, marginBottom: 12 }}>📚 Books</h3>
-        <ul style={{ listStyle: 'none' }}>
-          {(d.donation_items || []).map((i) => (
-            <li key={i.id} style={{ padding: '8px 0', borderBottom: '1px solid var(--mist)' }}>
-              {i.book_title || i.book_author || i.book_genre} — × {i.quantity}
-            </li>
-          ))}
-        </ul>
+        <div style={{ marginTop: 32, textAlign: 'center' }}>
+          <Link to={prefix} className="btn btn-secondary">{t('common.back')} {t('nav.home')}</Link>
+        </div>
       </div>
     </section>
   );

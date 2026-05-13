@@ -4,28 +4,28 @@ import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost, apiDelete } from '../api.js';
 import PhotoUpload from '../components/PhotoUpload.jsx';
+import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
+
+const BANNER = 'https://picsum.photos/seed/bb-manage/1200/420';
 
 export default function SchoolManage() {
   const { t, lang } = useT();
-  const { user, loading } = useAuth();
-  const [schools, setSchools] = useState([]);
+  const prefix = '/' + lang;
+  const { user, loading: authLoading } = useAuth();
+  const [schools, setSchools] = useState(null);
   const [selected, setSelected] = useState(null);
   const [requests, setRequests] = useState([]);
-  const [err, setErr] = useState(null);
+  const [error, setError] = useState(null);
 
   async function load() {
+    setError(null);
     try {
-      // /api/volunteer/my-schools returns *volunteer* schools owned by the user.
-      // Beneficiary schools owned by the user are visible via RLS on /api/schools (their `owner_user_id = auth.uid()` policy).
-      const volunteer = await apiGet('/api/volunteer/my-schools').catch(() => []);
-      // Fallback: get all approved + the user's own (server-side admin path is not needed; RLS lets owner see own pending).
-      // Since the public list endpoint only returns 'approved' schools, here we just trust the volunteer list,
-      // and for beneficiary management owners need at least one beneficiary school created which then appears
-      // once approved. This is a known limitation; full owner-list endpoint can be added on the server later.
-      setSchools(volunteer);
-      if (volunteer.length > 0 && !selected) setSelected(volunteer[0].id);
-    } catch (e) { setErr(e.message); }
+      const list = await apiGet('/api/volunteer/my-schools').catch(() => []);
+      setSchools(list);
+      if (list.length > 0 && !selected) setSelected(list[0].id);
+    } catch (e) { setError(e.message); }
   }
+
   useEffect(() => { if (user) load(); /* eslint-disable-next-line */ }, [user]);
 
   useEffect(() => {
@@ -34,44 +34,78 @@ export default function SchoolManage() {
     }
   }, [selected]);
 
-  if (loading) return <section className="section"><div className="card">Loading…</div></section>;
-  if (!user) return (
-    <section className="section"><div className="card">
-      <h2>Sign in required</h2>
-      <Link className="btn-primary" style={{ marginTop: 16, display: 'inline-block' }} to={'/' + lang + '/auth'}>{t('auth.signin')}</Link>
-    </div></section>
-  );
+  if (authLoading) {
+    return <section className="section"><div className="container" style={{ maxWidth: 720 }}><Loading /></div></section>;
+  }
+  if (!user) {
+    return (
+      <section className="section">
+        <div className="container" style={{ maxWidth: 540 }}>
+          <EmptyState
+            icon="🔑"
+            title={t('account.signinRequired')}
+            body={t('account.signinHint')}
+            action={<Link className="btn btn-primary btn-lg" to={prefix + '/auth'}>{t('auth.signin')} →</Link>}
+          />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section">
-      <div className="section-inner">
-        <h1 style={{ fontSize: 36, marginBottom: 24 }}>
-          🏔️ School management
-        </h1>
+      <div className="container" style={{ maxWidth: 760 }}>
+        <div className="page-banner">
+          <img src={BANNER} alt="" />
+          <div className="page-banner-overlay" />
+          <div className="page-banner-content">
+            <div className="page-banner-eyebrow">{t('schoolManage.eyebrow')}</div>
+            <h1>{t('schoolManage.title')}</h1>
+            <div className="page-banner-meta">{t('schoolManage.subtitle')}</div>
+          </div>
+        </div>
 
-        {schools.length > 0 && (
+        {error && <ErrorState message={error} onRetry={load} />}
+
+        {schools === null && !error && <Loading kind="list" />}
+
+        {schools && schools.length > 0 && (
           <>
-            <div className="card" style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 13, fontWeight: 600 }}>Pick a school you own</label>
-              <select style={{ marginTop: 8, padding: 12, borderRadius: 12, border: '2px solid var(--mist)', width: '100%' }}
-                value={selected || ''} onChange={(e) => setSelected(e.target.value)}>
-                {schools.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.status})</option>)}
+            <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                {t('schoolManage.pickSchool')}
+              </label>
+              <select
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                value={selected || ''}
+                onChange={(e) => setSelected(e.target.value)}
+              >
+                {schools.map((s) => (
+                  <option key={s.id} value={s.id}>
+                    {s.name} ({s.status})
+                  </option>
+                ))}
               </select>
             </div>
 
-            {selected && <BookRequestsManager schoolId={selected} requests={requests} reload={() => apiGet('/api/schools/' + selected + '/book-requests').then(setRequests)} />}
+            {selected && (
+              <BookRequestsManager
+                schoolId={selected}
+                requests={requests}
+                reload={() => apiGet('/api/schools/' + selected + '/book-requests').then(setRequests)}
+                t={t}
+              />
+            )}
           </>
         )}
 
-        <CreateSchoolCard onCreated={() => load()} />
-
-        {err && <div className="card error">{err}</div>}
+        <CreateSchoolCard onCreated={load} t={t} />
       </div>
     </section>
   );
 }
 
-function CreateSchoolCard({ onCreated }) {
+function CreateSchoolCard({ onCreated, t }) {
   const [type, setType] = useState('beneficiary');
   const [form, setForm] = useState({ name: '', region: '', city: '', description: '', contact_phone: '', contact_email: '' });
   const [photoUrl, setPhotoUrl] = useState(null);
@@ -86,7 +120,7 @@ function CreateSchoolCard({ onCreated }) {
     setBusy(true); setErr(null); setOk(null);
     try {
       await apiPost('/api/schools', { type, photo_url: photoUrl || undefined, ...form });
-      setOk('Submitted for approval. An admin will review.');
+      setOk(t('schoolManage.submitOk'));
       setForm({ name: '', region: '', city: '', description: '', contact_phone: '', contact_email: '' });
       setPhotoUrl(null);
       onCreated();
@@ -95,45 +129,48 @@ function CreateSchoolCard({ onCreated }) {
   }
 
   return (
-    <div className="card">
-      <h3 style={{ marginBottom: 16 }}>➕ Register a new school</h3>
-      <form className="form" onSubmit={submit} style={{ maxWidth: 'none' }}>
-        <label>Type</label>
+    <div className="card" style={{ maxWidth: 'none', margin: '24px 0 0' }}>
+      <h3 style={{ marginBottom: 16 }}>➕ {t('schoolManage.registerNew')}</h3>
+      <form className="form" onSubmit={submit}>
+        <label>{t('schoolManage.fieldType')}</label>
         <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="beneficiary">Beneficiary (highland school)</option>
-          <option value="volunteer">Volunteer (Tbilisi intermediate)</option>
+          <option value="beneficiary">{t('schoolManage.typeBeneficiary')}</option>
+          <option value="volunteer">{t('schoolManage.typeVolunteer')}</option>
         </select>
 
-        <label>Name</label>
+        <label>{t('schoolManage.fieldName')}</label>
         <input required value={form.name} onChange={(e) => set('name', e.target.value)} />
 
-        <label>Region</label>
-        <input value={form.region} onChange={(e) => set('region', e.target.value)} placeholder="e.g. Samtskhe-Javakheti" />
+        <label>{t('schoolManage.fieldRegion')}</label>
+        <input value={form.region} onChange={(e) => set('region', e.target.value)} placeholder={t('schoolManage.regionPlaceholder')} />
 
-        <label>City</label>
+        <label>{t('schoolManage.fieldCity')}</label>
         <input value={form.city} onChange={(e) => set('city', e.target.value)} />
 
-        <label>Description</label>
+        <label>{t('schoolManage.fieldDescription')}</label>
         <textarea rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} />
 
-        <label>Contact phone</label>
+        <label>{t('schoolManage.fieldPhone')}</label>
         <input value={form.contact_phone} onChange={(e) => set('contact_phone', e.target.value)} />
 
-        <label>Contact email</label>
+        <label>{t('schoolManage.fieldContactEmail')}</label>
         <input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />
 
-        <label>Photo</label>
+        <label>{t('schoolManage.fieldPhoto')}</label>
         <PhotoUpload bucket="school-photos" onUploaded={setPhotoUrl} />
 
         {err && <div className="error">{err}</div>}
-        {ok && <div style={{ color: 'green', fontSize: 13 }}>{ok}</div>}
-        <button className="btn-primary" disabled={busy}>{busy ? '…' : 'Submit for approval'}</button>
+        {ok && <div style={{ background: 'var(--teal-soft)', color: 'var(--teal-dark)', padding: '10px 14px', borderRadius: 8, fontSize: 14 }}>✓ {ok}</div>}
+
+        <button className="btn btn-primary" disabled={busy}>
+          {busy ? '…' : t('schoolManage.submitButton')}
+        </button>
       </form>
     </div>
   );
 }
 
-function BookRequestsManager({ schoolId, requests, reload }) {
+function BookRequestsManager({ schoolId, requests, reload, t }) {
   const [form, setForm] = useState({ request_type: 'title', title: '', author: '', genre: '', quantity_needed: 1, notes: '' });
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
@@ -157,61 +194,65 @@ function BookRequestsManager({ schoolId, requests, reload }) {
   }
 
   async function remove(id) {
-    if (!confirm('Delete this request?')) return;
+    if (!confirm(t('schoolManage.confirmDelete'))) return;
     try { await apiDelete('/api/schools/' + schoolId + '/book-requests/' + id); reload(); }
     catch (e) { alert(e.message); }
   }
 
   return (
-    <div className="card">
-      <h3 style={{ marginBottom: 16 }}>📚 Book requests</h3>
+    <div className="card" style={{ maxWidth: 'none', margin: 0 }}>
+      <h3 style={{ marginBottom: 16 }}>📚 {t('schoolManage.bookRequests')}</h3>
 
-      {requests.length === 0 && <p style={{ color: 'var(--soft-gray)' }}>No requests yet.</p>}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 24 }}>
-        {requests.map((r) => (
-          <div key={r.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--mist)', padding: 12, borderRadius: 10 }}>
-            <div>
-              <strong>{r.title || r.author || r.genre}</strong>
-              <span style={{ color: 'var(--soft-gray)', marginLeft: 8, fontSize: 13 }}>({r.request_type})</span>
-              <div style={{ fontSize: 12, color: 'var(--soft-gray)' }}>
-                {r.quantity_fulfilled}/{r.quantity_needed} fulfilled
+      {requests.length === 0 ? (
+        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>{t('schoolManage.noRequests')}</p>
+      ) : (
+        <div className="row-list" style={{ marginBottom: 24 }}>
+          {requests.map((r) => (
+            <div className="row-item" key={r.id}>
+              <div className="row-item-main">
+                <div className="row-item-title">{r.title || r.author || r.genre}</div>
+                <div className="row-item-sub">
+                  ({r.request_type}) · {r.quantity_fulfilled}/{r.quantity_needed} {t('schoolManage.fulfilled')}
+                </div>
               </div>
+              <button className="btn btn-secondary btn-sm" onClick={() => remove(r.id)}>✕</button>
             </div>
-            <button className="btn-secondary" style={{ padding: '4px 10px', fontSize: 12 }} onClick={() => remove(r.id)}>✕</button>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      <h4 style={{ marginBottom: 12 }}>Add a request</h4>
-      <form className="form" onSubmit={submit} style={{ maxWidth: 'none' }}>
-        <label>Type</label>
+      <h4 style={{ marginBottom: 12 }}>{t('schoolManage.addRequest')}</h4>
+      <form className="form" onSubmit={submit}>
+        <label>{t('schoolManage.requestType')}</label>
         <select value={form.request_type} onChange={(e) => setForm({ ...form, request_type: e.target.value })}>
-          <option value="title">Specific title</option>
-          <option value="author">By author</option>
-          <option value="genre">By genre</option>
+          <option value="title">{t('schoolManage.byTitle')}</option>
+          <option value="author">{t('schoolManage.byAuthor')}</option>
+          <option value="genre">{t('schoolManage.byGenre')}</option>
         </select>
 
         {form.request_type === 'title' && (<>
-          <label>Title</label>
+          <label>{t('schoolManage.fieldTitle')}</label>
           <input required value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
         </>)}
         {form.request_type === 'author' && (<>
-          <label>Author</label>
+          <label>{t('schoolManage.fieldAuthor')}</label>
           <input required value={form.author} onChange={(e) => setForm({ ...form, author: e.target.value })} />
         </>)}
         {form.request_type === 'genre' && (<>
-          <label>Genre</label>
+          <label>{t('schoolManage.fieldGenre')}</label>
           <input required value={form.genre} onChange={(e) => setForm({ ...form, genre: e.target.value })} />
         </>)}
 
-        <label>Quantity needed</label>
+        <label>{t('schoolManage.fieldQty')}</label>
         <input type="number" min="1" value={form.quantity_needed} onChange={(e) => setForm({ ...form, quantity_needed: e.target.value })} />
 
-        <label>Notes (optional)</label>
+        <label>{t('schoolManage.fieldNotes')}</label>
         <textarea rows={2} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
 
         {err && <div className="error">{err}</div>}
-        <button className="btn-primary" disabled={busy}>{busy ? '…' : 'Add request'}</button>
+        <button className="btn btn-primary" disabled={busy}>
+          {busy ? '…' : t('schoolManage.addRequestButton')}
+        </button>
       </form>
     </div>
   );

@@ -3,28 +3,44 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost } from '../api.js';
+import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
+
+const BANNER = 'https://picsum.photos/seed/bb-volunteer/1200/420';
+
+const STATUS_KEY = {
+  pending:       'track.statusPending',
+  at_volunteer:  'track.statusAtVolunteer',
+  in_transit:    'track.statusInTransit',
+  delivered:     'track.statusDelivered',
+  cancelled:     'track.statusCancelled',
+};
 
 export default function VolunteerManage() {
   const { t, lang } = useT();
-  const { user, loading } = useAuth();
-  const [schools, setSchools] = useState([]);
+  const prefix = '/' + lang;
+  const { user, loading: authLoading } = useAuth();
+  const [schools, setSchools] = useState(null);
   const [selected, setSelected] = useState(null);
-  const [donations, setDonations] = useState([]);
-  const [err, setErr] = useState(null);
+  const [donations, setDonations] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     if (!user) return;
+    setError(null);
     apiGet('/api/volunteer/my-schools')
       .then((list) => {
         setSchools(list);
         if (list.length && !selected) setSelected(list[0].id);
       })
-      .catch((e) => setErr(e.message));
+      .catch((e) => setError(e.message));
     // eslint-disable-next-line
   }, [user]);
 
   function reload() {
-    if (selected) apiGet('/api/volunteer/incoming/' + selected).then(setDonations).catch(() => setDonations([]));
+    if (selected) {
+      setDonations(null);
+      apiGet('/api/volunteer/incoming/' + selected).then(setDonations).catch(() => setDonations([]));
+    }
   }
   useEffect(reload, [selected]);
 
@@ -35,73 +51,103 @@ export default function VolunteerManage() {
     } catch (e) { alert(e.message); }
   }
 
-  if (loading) return <section className="section"><div className="card">Loading…</div></section>;
-  if (!user) return (
-    <section className="section"><div className="card">
-      <h2>Sign in required</h2>
-      <Link className="btn-primary" style={{ marginTop: 16, display: 'inline-block' }} to={'/' + lang + '/auth'}>{t('auth.signin')}</Link>
-    </div></section>
-  );
+  if (authLoading) {
+    return <section className="section"><div className="container" style={{ maxWidth: 720 }}><Loading /></div></section>;
+  }
+  if (!user) {
+    return (
+      <section className="section">
+        <div className="container" style={{ maxWidth: 540 }}>
+          <EmptyState
+            icon="🔑"
+            title={t('account.signinRequired')}
+            body={t('account.signinHint')}
+            action={<Link className="btn btn-primary btn-lg" to={prefix + '/auth'}>{t('auth.signin')} →</Link>}
+          />
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section">
-      <div className="section-inner">
-        <h1 style={{ fontSize: 36, marginBottom: 24 }}>
-          🚚 Volunteer dashboard
-        </h1>
-
-        {schools.length === 0 ? (
-          <div className="card">
-            <p>You don't own a volunteer school yet.</p>
-            <Link className="btn-primary" style={{ marginTop: 16, display: 'inline-block' }} to={'/' + lang + '/school/manage'}>
-              Register one →
-            </Link>
+      <div className="container" style={{ maxWidth: 760 }}>
+        <div className="page-banner">
+          <img src={BANNER} alt="" />
+          <div className="page-banner-overlay" />
+          <div className="page-banner-content">
+            <div className="page-banner-eyebrow">{t('volunteerManage.eyebrow')}</div>
+            <h1>{t('volunteerManage.title')}</h1>
+            <div className="page-banner-meta">{t('volunteerManage.subtitle')}</div>
           </div>
-        ) : (
+        </div>
+
+        {error && <ErrorState message={error} />}
+
+        {schools === null && !error && <Loading kind="list" />}
+
+        {schools && schools.length === 0 && (
+          <EmptyState
+            icon="🏫"
+            title={t('volunteerManage.noSchoolTitle')}
+            body={t('volunteerManage.noSchoolBody')}
+            action={<Link className="btn btn-primary" to={prefix + '/school/manage'}>{t('donate.registerSchool')} →</Link>}
+          />
+        )}
+
+        {schools && schools.length > 0 && (
           <>
-            <div className="card" style={{ marginBottom: 16 }}>
-              <label style={{ fontSize: 13, fontWeight: 600 }}>Your volunteer schools</label>
-              <select style={{ marginTop: 8, padding: 12, borderRadius: 12, border: '2px solid var(--mist)', width: '100%' }}
-                value={selected || ''} onChange={(e) => setSelected(e.target.value)}>
+            <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>
+                {t('volunteerManage.pickSchool')}
+              </label>
+              <select
+                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                value={selected || ''}
+                onChange={(e) => setSelected(e.target.value)}
+              >
                 {schools.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
               </select>
             </div>
 
-            <h2 style={{ margin: '24px 0 12px' }}>Incoming donations</h2>
-            {donations.length === 0 ? (
-              <div className="card" style={{ color: 'var(--soft-gray)' }}>No incoming donations.</div>
-            ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <h2 style={{ fontSize: 20, marginBottom: 12 }}>{t('volunteerManage.incoming')}</h2>
+
+            {donations === null && <Loading kind="list" />}
+
+            {donations !== null && donations.length === 0 && (
+              <EmptyState icon="📭" title={t('volunteerManage.noIncoming')} />
+            )}
+
+            {donations !== null && donations.length > 0 && (
+              <div className="row-list">
                 {donations.map((d) => (
-                  <div key={d.id} className="card" style={{ marginTop: 0 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <div>
-                        <strong>#{d.id.slice(0, 8)}</strong>
-                        <span style={{ marginLeft: 12, color: 'var(--soft-gray)', fontSize: 13 }}>
-                          → {d.beneficiary_school?.name || 'auto-pick'}
+                  <div className="row-item" key={d.id} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                      <div className="row-item-title">
+                        #{d.id.slice(0, 8)} →{' '}
+                        <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>
+                          {d.beneficiary_school?.name || t('volunteerManage.autoPick')}
                         </span>
                       </div>
-                      <span style={{ padding: '4px 12px', borderRadius: 20, background: 'var(--mist)', fontSize: 13, fontWeight: 700, color: 'var(--primary)' }}>
-                        {d.status}
-                      </span>
+                      <span className={'badge ' + d.status}>{t(STATUS_KEY[d.status] || 'common.errorTitle')}</span>
                     </div>
-                    <p style={{ marginTop: 8, color: 'var(--soft-gray)', fontSize: 14 }}>
-                      {(d.donation_items || []).length} item(s) · {d.delivery_method}
+                    <div className="row-item-sub" style={{ marginBottom: 12 }}>
+                      {(d.donation_items || []).length} {t('account.lineItems')} · {d.delivery_method}
                       {d.courier_tracking_id ? ' · 📦 ' + d.courier_tracking_id : ''}
-                    </p>
-                    <div style={{ display: 'flex', gap: 8, marginTop: 12, flexWrap: 'wrap' }}>
+                    </div>
+                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {d.status === 'pending' && (
-                        <button className="btn-primary" style={{ padding: '6px 14px', fontSize: 13 }} onClick={() => setStatus(d.id, 'at_volunteer')}>
-                          ✓ Received at school
+                        <button className="btn btn-primary btn-sm" onClick={() => setStatus(d.id, 'at_volunteer')}>
+                          ✓ {t('volunteerManage.markReceived')}
                         </button>
                       )}
                       {(d.status === 'pending' || d.status === 'at_volunteer') && (
-                        <button className="btn-secondary" style={{ padding: '6px 14px', fontSize: 13 }} onClick={() => setStatus(d.id, 'in_transit')}>
-                          🚚 Shipped to beneficiary
+                        <button className="btn btn-secondary btn-sm" onClick={() => setStatus(d.id, 'in_transit')}>
+                          🚚 {t('volunteerManage.markShipped')}
                         </button>
                       )}
-                      <Link to={'/' + lang + '/track/' + d.track_token} className="btn-secondary" style={{ padding: '6px 14px', fontSize: 13 }}>
-                        Track →
+                      <Link to={prefix + '/track/' + d.track_token} className="btn btn-ghost btn-sm">
+                        {t('volunteerManage.viewTrack')} →
                       </Link>
                     </div>
                   </div>
@@ -110,8 +156,6 @@ export default function VolunteerManage() {
             )}
           </>
         )}
-
-        {err && <div className="card error">{err}</div>}
       </div>
     </section>
   );

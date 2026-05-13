@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validate.js';
 import { SearchSchema } from '../schemas.js';
-import { getPublicStats, search, listApprovedSchools, getLeaderboard } from '../db/store.js';
+import { getPublicStats, search, listApprovedSchools, getLeaderboard, getActivityFeed } from '../db/store.js';
 import { supabaseAdmin } from '../lib/supabase.js';
 
 const router = Router();
@@ -31,6 +31,13 @@ router.get('/leaderboard', async (req, res, next) => {
   try {
     const limit = Math.max(1, Math.min(50, Number(req.query.limit) || 10));
     res.json(await getLeaderboard(limit));
+  } catch (err) { next(err); }
+});
+
+router.get('/activity', async (req, res, next) => {
+  try {
+    const limit = Math.max(1, Math.min(50, Number(req.query.limit) || 8));
+    res.json(await getActivityFeed(limit));
   } catch (err) { next(err); }
 });
 

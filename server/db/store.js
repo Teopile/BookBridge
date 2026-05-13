@@ -334,3 +334,14 @@ export async function getLeaderboard(limit = 10) {
   if (error) throw error;
   return data || [];
 }
+
+// ---------- activity feed ----------
+
+export async function getActivityFeed(limit = 12) {
+  const { data, error } = await supabaseAdmin
+    .from('v_activity_feed')
+    .select('*')
+    .limit(limit);
+  if (error) throw error;
+  return data || [];
+}

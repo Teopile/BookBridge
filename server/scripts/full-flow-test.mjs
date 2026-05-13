@@ -176,7 +176,6 @@ try {
       lat: 41.6786,
       lng: 42.6889,
       description: 'A test beneficiary school in the highlands.',
-      contact_phone: '+995 555 555 555',
       contact_email: 'test@school.ge',
     }),
   }, ownerCookies);
@@ -214,7 +213,7 @@ try {
   section('J. School owner edits school');
   const editSchool = await api('/api/schools/' + schoolId, {
     method: 'PUT',
-    body: JSON.stringify({ description: 'Updated description', contact_phone: '+995 555 555 666' }),
+    body: JSON.stringify({ description: 'Updated description' }),
   }, ownerCookies);
   if (editSchool.status === 200 && editSchool.body.description === 'Updated description') pass('owner can edit own school');
   else fail('edit school', JSON.stringify(editSchool.body));

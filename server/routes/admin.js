@@ -72,7 +72,7 @@ async function fetchExportRows({ resource, status, from, to }) {
   if (resource === 'schools') {
     let q = supabaseAdmin
       .from('schools')
-      .select('id, name, type, status, region, city, address, contact_email, contact_phone, created_at')
+      .select('id, name, type, status, region, city, address, contact_email, created_at')
       .order('created_at', { ascending: false });
     if (status) q = q.eq('status', status);
     const { data } = await q;

@@ -11,8 +11,6 @@ import {
 import { DonationCreateSchema, DonationStatusUpdateSchema, AdminDonationsListSchema } from '../schemas.js';
 import { createShipment } from '../lib/courier.js';
 import { sendEmail, Templates } from '../lib/mailer.js';
-import { sendSms, SmsTemplates } from '../lib/sms.js';
-
 const router = Router();
 
 function trackUrlFor(token) {
@@ -157,24 +155,6 @@ async function fireStatusNotifications(donation) {
     }
   }
 
-  // SMS — only on delivered (avoid spamming on every intermediate step).
-  if (contact.phone && donation.status === 'delivered') {
-    const smsBody = SmsTemplates.delivered({ schoolName: school?.name || '', lang });
-    try {
-      await sendSms({ to: contact.phone, body: smsBody });
-      await recordNotification({
-        user_id: contact.user_id, donation_id: donation.id, channel: 'sms',
-        template: 'donation_delivered', recipient: contact.phone,
-        subject: smsBody.slice(0, 80), status: 'sent',
-      });
-    } catch (e) {
-      await recordNotification({
-        user_id: contact.user_id, donation_id: donation.id, channel: 'sms',
-        template: 'donation_delivered', recipient: contact.phone,
-        subject: smsBody.slice(0, 80), status: 'failed', error_message: e.message,
-      });
-    }
-  }
 }
 
 export default router;

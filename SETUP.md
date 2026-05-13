@@ -8,7 +8,7 @@ This document is the **one-time setup checklist**. Work top-to-bottom. Most step
 
 ## Phase A — Local development (do this first, before any deploy)
 
-You can build and run BookBridge locally with just **Supabase**, **Node 20+**, and **npm**. Everything else (Maileroo, Flitt, Twilio, Mapbox, DigitalOcean, Cloudflare) is needed only for production.
+You can build and run BookBridge locally with just **Supabase**, **Node 20+**, and **npm**. Everything else (Maileroo, Flitt, Mapbox, DigitalOcean, Cloudflare) is needed only for production.
 
 ### A.1. Install prerequisites
 
@@ -160,19 +160,7 @@ Skip until you're ready to deploy. None of these are reusable from any sister pr
 
 **Why day 1:** Supabase's built-in mailer hangs intermittently and causes signup outages.
 
-### B.5. SMS provider (pick one)
-
-- **Twilio** (global, ~$0.10/SMS to Georgia): https://twilio.com → buy number → save Account SID + Auth Token.
-- **Verify.ge** (Georgian-only, cheap): contact https://verify.ge for API access.
-
-```
-SMS_PROVIDER=twilio              # or "verify_ge"
-TWILIO_ACCOUNT_SID=...
-TWILIO_AUTH_TOKEN=...
-TWILIO_FROM_NUMBER=+1234567890
-```
-
-### B.6. Flitt (Georgian payment processor — for monetary donations)
+### B.5. Flitt (Georgian payment processor — for monetary donations)
 
 - [ ] Register a legal entity (NGO or LLC).
 - [ ] Apply at https://flitt.com → upload company registration, ID, IBAN.
@@ -256,11 +244,10 @@ Before building the courier integration:
 
 1. **Final production domain?**
 2. **Which courier company are you signing with?**
-3. **Twilio or Verify.ge for SMS?**
-4. **Flitt or Stripe for payments?**
-5. **Brand assets ready?**
+3. **Flitt or Stripe for payments?**
+4. **Brand assets ready?**
 
-MVP can launch using: manual courier, email only (skip SMS for v1), skip monetary donations (just books) for v1.
+MVP can launch using: manual courier, email-only notifications, skip monetary donations (just books) for v1.
 
 ---
 

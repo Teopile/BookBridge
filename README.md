@@ -48,6 +48,5 @@ npm run dev
 - Supabase (Postgres + Auth + Storage) — managed
 - Maileroo (transactional email via HTTPS API)
 - Flitt (Georgian payment processor) — for monetary donations
-- Twilio or Verify.ge (SMS)
 - Mapbox (school map)
 - Cloudflare in front of DigitalOcean droplet

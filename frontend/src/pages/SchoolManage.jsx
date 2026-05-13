@@ -140,7 +140,7 @@ function fieldsFromForm(form, photoUrl) {
 
 function CreateSchoolCard({ onCreated, t }) {
   const [type, setType] = useState('beneficiary');
-  const [form, setForm] = useState({ name: '', region: '', city: '', address: '', description: '', contact_phone: '', contact_email: '', lat: '', lng: '' });
+  const [form, setForm] = useState({ name: '', region: '', city: '', address: '', description: '', contact_email: '', lat: '', lng: '' });
   const [photoUrl, setPhotoUrl] = useState(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
@@ -155,7 +155,7 @@ function CreateSchoolCard({ onCreated, t }) {
       const payload = { type, ...fieldsFromForm(form, photoUrl) };
       await apiPost('/api/schools', payload);
       setOk(t('schoolManage.submitOk'));
-      setForm({ name: '', region: '', city: '', address: '', description: '', contact_phone: '', contact_email: '', lat: '', lng: '' });
+      setForm({ name: '', region: '', city: '', address: '', description: '', contact_email: '', lat: '', lng: '' });
       setPhotoUrl(null);
       onCreated();
     } catch (e) { setErr(e.message); }
@@ -194,7 +194,6 @@ function EditSchoolCard({ school, onSaved, onCancel, t }) {
     city:          school.city || '',
     address:       school.address || '',
     description:   school.description || '',
-    contact_phone: school.contact_phone || '',
     contact_email: school.contact_email || '',
     lat:           school.lat ?? '',
     lng:           school.lng ?? '',
@@ -303,9 +302,6 @@ function SchoolFormBody({ type, setType, form, set, photoUrl, setPhotoUrl, t, hi
 
       <label>{t('schoolManage.fieldDescription')}</label>
       <textarea rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} />
-
-      <label>{t('schoolManage.fieldPhone')}</label>
-      <input value={form.contact_phone} onChange={(e) => set('contact_phone', e.target.value)} />
 
       <label>{t('schoolManage.fieldContactEmail')}</label>
       <input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />

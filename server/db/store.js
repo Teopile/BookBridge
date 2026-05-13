@@ -270,7 +270,7 @@ export async function listDonationsForVolunteer(volunteerSchoolId) {
 }
 
 export async function getDonorContact(donationId) {
-  // donor email + phone — used for notifications when admin updates status.
+  // donor email — used for email notifications when admin updates status.
   const { data, error } = await supabaseAdmin
     .from('donations').select('donor_user_id').eq('id', donationId).maybeSingle();
   if (error) throw error;
@@ -278,12 +278,11 @@ export async function getDonorContact(donationId) {
 
   const { data: u } = await supabaseAdmin.auth.admin.getUserById(data.donor_user_id);
   const { data: p } = await supabaseAdmin
-    .from('profiles').select('phone, language, full_name').eq('id', data.donor_user_id).maybeSingle();
+    .from('profiles').select('language, full_name').eq('id', data.donor_user_id).maybeSingle();
 
   return {
     user_id: data.donor_user_id,
     email: u?.user?.email || null,
-    phone: p?.phone || null,
     language: p?.language || 'en',
     full_name: p?.full_name || '',
   };

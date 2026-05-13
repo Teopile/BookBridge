@@ -162,7 +162,6 @@ function ProfileEditor({ profile, onSaved, onCancel, t, currentLang, setLang }) 
   const [form, setForm] = useState({
     username:  profile.username  || '',
     full_name: profile.full_name || '',
-    phone:     profile.phone     || '',
     city:      profile.city      || '',
     language:  profile.language  || currentLang || 'en',
   });
@@ -203,9 +202,6 @@ function ProfileEditor({ profile, onSaved, onCancel, t, currentLang, setLang }) 
 
         <label>{t('account.fullName')}</label>
         <input value={form.full_name} onChange={(e) => set('full_name', e.target.value)} />
-
-        <label>{t('account.phone')}</label>
-        <input value={form.phone} onChange={(e) => set('phone', e.target.value)} />
 
         <label>{t('account.city')}</label>
         <input value={form.city} onChange={(e) => set('city', e.target.value)} />

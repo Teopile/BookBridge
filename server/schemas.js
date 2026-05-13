@@ -23,7 +23,6 @@ export const SchoolCreateSchema = z.object({
   lng: z.number().min(-180).max(180).optional(),
   photo_url: z.string().url().optional(),
   contact_email: z.string().email().optional(),
-  contact_phone: z.string().max(40).optional(),
   opening_hours: z.string().max(200).optional(),
 });
 

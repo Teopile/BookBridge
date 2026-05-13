@@ -140,7 +140,6 @@ router.get('/me', async (req, res, next) => {
 const ProfileUpdateSchema = z.object({
   full_name: z.string().min(1).max(120).optional(),
   username: z.string().min(3).max(30).regex(/^[A-Za-z0-9_-]+$/).optional(),
-  phone: z.string().max(40).optional(),
   city: z.string().max(120).optional(),
   language: z.enum(['en', 'ka']).optional(),
   avatar_url: z.string().url().optional(),

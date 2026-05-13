@@ -73,7 +73,7 @@ router.post('/flitt/webhook', async (req, res, next) => {
         amountMinor: updated.amount_minor, currency: updated.currency, lang: 'en',
       });
       try {
-        await sendEmail({ to: updated.donor_email_for_receipt, subject: tpl.subject, html: tpl.html });
+        await sendEmail({ to: updated.donor_email_for_receipt, subject: tpl.subject, html: tpl.html, text: tpl.text });
         await recordNotification({
           user_id: updated.donor_user_id, channel: 'email', template: 'monetary_receipt',
           recipient: updated.donor_email_for_receipt, subject: tpl.subject, status: 'sent',

@@ -1,8 +1,10 @@
-import { useEffect, useState } from 'react';
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
-import MapView from '../components/MapView.jsx';
+
+// Map (Leaflet + tiles) only loads when the user clicks the Map toggle.
+const MapView = lazy(() => import('../components/MapView.jsx'));
 
 const FALLBACK_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -98,7 +100,11 @@ export default function Schools({ type }) {
           </div>
         </div>
 
-        {view === 'map' && <MapView schools={filtered} />}
+        {view === 'map' && (
+          <Suspense fallback={<div className="skeleton skeleton-block" style={{ height: 480, borderRadius: 14 }} />}>
+            <MapView schools={filtered} />
+          </Suspense>
+        )}
         {view === 'list' && (
 
         <div className="school-grid">

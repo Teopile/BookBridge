@@ -37,7 +37,7 @@ router.post('/', csrfProtection, requireAuth, validate(DonationCreateSchema), as
     const url = trackUrlFor(created.track_token);
     const tpl = Templates.donationConfirmed({ donationId: created.id, trackUrl: url, lang: req.user.language });
     try {
-      await sendEmail({ to: req.user.email, subject: tpl.subject, html: tpl.html });
+      await sendEmail({ to: req.user.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
       await recordNotification({
         user_id: req.user.id, donation_id: created.id, channel: 'email',
         template: 'donation_confirmed', recipient: req.user.email, subject: tpl.subject, status: 'sent',
@@ -140,7 +140,7 @@ async function fireStatusNotifications(donation) {
   // Email.
   if (contact.email) {
     try {
-      await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html });
+      await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
       await recordNotification({
         user_id: contact.user_id, donation_id: donation.id, channel: 'email',
         template: donation.status === 'delivered' ? 'donation_delivered' : 'status_changed',

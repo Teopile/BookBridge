@@ -2,25 +2,82 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="BookBridge — your book is awaited in the mountains. Donate books to Georgian highland schools." />
+    <meta name="theme-color" content="#2D8B7A" />
+    <meta name="color-scheme" content="light" />
+
+    <title>BookBridge — Your book is awaited in the mountains</title>
+    <meta name="description" content="BookBridge connects donors with Georgian highland schools. Pick a school, choose books, we deliver. Built for transparency — track every donation end to end." />
+    <link rel="canonical" href="https://bookbridge.ge/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="BookBridge" />
+    <meta property="og:title" content="BookBridge — Your book is awaited in the mountains" />
+    <meta property="og:description" content="Donate books to Georgian highland schools. Pick a school, choose books, we deliver." />
+    <meta property="og:url" content="https://bookbridge.ge/" />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:locale:alternate" content="ka_GE" />
+    <meta property="og:image" content="https://bookbridge.ge/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="BookBridge — Donate books to Georgian highland schools" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="BookBridge — Your book is awaited in the mountains" />
+    <meta name="twitter:description" content="Donate books to Georgian highland schools. Pick a school, choose books, we deliver." />
+    <meta name="twitter:image" content="https://bookbridge.ge/og-image.png" />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://tile.openstreetmap.org" crossorigin />
+
+    <!-- Fonts (Georgian + system fallback in CSS) -->
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
+
+    <!-- Leaflet CSS (only needed on /schools map view, but small enough to preload) -->
     <link
       rel="stylesheet"
       href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
       crossorigin=""
     />
-    <title>BookBridge — Your book is awaited in the mountains</title>
+
+    <!-- Structured data: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "NGO",
+      "name": "BookBridge",
+      "url": "https://bookbridge.ge/",
+      "logo": "https://bookbridge.ge/favicon.svg",
+      "description": "BookBridge connects donors with Georgian highland schools to deliver books to children in remote villages.",
+      "address": {
+        "@type": "PostalAddress",
+        "addressCountry": "GE"
+      },
+      "areaServed": "GE",
+      "email": "info@bookbridge.ge"
+    }
+    </script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <div style="padding:32px;font-family:sans-serif;text-align:center;color:#1C2B27;background:#FAF7F2;">
+        <h1>BookBridge</h1>
+        <p>This site needs JavaScript to run. Please enable JavaScript in your browser, or write to <a href="mailto:info@bookbridge.ge">info@bookbridge.ge</a>.</p>
+      </div>
+    </noscript>
     <script type="module" src="/src/main.jsx"></script>
   </body>
 </html>

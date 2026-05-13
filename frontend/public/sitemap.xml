@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://bookbridge.ge/en</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bookbridge.ge/en" />
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/schools</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/schools" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/schools" />
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/how-it-works</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/how-it-works" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/how-it-works" />
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/donate</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/donate" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/donate" />
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/about" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/about" />
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/search</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/search" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/search" />
+    <changefreq>monthly</changefreq>
+    <priority>0.4</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/auth</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+</urlset>

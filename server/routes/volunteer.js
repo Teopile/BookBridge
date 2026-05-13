@@ -64,7 +64,7 @@ router.post('/donations/:id/status', csrfProtection, requireAuth, validate(VolSt
           donationId: updated.id, status: updated.status,
           trackUrl: trackUrlFor(updated.track_token), lang: contact.language,
         });
-        await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html });
+        await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
         await recordNotification({
           user_id: contact.user_id, donation_id: updated.id, channel: 'email',
           template: 'status_changed', recipient: contact.email, subject: tpl.subject, status: 'sent',

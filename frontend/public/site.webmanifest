@@ -1,0 +1,19 @@
+{
+  "name": "BookBridge",
+  "short_name": "BookBridge",
+  "description": "Donate books to Georgian highland schools.",
+  "start_url": "/en",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#FAF7F2",
+  "theme_color": "#2D8B7A",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

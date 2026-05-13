@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Internal / authenticated paths — don't index even if linked accidentally.
+Disallow: /account
+Disallow: /dashboard
+Disallow: /school/manage
+Disallow: /volunteer/manage
+Disallow: /track/
+
+# Per-language equivalents.
+Disallow: /en/account
+Disallow: /en/dashboard
+Disallow: /en/school/manage
+Disallow: /en/volunteer/manage
+Disallow: /en/track/
+Disallow: /ka/account
+Disallow: /ka/dashboard
+Disallow: /ka/school/manage
+Disallow: /ka/volunteer/manage
+Disallow: /ka/track/
+
+Sitemap: https://bookbridge.ge/sitemap.xml

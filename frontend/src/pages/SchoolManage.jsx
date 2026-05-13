@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
-import { apiGet, apiPost, apiDelete } from '../api.js';
+import { apiGet, apiPost, apiPut, apiDelete } from '../api.js';
 import PhotoUpload from '../components/PhotoUpload.jsx';
 import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
 
@@ -16,6 +16,7 @@ export default function SchoolManage() {
   const [selected, setSelected] = useState(null);
   const [requests, setRequests] = useState([]);
   const [error, setError] = useState(null);
+  const [editingSchool, setEditingSchool] = useState(false);
 
   async function load() {
     setError(null);
@@ -32,7 +33,10 @@ export default function SchoolManage() {
     if (selected) {
       apiGet('/api/schools/' + selected + '/book-requests').then(setRequests).catch(() => setRequests([]));
     }
+    setEditingSchool(false);
   }, [selected]);
+
+  const selectedSchool = schools?.find((s) => s.id === selected) || null;
 
   if (authLoading) {
     return <section className="section"><div className="container" style={{ maxWidth: 720 }}><Loading /></div></section>;
@@ -75,20 +79,35 @@ export default function SchoolManage() {
               <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>
                 {t('schoolManage.pickSchool')}
               </label>
-              <select
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
-                value={selected || ''}
-                onChange={(e) => setSelected(e.target.value)}
-              >
-                {schools.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.status})
-                  </option>
-                ))}
-              </select>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+                <select
+                  style={{ flex: 1, padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                  value={selected || ''}
+                  onChange={(e) => setSelected(e.target.value)}
+                >
+                  {schools.map((s) => (
+                    <option key={s.id} value={s.id}>{s.name} ({s.status})</option>
+                  ))}
+                </select>
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setEditingSchool((v) => !v)}
+                >
+                  {editingSchool ? t('common.cancel') : t('schoolManage.editSchool')}
+                </button>
+              </div>
             </div>
 
-            {selected && (
+            {selectedSchool && editingSchool && (
+              <EditSchoolCard
+                school={selectedSchool}
+                onSaved={() => { setEditingSchool(false); load(); }}
+                onCancel={() => setEditingSchool(false)}
+                t={t}
+              />
+            )}
+
+            {selected && !editingSchool && (
               <BookRequestsManager
                 schoolId={selected}
                 requests={requests}
@@ -105,9 +124,22 @@ export default function SchoolManage() {
   );
 }
 
+function fieldsFromForm(form, photoUrl) {
+  const out = { ...form };
+  if (photoUrl) out.photo_url = photoUrl;
+  // Convert empty strings to undefined so Zod's `.optional()` doesn't trip on them.
+  for (const k of Object.keys(out)) {
+    if (out[k] === '' || out[k] === null) delete out[k];
+  }
+  // Numbers
+  if (out.lat !== undefined) out.lat = Number(out.lat);
+  if (out.lng !== undefined) out.lng = Number(out.lng);
+  return out;
+}
+
 function CreateSchoolCard({ onCreated, t }) {
   const [type, setType] = useState('beneficiary');
-  const [form, setForm] = useState({ name: '', region: '', city: '', description: '', contact_phone: '', contact_email: '' });
+  const [form, setForm] = useState({ name: '', region: '', city: '', address: '', description: '', contact_phone: '', contact_email: '', lat: '', lng: '' });
   const [photoUrl, setPhotoUrl] = useState(null);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
@@ -119,9 +151,10 @@ function CreateSchoolCard({ onCreated, t }) {
     e.preventDefault();
     setBusy(true); setErr(null); setOk(null);
     try {
-      await apiPost('/api/schools', { type, photo_url: photoUrl || undefined, ...form });
+      const payload = { type, ...fieldsFromForm(form, photoUrl) };
+      await apiPost('/api/schools', payload);
       setOk(t('schoolManage.submitOk'));
-      setForm({ name: '', region: '', city: '', description: '', contact_phone: '', contact_email: '' });
+      setForm({ name: '', region: '', city: '', address: '', description: '', contact_phone: '', contact_email: '', lat: '', lng: '' });
       setPhotoUrl(null);
       onCreated();
     } catch (e) { setErr(e.message); }
@@ -131,41 +164,153 @@ function CreateSchoolCard({ onCreated, t }) {
   return (
     <div className="card" style={{ maxWidth: 'none', margin: '24px 0 0' }}>
       <h3 style={{ marginBottom: 16 }}>➕ {t('schoolManage.registerNew')}</h3>
-      <form className="form" onSubmit={submit}>
-        <label>{t('schoolManage.fieldType')}</label>
-        <select value={type} onChange={(e) => setType(e.target.value)}>
-          <option value="beneficiary">{t('schoolManage.typeBeneficiary')}</option>
-          <option value="volunteer">{t('schoolManage.typeVolunteer')}</option>
-        </select>
-
-        <label>{t('schoolManage.fieldName')}</label>
-        <input required value={form.name} onChange={(e) => set('name', e.target.value)} />
-
-        <label>{t('schoolManage.fieldRegion')}</label>
-        <input value={form.region} onChange={(e) => set('region', e.target.value)} placeholder={t('schoolManage.regionPlaceholder')} />
-
-        <label>{t('schoolManage.fieldCity')}</label>
-        <input value={form.city} onChange={(e) => set('city', e.target.value)} />
-
-        <label>{t('schoolManage.fieldDescription')}</label>
-        <textarea rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} />
-
-        <label>{t('schoolManage.fieldPhone')}</label>
-        <input value={form.contact_phone} onChange={(e) => set('contact_phone', e.target.value)} />
-
-        <label>{t('schoolManage.fieldContactEmail')}</label>
-        <input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />
-
-        <label>{t('schoolManage.fieldPhoto')}</label>
-        <PhotoUpload bucket="school-photos" onUploaded={setPhotoUrl} />
-
+      <SchoolFormBody
+        type={type}
+        setType={setType}
+        form={form}
+        set={set}
+        photoUrl={photoUrl}
+        setPhotoUrl={setPhotoUrl}
+        t={t}
+      />
+      <div style={{ marginTop: 16 }}>
         {err && <div className="error">{err}</div>}
         {ok && <div style={{ background: 'var(--teal-soft)', color: 'var(--teal-dark)', padding: '10px 14px', borderRadius: 8, fontSize: 14 }}>✓ {ok}</div>}
-
-        <button className="btn btn-primary" disabled={busy}>
+      </div>
+      <div style={{ marginTop: 16 }}>
+        <button className="btn btn-primary" disabled={busy} onClick={submit}>
           {busy ? '…' : t('schoolManage.submitButton')}
         </button>
-      </form>
+      </div>
+    </div>
+  );
+}
+
+function EditSchoolCard({ school, onSaved, onCancel, t }) {
+  const [form, setForm] = useState({
+    name:          school.name || '',
+    region:        school.region || '',
+    city:          school.city || '',
+    address:       school.address || '',
+    description:   school.description || '',
+    contact_phone: school.contact_phone || '',
+    contact_email: school.contact_email || '',
+    lat:           school.lat ?? '',
+    lng:           school.lng ?? '',
+  });
+  const [photoUrl, setPhotoUrl] = useState(school.photo_url || null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+
+  function set(k, v) { setForm((f) => ({ ...f, [k]: v })); }
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true); setErr(null);
+    try {
+      const payload = fieldsFromForm(form, photoUrl !== school.photo_url ? photoUrl : null);
+      // Allow clearing fields by sending null instead of undefined
+      const out = {};
+      for (const k of Object.keys(form)) {
+        const v = form[k];
+        if (k === 'lat' || k === 'lng') {
+          if (v === '') continue;
+          out[k] = Number(v);
+        } else if (v !== '' && v !== (school[k] || '')) {
+          out[k] = v;
+        }
+      }
+      if (photoUrl && photoUrl !== school.photo_url) out.photo_url = photoUrl;
+      if (Object.keys(out).length === 0) { onCancel(); return; }
+      await apiPut('/api/schools/' + school.id, out);
+      onSaved();
+    } catch (e) { setErr(e.message); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+      <h3 style={{ marginBottom: 16 }}>✏️ {t('schoolManage.editSchoolTitle')}</h3>
+      <SchoolFormBody
+        type={school.type}
+        form={form}
+        set={set}
+        photoUrl={photoUrl}
+        setPhotoUrl={setPhotoUrl}
+        t={t}
+        hideTypeField
+      />
+      {err && <div className="error" style={{ marginTop: 12 }}>{err}</div>}
+      <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>{t('common.cancel')}</button>
+        <button type="button" className="btn btn-primary" disabled={busy} onClick={submit}>
+          {busy ? '…' : t('common.save')}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function SchoolFormBody({ type, setType, form, set, photoUrl, setPhotoUrl, t, hideTypeField }) {
+  return (
+    <div className="form" style={{ maxWidth: 'none' }}>
+      {!hideTypeField && (
+        <>
+          <label>{t('schoolManage.fieldType')}</label>
+          <select value={type} onChange={(e) => setType(e.target.value)}>
+            <option value="beneficiary">{t('schoolManage.typeBeneficiary')}</option>
+            <option value="volunteer">{t('schoolManage.typeVolunteer')}</option>
+          </select>
+        </>
+      )}
+
+      <label>{t('schoolManage.fieldName')}</label>
+      <input required value={form.name} onChange={(e) => set('name', e.target.value)} />
+
+      <label>{t('schoolManage.fieldRegion')}</label>
+      <input value={form.region} onChange={(e) => set('region', e.target.value)} placeholder={t('schoolManage.regionPlaceholder')} />
+
+      <label>{t('schoolManage.fieldCity')}</label>
+      <input value={form.city} onChange={(e) => set('city', e.target.value)} />
+
+      <label>{t('schoolManage.fieldAddress')}</label>
+      <input value={form.address || ''} onChange={(e) => set('address', e.target.value)} />
+
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('schoolManage.fieldLat')}</label>
+          <input
+            type="number" step="0.000001" min={-90} max={90}
+            value={form.lat}
+            onChange={(e) => set('lat', e.target.value)}
+            placeholder="41.7"
+            style={{ width: '100%', padding: 12, borderRadius: 10, border: '1.5px solid var(--gray-200)' }}
+          />
+        </div>
+        <div>
+          <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('schoolManage.fieldLng')}</label>
+          <input
+            type="number" step="0.000001" min={-180} max={180}
+            value={form.lng}
+            onChange={(e) => set('lng', e.target.value)}
+            placeholder="44.8"
+            style={{ width: '100%', padding: 12, borderRadius: 10, border: '1.5px solid var(--gray-200)' }}
+          />
+        </div>
+      </div>
+      <small style={{ color: 'var(--gray-500)', fontSize: 12, marginTop: -8 }}>{t('schoolManage.latLngHint')}</small>
+
+      <label>{t('schoolManage.fieldDescription')}</label>
+      <textarea rows={3} value={form.description} onChange={(e) => set('description', e.target.value)} />
+
+      <label>{t('schoolManage.fieldPhone')}</label>
+      <input value={form.contact_phone} onChange={(e) => set('contact_phone', e.target.value)} />
+
+      <label>{t('schoolManage.fieldContactEmail')}</label>
+      <input type="email" value={form.contact_email} onChange={(e) => set('contact_email', e.target.value)} />
+
+      <label>{t('schoolManage.fieldPhoto')}</label>
+      <PhotoUpload bucket="school-photos" onUploaded={setPhotoUrl} initialUrl={photoUrl} />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import MapView from '../components/MapView.jsx';
 
 const FALLBACK_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -23,12 +24,23 @@ export default function Schools({ type }) {
   const prefix = '/' + lang;
   const [items, setItems] = useState([]);
   const [filter, setFilter] = useState(type || 'all');
+  const [region, setRegion] = useState('');
+  const [regions, setRegions] = useState([]);
   const [q, setQ] = useState('');
+  const [view, setView] = useState('list');
 
   useEffect(() => {
-    const url = filter === 'all' ? '/api/schools' : '/api/schools?type=' + filter;
+    apiGet('/api/regions').then(setRegions).catch(() => setRegions([]));
+  }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams();
+    if (filter !== 'all') params.set('type', filter);
+    if (region)            params.set('region', region);
+    const qs = params.toString();
+    const url = '/api/schools' + (qs ? '?' + qs : '');
     apiGet(url).then(setItems).catch(() => setItems([]));
-  }, [filter]);
+  }, [filter, region]);
 
   const filtered = items.filter((s) =>
     !q || s.name?.toLowerCase().includes(q.toLowerCase()) || s.region?.toLowerCase().includes(q.toLowerCase()),
@@ -49,6 +61,18 @@ export default function Schools({ type }) {
             value={q}
             onChange={(e) => setQ(e.target.value)}
           />
+          <select
+            value={region}
+            onChange={(e) => setRegion(e.target.value)}
+            style={{ padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', background: 'white', fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' }}
+          >
+            <option value="">{t('schools.allRegions')}</option>
+            {regions.map((r) => (
+              <option key={r.region} value={r.region}>
+                {r.region} · {r.count}
+              </option>
+            ))}
+          </select>
           <div className="filter-pills">
             {['all', 'beneficiary', 'volunteer'].map((k) => (
               <button
@@ -60,7 +84,20 @@ export default function Schools({ type }) {
               </button>
             ))}
           </div>
+          <div className="filter-pills" style={{ marginLeft: 'auto' }}>
+            <button
+              className={'pill' + (view === 'list' ? ' active' : '')}
+              onClick={() => setView('list')}
+            >📋 {t('schools.viewList')}</button>
+            <button
+              className={'pill' + (view === 'map' ? ' active' : '')}
+              onClick={() => setView('map')}
+            >🗺 {t('schools.viewMap')}</button>
+          </div>
         </div>
+
+        {view === 'map' && <MapView schools={filtered} />}
+        {view === 'list' && (
 
         <div className="school-grid">
           {filtered.map((s, i) => (
@@ -92,6 +129,7 @@ export default function Schools({ type }) {
             </div>
           )}
         </div>
+        )}
       </div>
     </section>
   );

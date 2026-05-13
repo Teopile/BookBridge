@@ -12,3 +12,4 @@ coverage/
 .turbo/
 *.tsbuildinfo
 /test-screenshots/
+tests/fixtures/

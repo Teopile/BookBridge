@@ -5,7 +5,7 @@
 import 'dotenv/config';
 import { chromium } from 'playwright';
 import { createClient } from '@supabase/supabase-js';
-import { readFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -26,6 +26,19 @@ mkdirSync(SHOTS, { recursive: true });
 const sb = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SECRET_KEY, {
   auth: { persistSession: false, autoRefreshToken: false },
 });
+
+// Get a small test photo fixture; downloads from picsum once and caches.
+async function ensurePhotoFixture() {
+  const fixturePath = join(__dirname, 'fixtures', 'test-photo.jpg');
+  mkdirSync(dirname(fixturePath), { recursive: true });
+  if (!existsSync(fixturePath)) {
+    const res = await fetch('https://picsum.photos/seed/bookbridge-walk-fixture/600/400.jpg');
+    const buf = Buffer.from(await res.arrayBuffer());
+    writeFileSync(fixturePath, buf);
+    console.log('  📥 downloaded photo fixture (' + buf.length + ' bytes) to ' + fixturePath);
+  }
+  return fixturePath;
+}
 
 let passed = 0, failed = 0;
 const findings = [];
@@ -386,7 +399,120 @@ async function loginViaUI(page) {
     await adminPage.waitForLoadState('networkidle');
     await shoot(adminPage, '38-admin-dashboard-final');
 
-    section('PHASE 8 — mobile responsive (375x667)');
+    section('PHASE 8 — real OTP signup flow (separate user, end-to-end via UI)');
+    {
+      // Create a brand-new user via the public /register UI so we exercise the OTP code path.
+      const otpEmail = `walk-otp-${RUN}@bookbridge.test`;
+      const otpUsername = `otp_${RUN}`;
+      const otpPassword = 'OtpTest12345!';
+
+      step('8.1 Open a new context (no cookies) and fill signup form');
+      const ctx2 = await browser.newContext({ viewport: { width: 1366, height: 820 } });
+      const otpPage = await ctx2.newPage();
+      otpPage.on('console', (m) => { if (m.type() === 'error') errors.push({ url: otpPage.url(), text: m.text() }); });
+
+      await otpPage.goto(FRONTEND + '/en/auth');
+      await otpPage.waitForLoadState('networkidle');
+      // Toggle to signup
+      await otpPage.locator('button', { hasText: /create account|register|sign up/i }).first().click();
+      await otpPage.waitForTimeout(400);
+      await otpPage.locator('input[type=email]').fill(otpEmail);
+      // Username is the second text input (after email)
+      await otpPage.locator('input[type=text]').first().fill(otpUsername);
+      await otpPage.locator('input[type=password]').fill(otpPassword);
+      await shoot(otpPage, '42-otp-signup-filled');
+      await otpPage.locator('button[type=submit]').click();
+
+      step('8.2 Wait for the "verify code" step to render');
+      // The verify-otp screen has an input with letterSpacing styling — we look for the otpCode label text.
+      await otpPage.waitForSelector('input[inputmode=numeric]', { timeout: 10_000 });
+      await shoot(otpPage, '43-otp-verify-screen');
+      pass('signup submitted and OTP entry screen rendered');
+
+      step('8.3 Extract the OTP via Supabase admin API');
+      // generateLink({ type: 'signup' }) returns the email_otp for the user.
+      const linkRes = await sb.auth.admin.generateLink({
+        type: 'signup',
+        email: otpEmail,
+        password: otpPassword,
+      });
+      const otpCode = linkRes.data?.properties?.email_otp;
+      if (!otpCode) {
+        fail('otp extraction', 'admin.generateLink returned no email_otp');
+        await ctx2.close();
+      } else {
+        pass('OTP retrieved from admin API: ' + otpCode.replace(/.(?=.{2})/g, '•'));
+
+        step('8.4 Type OTP into the form and submit');
+        await otpPage.locator('input[inputmode=numeric]').fill(otpCode);
+        await shoot(otpPage, '44-otp-code-entered');
+        await otpPage.locator('button[type=submit]').click();
+        // Should redirect to /account
+        await otpPage.waitForURL((u) => u.toString().includes('/account'), { timeout: 10_000 });
+        await otpPage.waitForLoadState('networkidle');
+        await shoot(otpPage, '45-otp-signed-in');
+        pass('OTP verified, redirected to /account');
+
+        // Verify in DB
+        const otpUser = await sb.auth.admin.listUsers();
+        const created = (otpUser.data?.users || []).find((u) => u.email === otpEmail);
+        if (created?.email_confirmed_at) pass('user.email_confirmed_at is set in auth.users');
+        else fail('email confirmation', 'email_confirmed_at not set');
+
+        // Cleanup
+        if (created) await sb.auth.admin.deleteUser(created.id).catch(() => null);
+        pass('OTP test user cleaned up');
+      }
+      await ctx2.close();
+    }
+
+    section('PHASE 9 — file upload (real binary upload to Supabase Storage)');
+    {
+      step('9.1 Prepare local photo fixture');
+      const photoPath = await ensurePhotoFixture();
+      pass('fixture ready: ' + photoPath);
+
+      step('9.2 Open SchoolManage in main session');
+      await page.bringToFront();
+      await page.goto(FRONTEND + '/en/school/manage');
+      await page.waitForLoadState('networkidle');
+
+      step('9.3 Set the file on the hidden <input type=file> in the Create form');
+      const fileInputs = page.locator('input[type=file]');
+      const count = await fileInputs.count();
+      if (count === 0) {
+        fail('file upload', 'no file input on page');
+      } else {
+        await fileInputs.last().setInputFiles(photoPath);
+        await page.waitForTimeout(3000); // allow signed-url + PUT to Supabase Storage to complete
+        await shoot(page, '46-school-photo-uploaded');
+
+        // Verify the upload actually landed in Supabase Storage under the user's folder.
+        // Find a file uploaded in the last 60 seconds for this run.
+        const since = new Date(Date.now() - 60_000).toISOString();
+        const { data: rootList } = await sb.storage.from('school-photos').list('', {
+          limit: 100, sortBy: { column: 'created_at', order: 'desc' },
+        });
+        let found = null;
+        for (const folder of (rootList || [])) {
+          if (folder.id) continue; // skip files at root
+          const sub = await sb.storage.from('school-photos').list(folder.name, {
+            limit: 10, sortBy: { column: 'created_at', order: 'desc' },
+          });
+          for (const f of (sub.data || [])) {
+            if (f.created_at && f.created_at > since && f.metadata?.size > 0) {
+              found = { folder: folder.name, file: f.name, size: f.metadata.size };
+              break;
+            }
+          }
+          if (found) break;
+        }
+        if (found) pass(`file uploaded → ${found.folder}/${found.file} (${found.size} bytes)`);
+        else fail('file upload to storage', 'no recent upload found in school-photos bucket');
+      }
+    }
+
+    section('PHASE 10 — mobile responsive (375x667)');
     await page.bringToFront();
     await page.setViewportSize({ width: 375, height: 667 });
     await page.goto(FRONTEND + '/en');

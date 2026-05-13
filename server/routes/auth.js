@@ -125,8 +125,11 @@ router.post('/refresh', csrfProtection, validate(RefreshSchema), async (req, res
 });
 
 // ---------- Current user ----------
-router.get('/me', requireAuth, async (req, res, next) => {
+// Note: not behind requireAuth — returns 200 + {user:null} when not authed.
+// This avoids the browser logging a 401 console error on every public page load.
+router.get('/me', async (req, res, next) => {
   try {
+    if (!req.user) return res.json({ user: null });
     const { data, error } = await supabaseAdmin
       .from('profiles').select('*').eq('id', req.user.id).maybeSingle();
     if (error) throw error;

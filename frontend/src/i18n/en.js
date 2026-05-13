@@ -4,6 +4,7 @@ export default {
     search: 'Search', about: 'About', join: 'Join us',
     login: 'Sign in', register: 'Register', account: 'My account', logout: 'Sign out',
     menu: 'Menu', switchToKa: 'Switch to Georgian', switchToEn: 'Switch to English',
+    beneficiaryCta: 'Are you a beneficiary?',
   },
   hero: {
     slogan: 'Your book is awaited in the mountains',

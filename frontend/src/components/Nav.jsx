@@ -56,6 +56,10 @@ export default function Nav() {
             {lang === 'en' ? 'KA' : 'EN'}
           </button>
 
+          <Link to={prefix + '/school/manage'} className="btn btn-ghost btn-sm nav-desktop-only">
+            {t('nav.beneficiaryCta')}
+          </Link>
+
           {user ? (
             <Link to={prefix + '/account'} className="btn btn-secondary btn-sm nav-desktop-only">
               <Icon name="user" size={14} /> {t('nav.account')}
@@ -86,6 +90,7 @@ export default function Nav() {
 
       {open && <div className="nav-backdrop" onClick={() => setOpen(false)} aria-hidden="true" />}
       <div id="nav-drawer" className={'nav-drawer' + (open ? ' open' : '')} role="dialog" aria-modal="true" aria-label={t('nav.menu')}>
+        <NavLink to={prefix + '/school/manage'}>{t('nav.beneficiaryCta')}</NavLink>
         <NavLink to={prefix + '/schools'}>{t('nav.schools')}</NavLink>
         <NavLink to={prefix + '/how-it-works'}>{t('nav.how')}</NavLink>
         <NavLink to={prefix + '/about'}>{t('nav.about')}</NavLink>

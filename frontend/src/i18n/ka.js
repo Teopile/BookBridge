@@ -4,6 +4,7 @@ export default {
     search: 'ძებნა', about: 'ჩვენ შესახებ', join: 'შემოგვიერთდი',
     login: 'შესვლა', register: 'რეგისტრაცია', account: 'ჩემი კაბინეტი', logout: 'გასვლა',
     menu: 'მენიუ', switchToKa: 'ქართულზე გადართვა', switchToEn: 'ინგლისურზე გადართვა',
+    beneficiaryCta: 'ხართ ბენეფიციარი?',
   },
   hero: {
     slogan: 'შენს წიგნს ელიან მთაში',

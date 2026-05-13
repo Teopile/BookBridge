@@ -371,9 +371,11 @@ try {
   else fail('admin authz', 'expected 403, got ' + unauthorized.status);
 
   section('X. Auth boundaries');
+  // /api/auth/me intentionally returns 200 + {user:null} for anonymous callers
+  // so the public-page session probe doesn't spam the browser console with 401s.
   const noCookie = await api('/api/auth/me');
-  if (noCookie.status === 401) pass('/api/auth/me without session → 401');
-  else fail('auth boundary /me', 'expected 401, got ' + noCookie.status);
+  if (noCookie.status === 200 && noCookie.body.user === null) pass('/api/auth/me without session → 200 {user:null}');
+  else fail('auth boundary /me', 'expected 200 {user:null}, got ' + noCookie.status + ' ' + JSON.stringify(noCookie.body));
 
   const noCsrf = await api('/api/auth/logout', { method: 'POST' });
   if (noCsrf.status === 403) pass('POST without CSRF header → 403');

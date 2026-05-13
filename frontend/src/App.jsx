@@ -12,11 +12,9 @@ import About from './pages/About.jsx';
 import Search from './pages/Search.jsx';
 import Track from './pages/Track.jsx';
 import Auth from './pages/Auth.jsx';
-import AuthConfirm from './pages/AuthConfirm.jsx';
 import ForgotPassword from './pages/ForgotPassword.jsx';
 import ResetPassword from './pages/ResetPassword.jsx';
 import Account from './pages/Account.jsx';
-import AccountSecurity from './pages/AccountSecurity.jsx';
 import SchoolManage from './pages/SchoolManage.jsx';
 import VolunteerManage from './pages/VolunteerManage.jsx';
 import NotFound from './pages/NotFound.jsx';
@@ -61,11 +59,9 @@ function LocalizedRoutes() {
       <Route path="search" element={<Search />} />
       <Route path="track/:token" element={<Track />} />
       <Route path="auth" element={<Auth />} />
-      <Route path="auth/confirmed" element={<AuthConfirm />} />
       <Route path="auth/forgot" element={<ForgotPassword />} />
       <Route path="auth/reset-password" element={<ResetPassword />} />
       <Route path="account" element={<Account />} />
-      <Route path="account/security" element={<AccountSecurity />} />
       <Route path="school/manage" element={<SchoolManage />} />
       <Route path="volunteer/manage" element={<VolunteerManage />} />
       <Route path="*" element={<NotFound />} />

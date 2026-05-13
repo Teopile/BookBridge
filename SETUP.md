@@ -38,14 +38,35 @@ git --version
    - Site URL: `http://localhost:5173`
    - Redirect URLs: add `http://localhost:5173/**` and `http://localhost:5174/**`
 
-### A.3. Apply the initial migration
+### A.3. Apply the initial migrations
 
 1. In the Supabase dashboard, go to **SQL Editor**.
 2. Click **"New query"**.
 3. Open `supabase/migrations/0001_initial_schema.sql` from this repo, copy-paste the entire contents into the SQL Editor, and click **Run**.
-4. Verify in **Table Editor** that you see these tables: `profiles`, `schools`, `book_requests`, `donations`, `donation_items`, `monetary_donations`, `notifications`, `donation_status_history`.
+4. Repeat with `0002_business_logic.sql`, then `0003_username.sql`. Run each as a separate query.
+5. Verify in **Table Editor** that you see: `profiles` (with a `username` column), `schools`, `book_requests`, `donations`, `donation_items`, `monetary_donations`, `notifications`, `donation_status_history`, `site_content`.
 
 > **Migrations are applied manually, not via CLI.** Every migration file in this repo is idempotent (`create ... if not exists` style) so re-running is safe.
+
+### A.3b. Switch confirmation + reset emails to 6-digit codes
+
+BookBridge uses 6-digit codes (not magic links) for signup confirmation and password reset. Update two Supabase email templates so the code is in the body:
+
+1. **Authentication → Email Templates → Confirm signup**. Replace the default body with:
+   ```html
+   <h2>BookBridge — confirm your account</h2>
+   <p>Your 6-digit verification code is:</p>
+   <p style="font-size:28px;letter-spacing:8px;font-family:monospace;"><b>{{ .Token }}</b></p>
+   <p>Enter it on the BookBridge sign-up screen to finish creating your account.</p>
+   ```
+2. **Authentication → Email Templates → Reset Password**. Replace with:
+   ```html
+   <h2>BookBridge — reset your password</h2>
+   <p>Your 6-digit reset code is:</p>
+   <p style="font-size:28px;letter-spacing:8px;font-family:monospace;"><b>{{ .Token }}</b></p>
+   <p>Open the BookBridge "reset password" page and enter this code together with your new password.</p>
+   ```
+3. Save both templates.
 
 ### A.4. Configure local `.env` files
 

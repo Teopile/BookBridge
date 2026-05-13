@@ -2,9 +2,8 @@ import { z } from 'zod';
 
 export const RegisterSchema = z.object({
   email: z.string().email(),
+  username: z.string().min(3).max(30).regex(/^[A-Za-z0-9_-]+$/),
   password: z.string().min(8).max(200),
-  full_name: z.string().min(1).max(120),
-  role: z.enum(['donor', 'beneficiary', 'volunteer']).default('donor'),
   language: z.enum(['en', 'ka']).default('en'),
 });
 
@@ -80,24 +79,22 @@ export const ForgotPasswordSchema = z.object({
   email: z.string().email(),
 });
 
+// Code-based reset: { email, token (6-digit OTP), new_password }
 export const ResetPasswordSchema = z.object({
-  access_token: z.string().min(8),
-  refresh_token: z.string().min(8).optional(),
+  email: z.string().email(),
+  token: z.string().regex(/^[0-9]{6}$/),
   new_password: z.string().min(8).max(200),
 });
 
-export const ConfirmEmailSchema = z.object({
-  token_hash: z.string().min(8),
-  type: z.enum(['signup', 'email_change', 'recovery', 'invite']).default('signup'),
+// Signup email verification (6-digit OTP)
+export const VerifyOtpSchema = z.object({
+  email: z.string().email(),
+  token: z.string().regex(/^[0-9]{6}$/),
 });
 
-export const MfaEnrollSchema = z.object({});
-export const MfaVerifySchema = z.object({
-  factor_id: z.string().min(1),
-  code: z.string().regex(/^[0-9]{6}$/),
-});
-export const MfaChallengeSchema = z.object({
-  factor_id: z.string().min(1),
+// Resend signup OTP (same payload as forgot-password)
+export const ResendOtpSchema = z.object({
+  email: z.string().email(),
 });
 
 export const SignedUploadSchema = z.object({

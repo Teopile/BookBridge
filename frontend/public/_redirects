@@ -1,0 +1,8 @@
+# Render Static Site routing — Netlify-style _redirects format.
+# Order matters: more specific rules first.
+
+# Proxy /api/* to the API service so cookies stay same-origin (CSRF works).
+/api/*  https://bookbridge-bxux.onrender.com/api/:splat  200
+
+# SPA fallback — every other path serves index.html so client-side routes work.
+/*  /index.html  200

@@ -24,13 +24,17 @@ const authStrictLimiter = rateLimit({
   skip: () => process.env.NODE_ENV !== 'production',
 });
 
-const cookieOpts = () => ({
-  httpOnly: true,
-  sameSite: 'lax',
-  secure: process.env.NODE_ENV === 'production',
-  path: '/',
-  maxAge: 60 * 60 * 24 * 30 * 1000,
-});
+const cookieOpts = () => {
+  const isProd = process.env.NODE_ENV === 'production';
+  return {
+    httpOnly: true,
+    // Cross-origin SPA in prod (different Render hosts) → SameSite=None+Secure.
+    sameSite: isProd ? 'none' : 'lax',
+    secure: isProd,
+    path: '/',
+    maxAge: 60 * 60 * 24 * 30 * 1000,
+  };
+};
 
 // ---------- Signup (email + username + password, sends 6-digit OTP) ----------
 router.post('/register', authStrictLimiter, csrfProtection, validate(RegisterSchema), async (req, res, next) => {

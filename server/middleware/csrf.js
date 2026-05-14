@@ -14,17 +14,26 @@ function generateToken() {
 }
 
 export function csrfInit(req, res, next) {
-  if (!req.cookies?.[COOKIE_NAME]) {
-    const token = generateToken();
+  let token = req.cookies?.[COOKIE_NAME];
+  if (!token) {
+    token = generateToken();
+    const isProd = process.env.NODE_ENV === 'production';
     res.cookie(COOKIE_NAME, token, {
       httpOnly: false,
-      sameSite: 'lax',
-      secure: process.env.NODE_ENV === 'production',
+      // In prod the SPA is on a different origin than the API; the cookie has to
+      // travel cross-site for credentials:include to attach it. SameSite=None
+      // requires Secure (HTTPS), which Render provides.
+      sameSite: isProd ? 'none' : 'lax',
+      secure: isProd,
       path: '/',
       maxAge: 60 * 60 * 24 * 7 * 1000,
     });
     req.cookies = { ...(req.cookies || {}), [COOKIE_NAME]: token };
   }
+  // Also echo the token as a response header so cross-origin SPAs (where the
+  // cookie isn't readable via document.cookie) can pick it up. The header is
+  // already in Access-Control-Expose-Headers, so the browser exposes it.
+  res.setHeader(HEADER_NAME, token);
   next();
 }
 

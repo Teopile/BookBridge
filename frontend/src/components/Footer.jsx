@@ -5,10 +5,11 @@ import Logo from './Logo.jsx';
 // Routes where the marketing "donate now" footer-cta still makes sense.
 // Hidden everywhere else (auth, account, dashboard, manage, donate, track).
 function shouldShowFooterCta(pathname) {
-  // Strip leading "/" and language segment.
   const parts = pathname.split('/').filter(Boolean);
   if (parts.length === 0) return true; // bare "/" before LangGuard redirects
-  // parts[0] is "en" or "ka" (or "auth" before redirect). Look at the second segment.
+  // parts[0] must be a known language; otherwise this is an unprefixed route
+  // (e.g. "/auth" pre-redirect) and we hide the marketing footer-cta.
+  if (parts[0] !== 'en' && parts[0] !== 'ka') return false;
   const seg = parts[1] || '';
   if (!seg) return true; // home (e.g. /en)
   return [

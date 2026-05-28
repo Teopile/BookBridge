@@ -69,7 +69,7 @@ export default function Home() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-illustration">
-            <Logo size={120} withWordmark={false} />
+            <Logo size={180} withWordmark={false} />
           </div>
           <h1>{t('home.heroTitle')}</h1>
           <p>{t('home.heroSub')}</p>

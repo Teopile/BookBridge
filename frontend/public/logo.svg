@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="BookBridge">
+  <title>BookBridge</title>
+  <defs>
+    <linearGradient id="bb-page-l" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#E8D5A5"/>
+      <stop offset="1" stop-color="#D9B872"/>
+    </linearGradient>
+    <linearGradient id="bb-page-r" x1="1" y1="0" x2="0" y2="0">
+      <stop offset="0" stop-color="#E8D5A5"/>
+      <stop offset="1" stop-color="#D9B872"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Mountain lit face -->
+  <polygon points="256,72 130,372 256,372" fill="#3A6B4A"/>
+  <!-- Mountain shaded face -->
+  <polygon points="256,72 382,372 256,372" fill="#1F4530"/>
+  <!-- Ridge highlight -->
+  <polyline points="256,72 256,372" fill="none" stroke="#2D5C3E" stroke-width="2" opacity="0.45"/>
+
+  <!-- Snow cap (front) -->
+  <polygon points="256,72 218,170 240,160 256,200 270,158 290,170" fill="#FAF5E8"/>
+  <!-- Snow cap (shaded side) -->
+  <polygon points="256,72 290,170 270,158 256,200" fill="#E8D5A5" opacity="0.55"/>
+
+  <!-- Open book — left page fan -->
+  <path d="M256 422 C 200 412 140 414 84 432 L 110 396 C 170 388 220 392 256 408 Z" fill="url(#bb-page-l)"/>
+  <path d="M256 408 C 210 398 160 400 110 416 L 130 384 C 180 378 222 382 256 396 Z" fill="#F1ECDD"/>
+  <path d="M256 396 C 218 388 178 390 142 402 L 158 374 C 200 370 232 374 256 386 Z" fill="#FAF5E8"/>
+
+  <!-- Open book — right page fan -->
+  <path d="M256 422 C 312 412 372 414 428 432 L 402 396 C 342 388 292 392 256 408 Z" fill="url(#bb-page-r)"/>
+  <path d="M256 408 C 302 398 352 400 402 416 L 382 384 C 332 378 290 382 256 396 Z" fill="#F1ECDD"/>
+  <path d="M256 396 C 294 388 334 390 370 402 L 354 374 C 312 370 280 374 256 386 Z" fill="#FAF5E8"/>
+
+  <!-- Book base / binding shadow under the pages -->
+  <path d="M84 432 C 140 460 372 460 428 432 L 412 458 C 348 480 164 480 100 458 Z" fill="#A6824A"/>
+  <!-- Spine notch -->
+  <path d="M244 430 L 256 446 L 268 430 Z" fill="#6E4A20"/>
+
+  <!-- Child silhouette walking on the open book toward the mountain -->
+  <g transform="translate(248 332)">
+    <path d="M2 14 L 14 14 L 14 28 L 2 28 Z" fill="#1F4530" opacity="0.4"/>
+    <path d="M0 8 C 0 4 4 0 8 0 C 12 0 16 4 16 8 L 16 32 L 0 32 Z" fill="#2D5C3E"/>
+    <rect x="14" y="10" width="6" height="18" rx="2" fill="#2A2620"/>
+    <circle cx="9" cy="-3" r="5.5" fill="#E0BFA0"/>
+    <path d="M4 -7 C 4 -10 14 -10 14 -6 L 14 0 L 4 0 Z" fill="#2A2620"/>
+    <path d="M4 -2 C 2 2 2 8 4 12 L 6 12 C 5 8 5 2 6 -1 Z" fill="#2A2620"/>
+    <path d="M3 32 L 6 32 L 7 46 L 4 46 Z" fill="#1F4530"/>
+    <path d="M10 32 L 13 32 L 14 46 L 11 46 Z" fill="#1F4530"/>
+    <rect x="3" y="44" width="5" height="4" rx="1" fill="#2A2620"/>
+    <rect x="10" y="44" width="5" height="4" rx="1" fill="#2A2620"/>
+  </g>
+</svg>

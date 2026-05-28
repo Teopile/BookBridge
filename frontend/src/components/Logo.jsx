@@ -1,58 +1,51 @@
 import { useEffect, useState } from 'react';
-import Icon from './Icon.jsx';
 
 // Module-level cache so the /logo.png probe runs at most once per page session,
 // even when <Logo /> mounts in multiple places (Nav, Footer, Home hero).
-let _logoStatus = 'checking'; // 'checking' | 'loaded' | 'failed'
+let _pngStatus = 'checking'; // 'checking' | 'loaded' | 'failed'
 
 /**
  * BookBridge brand mark.
- * Renders the SVG fallback first, then swaps to /logo.png once a preload probe
- * confirms it exists. Prevents the broken-image flash and avoids 2–3× 404s per
- * render when the file is missing.
  *
- * Accessibility: when withWordmark is true, the visible "BookBridge" text IS
- * the name — no aria-label on the wrapper (avoids double-announce). When the
- * wordmark is hidden, the fallback span / img carries the accessible name.
+ * Asset chain:
+ *   1. /logo.svg — always ships in the build (frontend/public/logo.svg). Used
+ *      as the default so the first paint shows a real logo and no broken-image
+ *      flash ever occurs.
+ *   2. /logo.png — optional painterly upgrade. If the user drops a higher-
+ *      resolution PNG into frontend/public/, a one-shot background <Image>
+ *      probe detects it and swaps in. Status is cached at module scope so
+ *      multiple <Logo> mounts share a single probe.
+ *
+ * Accessibility:
+ *   - When withWordmark is true the visible "BookBridge" text provides the
+ *     accessible name — img alt and wrapper aria-label stay empty (avoids
+ *     double-announce).
+ *   - When withWordmark is false (decorative hero illustration), the img alt
+ *     carries the accessible name.
  */
 export default function Logo({ size = 36, withWordmark = true, wordmarkColor }) {
-  const [status, setStatus] = useState(_logoStatus);
+  const [pngStatus, setPngStatus] = useState(_pngStatus);
 
   useEffect(() => {
-    if (status !== 'checking') return;
+    if (pngStatus !== 'checking') return;
     const probe = new Image();
-    probe.onload = () => { _logoStatus = 'loaded'; setStatus('loaded'); };
-    probe.onerror = () => { _logoStatus = 'failed'; setStatus('failed'); };
+    probe.onload = () => { _pngStatus = 'loaded'; setPngStatus('loaded'); };
+    probe.onerror = () => { _pngStatus = 'failed'; setPngStatus('failed'); };
     probe.src = '/logo.png';
-  }, [status]);
+  }, [pngStatus]);
 
-  const needsAriaName = !withWordmark;
+  const src = pngStatus === 'loaded' ? '/logo.png' : '/logo.svg';
+  const altText = withWordmark ? '' : 'BookBridge';
 
   return (
     <span className="logo">
-      {status === 'loaded' ? (
-        <img
-          src="/logo.png"
-          alt={needsAriaName ? 'BookBridge' : ''}
-          className="logo-img"
-          width={size}
-          height={size}
-        />
-      ) : (
-        <span
-          className="logo-mark-fallback"
-          style={{ width: size, height: size }}
-          aria-label={needsAriaName ? 'BookBridge' : undefined}
-          role={needsAriaName ? 'img' : undefined}
-        >
-          <Icon
-            name="books"
-            size={Math.round(size * 0.6)}
-            color="var(--honey-200)"
-            stroke={2}
-          />
-        </span>
-      )}
+      <img
+        src={src}
+        alt={altText}
+        className="logo-img"
+        width={size}
+        height={size}
+      />
       {withWordmark && (
         <span
           className="logo-text"

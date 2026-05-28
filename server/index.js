@@ -94,7 +94,14 @@ app.use((err, _req, res, _next) => {
   res.status(err.status || 500).json({ error: err.message || 'internal_error' });
 });
 
-const PORT = Number(process.env.PORT) || 3001;
-app.listen(PORT, () => {
-  console.log(`BookBridge API listening on http://localhost:${PORT}`);
-});
+// On Vercel (and any other serverless runtime), the Express app is imported
+// and invoked per-request — don't bind a port. Locally and on a long-running
+// host (droplet / Railway / Render), VERCEL is unset so we listen normally.
+if (!process.env.VERCEL) {
+  const PORT = Number(process.env.PORT) || 3001;
+  app.listen(PORT, () => {
+    console.log(`BookBridge API listening on http://localhost:${PORT}`);
+  });
+}
+
+export default app;

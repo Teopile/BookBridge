@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import Icon from './Icon.jsx';
 
 function timeAgo(iso, t) {
   if (!iso) return '';
@@ -18,26 +19,26 @@ function timeAgo(iso, t) {
 function describe(ev, t) {
   if (ev.kind === 'donation_created') {
     return {
-      icon: '📚',
+      iconName: 'book',
       text: `${ev.actor_username} ${t('home.actSent')} ${ev.quantity} ${ev.quantity === 1 ? t('home.leaderboardBookOne') : t('home.leaderboardBookMany')}` +
             (ev.target_name ? ` ${t('home.actTo')} ${ev.target_name}` : ''),
     };
   }
   if (ev.kind === 'donation_delivered') {
     return {
-      icon: '✅',
+      iconName: 'check',
       text: (ev.target_name || t('home.actSchool')) + ' ' + t('home.actReceived') +
             ' ' + ev.quantity + ' ' + (ev.quantity === 1 ? t('home.leaderboardBookOne') : t('home.leaderboardBookMany')),
     };
   }
   if (ev.kind === 'school_approved') {
     return {
-      icon: '🏫',
+      iconName: 'school',
       text: (ev.target_name || t('home.actSchool')) + ' ' + t('home.actJoined') +
             (ev.target_region ? ' · ' + ev.target_region : ''),
     };
   }
-  return { icon: '•', text: ev.kind };
+  return { iconName: 'sparkle', text: ev.kind };
 }
 
 export default function Activity({ limit = 6 }) {
@@ -55,7 +56,7 @@ export default function Activity({ limit = 6 }) {
       <div className="activity-feed">
         {Array.from({ length: 3 }).map((_, i) => (
           <div className="activity-row" key={i}>
-            <div className="skeleton skeleton-circle" style={{ width: 32, height: 32 }} />
+            <div className="skeleton skeleton-circle" style={{ width: 36, height: 36 }} />
             <div style={{ flex: 1 }}>
               <div className="skeleton skeleton-line" style={{ width: '70%' }} />
               <div className="skeleton skeleton-line" style={{ width: '30%', marginBottom: 0 }} />
@@ -74,7 +75,9 @@ export default function Activity({ limit = 6 }) {
         const d = describe(ev, t);
         return (
           <div className="activity-row" key={ev.kind + '-' + ev.ref_id + '-' + i}>
-            <div className="activity-icon">{d.icon}</div>
+            <div className="activity-icon">
+              <Icon name={d.iconName} size={18} />
+            </div>
             <div className="activity-text">{d.text}</div>
             <div className="activity-time">{timeAgo(ev.happened_at, t)}</div>
           </div>

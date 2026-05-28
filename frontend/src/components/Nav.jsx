@@ -3,6 +3,7 @@ import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import Icon from './Icon.jsx';
+import Logo from './Logo.jsx';
 
 export default function Nav() {
   const { t, lang, setLang } = useT();
@@ -33,10 +34,7 @@ export default function Nav() {
     <>
       <nav className="nav">
         <Link to={prefix} className="nav-logo" aria-label="BookBridge home">
-          <div className="logo-mark">
-            <Icon name="books" size={20} color="white" stroke={1.8} />
-          </div>
-          <span className="logo-text">BookBridge</span>
+          <Logo size={36} />
         </Link>
 
         <div className="nav-links">
@@ -56,21 +54,22 @@ export default function Nav() {
             {lang === 'en' ? 'KA' : 'EN'}
           </button>
 
-          <Link to={prefix + '/school/manage'} className="btn btn-ghost btn-sm nav-desktop-only">
-            {t('nav.beneficiaryCta')}
-          </Link>
-
           {user ? (
-            <Link to={prefix + '/account'} className="btn btn-secondary btn-sm nav-desktop-only">
-              <Icon name="user" size={14} /> {t('nav.account')}
+            <Link to={prefix + '/account'} className="btn btn-ghost btn-sm nav-desktop-only">
+              <Icon name="user" size={16} /> {t('nav.account')}
             </Link>
           ) : (
             <Link to={prefix + '/auth'} className="btn btn-ghost btn-sm nav-desktop-only">
               {t('nav.login')}
             </Link>
           )}
-          <Link to={prefix + '/donate'} className="btn btn-primary btn-sm nav-desktop-only">
-            <Icon name="heart" size={14} fill="currentColor" stroke={0} /> {t('hero.ctaDonate')}
+          <Link
+            to={prefix + '/donate'}
+            className="btn btn-primary btn-sm nav-donate-cta"
+            aria-label={t('hero.ctaDonate')}
+          >
+            <Icon name="heart" size={14} fill="currentColor" stroke={0} />
+            <span className="nav-donate-label">{t('hero.ctaDonate')}</span>
           </Link>
 
           <button
@@ -106,7 +105,7 @@ export default function Nav() {
         ) : (
           <Link to={prefix + '/auth'}>{t('nav.login')}</Link>
         )}
-        <Link to={prefix + '/donate'} className="btn btn-primary btn-block" style={{ marginTop: 12 }}>
+        <Link to={prefix + '/donate'} className="btn btn-primary btn-block" style={{ marginTop: 'var(--space-3)' }}>
           {t('hero.ctaDonate')}
         </Link>
       </div>

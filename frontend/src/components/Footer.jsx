@@ -1,28 +1,50 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
+import Logo from './Logo.jsx';
+
+// Routes where the marketing "donate now" footer-cta still makes sense.
+// Hidden everywhere else (auth, account, dashboard, manage, donate, track).
+function shouldShowFooterCta(pathname) {
+  // Strip leading "/" and language segment.
+  const parts = pathname.split('/').filter(Boolean);
+  if (parts.length === 0) return true; // bare "/" before LangGuard redirects
+  // parts[0] is "en" or "ka" (or "auth" before redirect). Look at the second segment.
+  const seg = parts[1] || '';
+  if (!seg) return true; // home (e.g. /en)
+  return [
+    'about',
+    'how-it-works',
+    'schools',
+    'search',
+  ].some((p) => seg === p || seg.startsWith(p + '/'));
+}
 
 export default function Footer() {
   const { t, lang } = useT();
   const prefix = '/' + lang;
+  const { pathname } = useLocation();
+  const showCta = shouldShowFooterCta(pathname);
+
+  const instagram = import.meta.env.VITE_SOCIAL_INSTAGRAM;
+  const facebook = import.meta.env.VITE_SOCIAL_FACEBOOK;
 
   return (
     <>
-      <section className="footer-cta">
-        <h2>{t('footerCta.title')}</h2>
-        <p>{t('footerCta.sub')}</p>
-        <div style={{ display: 'flex', gap: 12, justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link className="btn btn-white btn-lg" to={prefix + '/donate'}>{t('footerCta.start')}</Link>
-        </div>
-      </section>
+      {showCta && (
+        <section className="footer-cta">
+          <h2>{t('footerCta.title')}</h2>
+          <p>{t('footerCta.sub')}</p>
+          <div className="footer-cta-actions">
+            <Link className="btn btn-white btn-lg" to={prefix + '/donate'}>{t('footerCta.start')}</Link>
+          </div>
+        </section>
+      )}
 
       <footer>
         <div className="footer-grid">
           <div className="footer-brand">
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-              <div className="logo-mark" style={{ width: 32, height: 32 }}>
-                <span style={{ color: 'white', fontSize: 18 }}>📚</span>
-              </div>
-              <span style={{ color: 'white', fontSize: 18, fontWeight: 700 }}>BookBridge</span>
+            <div className="footer-brand-row">
+              <Logo size={32} wordmarkColor="var(--text-on-dark)" />
             </div>
             <p>{t('footer.tagline')}</p>
           </div>
@@ -32,19 +54,20 @@ export default function Footer() {
             <Link to={prefix + '/donate'}>{t('footer.donate')}</Link>
             <Link to={prefix + '/schools'}>{t('footer.findSchools')}</Link>
             <Link to={prefix + '/how-it-works'}>{t('nav.how')}</Link>
+            <Link to={prefix + '/school/manage'}>{t('nav.beneficiaryCta')}</Link>
           </div>
 
           <div className="footer-col">
             <h5>{t('footer.company')}</h5>
             <Link to={prefix + '/about'}>{t('footer.about')}</Link>
             <a href="mailto:info@bookbridge.ge">{t('footer.contact')}</a>
-          </div>
-
-          <div className="footer-col">
-            <h5>{t('footer.contact')}</h5>
             <a href="mailto:info@bookbridge.ge">info@bookbridge.ge</a>
-            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer">Instagram</a>
-            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer">Facebook</a>
+            {instagram && (
+              <a href={instagram} target="_blank" rel="noopener noreferrer">Instagram</a>
+            )}
+            {facebook && (
+              <a href={facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
+            )}
           </div>
         </div>
 

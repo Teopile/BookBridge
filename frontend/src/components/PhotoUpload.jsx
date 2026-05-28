@@ -28,11 +28,11 @@ export default function PhotoUpload({ bucket = 'school-photos', onUploaded, labe
   }
 
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+    <div className="photo-upload">
       {preview && (
-        <img src={preview} alt="" style={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 12, border: '2px solid var(--mist)' }} />
+        <img src={preview} alt="" className="photo-upload-preview" />
       )}
-      <label className="btn-secondary" style={{ cursor: 'pointer' }}>
+      <label className="btn btn-secondary btn-sm photo-upload-label">
         {busy ? '…' : label}
         <input type="file" accept="image/*" onChange={handle} style={{ display: 'none' }} />
       </label>

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import Icon from '../components/Icon.jsx';
 
 // Map (Leaflet + tiles) only loads when the user clicks the Map toggle.
 const MapView = lazy(() => import('../components/MapView.jsx'));
@@ -68,7 +69,6 @@ export default function Schools({ type }) {
             value={region}
             onChange={(e) => setRegion(e.target.value)}
             aria-label={t('schools.allRegions')}
-            style={{ padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', background: 'white', fontSize: 14, fontWeight: 600, color: 'var(--gray-700)' }}
           >
             <option value="">{t('schools.allRegions')}</option>
             {regions.map((r) => (
@@ -92,16 +92,22 @@ export default function Schools({ type }) {
             <button
               className={'pill' + (view === 'list' ? ' active' : '')}
               onClick={() => setView('list')}
-            >📋 {t('schools.viewList')}</button>
+              aria-label={t('schools.viewList')}
+            >
+              <Icon name="list" size={16} /> {t('schools.viewList')}
+            </button>
             <button
               className={'pill' + (view === 'map' ? ' active' : '')}
               onClick={() => setView('map')}
-            >🗺 {t('schools.viewMap')}</button>
+              aria-label={t('schools.viewMap')}
+            >
+              <Icon name="map" size={16} /> {t('schools.viewMap')}
+            </button>
           </div>
         </div>
 
         {view === 'map' && (
-          <Suspense fallback={<div className="skeleton skeleton-block" style={{ height: 480, borderRadius: 14 }} />}>
+          <Suspense fallback={<div className="skeleton skeleton-block" style={{ height: 480, borderRadius: 'var(--r-md)' }} />}>
             <MapView schools={filtered} />
           </Suspense>
         )}
@@ -130,10 +136,12 @@ export default function Schools({ type }) {
           ))}
 
           {filtered.length === 0 && (
-            <div className="card" style={{ gridColumn: '1/-1', textAlign: 'center', margin: 0 }}>
-              <div style={{ fontSize: 48, marginBottom: 12 }}>🔍</div>
-              <h3 style={{ marginBottom: 8 }}>{t('schools.empty')}</h3>
-              <p style={{ color: 'var(--gray-700)' }}>{t('schools.emptyHint')}</p>
+            <div className="state" style={{ gridColumn: '1/-1', margin: 0, maxWidth: 'none' }}>
+              <div className="state-icon">
+                <Icon name="search" size={48} color="var(--forest-500)" />
+              </div>
+              <h3>{t('schools.empty')}</h3>
+              <p>{t('schools.emptyHint')}</p>
             </div>
           )}
         </div>

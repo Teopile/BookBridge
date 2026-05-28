@@ -1,5 +1,5 @@
 /**
- * BookBridge icon set — inline SVG, single-color, 24×24 grid, 1.5px stroke.
+ * BookBridge icon set — inline SVG, single-color, 24×24 grid, ~1.9px stroke.
  * Usage: <Icon name="book" size={20} />
  */
 
@@ -15,6 +15,12 @@ const ICONS = {
       <path d="M4 19V6.5A2.5 2.5 0 0 1 6.5 4h11A2.5 2.5 0 0 1 20 6.5V19" />
       <path d="M4 19h16v2H4z" />
       <path d="M8 8v8M12 8v8M16 8v8" />
+    </>
+  ),
+  bookOpen: (
+    <>
+      <path d="M3 5h7a3 3 0 0 1 3 3v12a2 2 0 0 0-2-2H3V5Z" />
+      <path d="M21 5h-7a3 3 0 0 0-3 3v12a2 2 0 0 1 2-2h8V5Z" />
     </>
   ),
   mountain: (
@@ -100,9 +106,46 @@ const ICONS = {
   shield: (
     <path d="M12 3 4 6v6c0 4.5 3.5 8 8 9 4.5-1 8-4.5 8-9V6l-8-3Z" />
   ),
+  gift: (
+    <>
+      <path d="M4 11h16v9H4z" />
+      <path d="M2 7h20v4H2z" />
+      <path d="M12 7v13" />
+      <path d="M12 7s-1.5-4-4-4-2 3 0 4h4Z" />
+      <path d="M12 7s1.5-4 4-4 2 3 0 4h-4Z" />
+    </>
+  ),
+  mailEnvelope: (
+    <>
+      <path d="M3 6h18v12H3z" />
+      <path d="m3 7 9 7 9-7" />
+    </>
+  ),
+  medal: (
+    <>
+      <circle cx="12" cy="14" r="6" />
+      <path d="M8 8 6 3h4l2 4" />
+      <path d="m16 8 2-5h-4l-2 4" />
+      <path d="M12 11v3l2 1" />
+    </>
+  ),
+  list: (
+    <>
+      <path d="M8 6h13M8 12h13M8 18h13" />
+      <circle cx="4" cy="6" r="1" />
+      <circle cx="4" cy="12" r="1" />
+      <circle cx="4" cy="18" r="1" />
+    </>
+  ),
+  map: (
+    <>
+      <path d="m3 6 6-2 6 2 6-2v14l-6 2-6-2-6 2V6Z" />
+      <path d="M9 4v16M15 6v16" />
+    </>
+  ),
 };
 
-export default function Icon({ name, size = 20, color = 'currentColor', stroke = 1.6, fill = 'none' }) {
+export default function Icon({ name, size = 20, color = 'currentColor', stroke = 1.9, fill = 'none' }) {
   const path = ICONS[name];
   if (!path) return null;
   return (

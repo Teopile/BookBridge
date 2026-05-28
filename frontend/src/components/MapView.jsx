@@ -3,6 +3,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
+import Icon from './Icon.jsx';
 
 /**
  * Fix Leaflet's default marker icons under Vite/Webpack — without this they 404.
@@ -39,7 +40,9 @@ export default function MapView({ schools }) {
   if (placed.length === 0) {
     return (
       <div className="state">
-        <div className="state-icon">📍</div>
+        <div className="state-icon">
+          <Icon name="pin" size={48} color="var(--forest-500)" />
+        </div>
         <h3>{t('schools.mapEmpty')}</h3>
         <p>{t('schools.mapEmptyHint')}</p>
       </div>
@@ -47,13 +50,7 @@ export default function MapView({ schools }) {
   }
 
   return (
-    <div style={{
-      height: 520,
-      borderRadius: 14,
-      overflow: 'hidden',
-      border: '1px solid var(--gray-200)',
-      boxShadow: 'var(--sh-1)',
-    }}>
+    <div className="map-view">
       <MapContainer center={center} zoom={zoom} scrollWheelZoom={false} style={{ height: '100%', width: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -63,13 +60,13 @@ export default function MapView({ schools }) {
           <Marker key={s.id} position={[s.lat, s.lng]}>
             <Popup>
               <div style={{ minWidth: 180 }}>
-                <strong>{s.name}</strong>
-                <div style={{ fontSize: 12, color: '#666', marginTop: 2 }}>
+                <span className="map-popup-title">{s.name}</span>
+                <div className="map-popup-sub">
                   {s.region}{s.city ? ' · ' + s.city : ''}
                 </div>
                 <Link
                   to={prefix + '/schools/' + s.id}
-                  style={{ display: 'inline-block', marginTop: 8, color: '#2D8B7A', fontWeight: 600, fontSize: 13 }}
+                  className="map-popup-link"
                 >
                   {t('schools.viewDetails')} →
                 </Link>

@@ -4,6 +4,7 @@ import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost, apiPut } from '../api.js';
 import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
+import Icon from '../components/Icon.jsx';
 
 const STATUS_KEY = {
   pending:       'track.statusPending',
@@ -46,7 +47,7 @@ export default function Account() {
       <section className="section">
         <div className="container" style={{ maxWidth: 540 }}>
           <EmptyState
-            icon="🔑"
+            icon={<Icon name="user" size={48} color="var(--forest-500)" />}
             title={t('account.signinRequired')}
             body={t('account.signinHint')}
             action={<Link className="btn btn-primary btn-lg" to={prefix + '/auth'}>{t('auth.signin')} →</Link>}
@@ -72,18 +73,17 @@ export default function Account() {
     <section className="section">
       <div className="container" style={{ maxWidth: 760 }}>
         {/* Header */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 32 }}>
-          <div style={{
-            width: 56, height: 56, borderRadius: '50%',
-            background: 'linear-gradient(135deg, var(--teal), var(--teal-dark))',
-            color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center',
-            fontWeight: 700, fontSize: 22, flexShrink: 0,
-          }}>
-            {initial}
-          </div>
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--space-4)',
+          marginBottom: 'var(--space-7)',
+          flexWrap: 'wrap',
+        }}>
+          <div className="account-avatar">{initial}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontSize: 28, marginBottom: 2 }}>{username}</h1>
-            <div style={{ color: 'var(--gray-500)', fontSize: 14 }}>{user.email}</div>
+            <h1 style={{ fontSize: 'var(--fs-h2)', marginBottom: 2 }}>{username}</h1>
+            <div style={{ color: 'var(--text-subtle)', fontSize: 'var(--fs-sm)' }}>{user.email}</div>
           </div>
           <button
             onClick={() => setEditing((v) => !v)}
@@ -91,7 +91,7 @@ export default function Account() {
           >
             {editing ? t('common.cancel') : t('account.editProfile')}
           </button>
-          <button onClick={logout} className="btn btn-secondary btn-sm">{t('nav.logout')}</button>
+          <button onClick={logout} className="btn btn-ghost btn-sm">{t('nav.logout')}</button>
         </div>
 
         {editing && (
@@ -127,13 +127,13 @@ export default function Account() {
 
         {donations !== null && !error && (
           <>
-            <h2 style={{ fontSize: 20, marginBottom: 12, marginTop: 16 }}>
+            <h2 style={{ fontSize: 'var(--fs-h3)', marginBottom: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
               {t('account.activeDonations')}
-              <span style={{ color: 'var(--gray-500)', fontWeight: 500, marginLeft: 8 }}>· {active.length}</span>
+              <span style={{ color: 'var(--text-subtle)', fontWeight: 'var(--fw-medium)', marginLeft: 'var(--space-2)' }}>· {active.length}</span>
             </h2>
             {active.length === 0 ? (
               <EmptyState
-                icon="📚"
+                icon={<Icon name="book" size={48} color="var(--forest-500)" />}
                 title={t('account.noActive')}
                 body={t('account.noActiveSub')}
                 action={<Link to={prefix + '/donate'} className="btn btn-primary">{t('home.ctaPrimary')}</Link>}
@@ -142,12 +142,12 @@ export default function Account() {
               <DonationList items={active} prefix={prefix} t={t} cancellable onCancel={cancel} />
             )}
 
-            <h2 style={{ fontSize: 20, marginBottom: 12, marginTop: 32 }}>
+            <h2 style={{ fontSize: 'var(--fs-h3)', marginBottom: 'var(--space-3)', marginTop: 'var(--space-7)' }}>
               {t('account.history')}
-              <span style={{ color: 'var(--gray-500)', fontWeight: 500, marginLeft: 8 }}>· {history.length}</span>
+              <span style={{ color: 'var(--text-subtle)', fontWeight: 'var(--fw-medium)', marginLeft: 'var(--space-2)' }}>· {history.length}</span>
             </h2>
             {history.length === 0 ? (
-              <p style={{ color: 'var(--gray-500)' }}>—</p>
+              <p style={{ color: 'var(--text-subtle)' }}>—</p>
             ) : (
               <DonationList items={history} prefix={prefix} t={t} />
             )}
@@ -189,8 +189,8 @@ function ProfileEditor({ profile, onSaved, onCancel, t, currentLang, setLang }) 
   }
 
   return (
-    <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
-      <h3 style={{ marginBottom: 16 }}>{t('account.editProfile')}</h3>
+    <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
+      <h3 style={{ marginBottom: 'var(--space-4)' }}>{t('account.editProfile')}</h3>
       <form className="form" onSubmit={submit}>
         <label>{t('auth.username')}</label>
         <input
@@ -214,8 +214,8 @@ function ProfileEditor({ profile, onSaved, onCancel, t, currentLang, setLang }) 
 
         {err && <div className="error">{err}</div>}
 
-        <div style={{ display: 'flex', gap: 12, marginTop: 8 }}>
-          <button type="button" className="btn btn-secondary" onClick={onCancel}>{t('common.cancel')}</button>
+        <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-2)' }}>
+          <button type="button" className="btn btn-ghost" onClick={onCancel}>{t('common.cancel')}</button>
           <button type="submit" className="btn btn-primary" disabled={busy}>
             {busy ? '…' : t('common.save')}
           </button>
@@ -233,10 +233,10 @@ function DonationList({ items, prefix, t, cancellable, onCancel }) {
         const bookCount = (d.donation_items || []).reduce((s, i) => s + (i.quantity || 0), 0);
         return (
           <div key={d.id} className="row-item" style={{ flexWrap: 'wrap' }}>
-            <Link to={prefix + '/track/' + d.track_token} className="row-item-main" style={{ color: 'var(--ink)' }}>
+            <Link to={prefix + '/track/' + d.track_token} className="row-item-main" style={{ color: 'var(--text-default)', textDecoration: 'none' }}>
               <div className="row-item-title">
                 #{d.id.slice(0, 8)} ·{' '}
-                <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>
+                <span style={{ color: 'var(--text-muted)', fontWeight: 'var(--fw-medium)' }}>
                   {bookCount} {bookCount === 1 ? t('home.leaderboardBookOne') : t('home.leaderboardBookMany')}
                 </span>
               </div>
@@ -244,10 +244,10 @@ function DonationList({ items, prefix, t, cancellable, onCancel }) {
                 {new Date(d.created_at).toLocaleDateString()} · {itemCount} {t('account.lineItems')}
               </div>
             </Link>
-            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
               <span className={'badge ' + d.status}>{t(STATUS_KEY[d.status] || 'common.errorTitle')}</span>
               {cancellable && (
-                <button className="btn btn-secondary btn-sm" onClick={() => onCancel(d.id)}>
+                <button className="btn btn-ghost btn-sm" onClick={() => onCancel(d.id)}>
                   {t('account.cancelDonation')}
                 </button>
               )}

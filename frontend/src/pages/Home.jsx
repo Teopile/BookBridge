@@ -4,6 +4,8 @@ import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Leaderboard from '../components/Leaderboard.jsx';
 import Activity from '../components/Activity.jsx';
+import Icon from '../components/Icon.jsx';
+import Logo from '../components/Logo.jsx';
 
 const SAMPLE_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -16,6 +18,26 @@ const SAMPLE_SCHOOLS = [
   { id: 'sample-2', name: 'School #4 · Khulo',     region: 'Adjara',              need_pct: 34, urgent: false, photo: SAMPLE_PHOTOS[1] },
   { id: 'sample-3', name: 'School #2 · Kareli',    region: 'Shida Kartli',        need_pct: 82, urgent: false, photo: SAMPLE_PHOTOS[2] },
 ];
+
+// Render a row of book icons: filled = found, outlined = still needed.
+function BookProgress({ pct }) {
+  const total = 8;
+  const filled = Math.max(0, Math.min(total, Math.round((pct / 100) * total)));
+  return (
+    <div className="progress-books-row" aria-label={pct + '%'}>
+      {Array.from({ length: total }).map((_, i) => (
+        <Icon
+          key={i}
+          name="book"
+          size={14}
+          color={i < filled ? 'var(--honey-400)' : 'var(--border-default)'}
+          fill={i < filled ? 'var(--honey-400)' : 'none'}
+          stroke={1.5}
+        />
+      ))}
+    </div>
+  );
+}
 
 export default function Home() {
   const { t, lang } = useT();
@@ -46,6 +68,9 @@ export default function Home() {
       {/* HERO */}
       <section className="hero">
         <div className="hero-inner">
+          <div className="hero-illustration">
+            <Logo size={120} withWordmark={false} />
+          </div>
           <h1>{t('home.heroTitle')}</h1>
           <p>{t('home.heroSub')}</p>
           <div className="hero-actions">
@@ -69,16 +94,25 @@ export default function Home() {
           </div>
           <div className="steps">
             <div className="step">
+              <div className="step-icon">
+                <Icon name="search" size={28} />
+              </div>
               <div className="step-num">1</div>
               <h3>{t('home.step1Title')}</h3>
               <p>{t('home.step1Body')}</p>
             </div>
             <div className="step">
+              <div className="step-icon">
+                <Icon name="gift" size={28} />
+              </div>
               <div className="step-num">2</div>
               <h3>{t('home.step2Title')}</h3>
               <p>{t('home.step2Body')}</p>
             </div>
             <div className="step">
+              <div className="step-icon">
+                <Icon name="truck" size={28} />
+              </div>
               <div className="step-num">3</div>
               <h3>{t('home.step3Title')}</h3>
               <p>{t('home.step3Body')}</p>
@@ -104,12 +138,11 @@ export default function Home() {
                   <h3>{s.name}</h3>
                   <div className="school-region">{s.region}</div>
                   <div className="progress">
-                    <div className="progress-meta">
-                      <span>{t('home.fulfilledLabel')}</span>
-                      <strong>{s.need_pct}%</strong>
+                    <div className="progress-books">
+                      <BookProgress pct={s.need_pct} />
                     </div>
-                    <div className="progress-bar">
-                      <div className="progress-fill" style={{ width: s.need_pct + '%' }} />
+                    <div className="progress-books-label">
+                      {t('home.fulfilledLabel')} · {s.need_pct}%
                     </div>
                   </div>
                 </div>
@@ -119,7 +152,7 @@ export default function Home() {
               </Link>
             ))}
           </div>
-          <div style={{ textAlign: 'center', marginTop: 32 }}>
+          <div style={{ textAlign: 'center', marginTop: 'var(--space-7)' }}>
             <Link to={prefix + '/schools'} className="btn btn-ghost">{t('home.viewAllSchools')}</Link>
           </div>
         </div>

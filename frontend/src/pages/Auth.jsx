@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { apiPost } from '../api.js';
+import Icon from '../components/Icon.jsx';
 
 export default function Auth() {
   const { t, lang } = useT();
@@ -73,10 +74,13 @@ export default function Auth() {
     return (
       <section className="section">
         <div className="card">
-          <h1 style={{ fontSize: 32, marginBottom: 8 }}>
+          <div style={{ textAlign: 'center', marginBottom: 'var(--space-5)' }}>
+            <Icon name="mailEnvelope" size={56} color="var(--forest-600)" />
+          </div>
+          <h1 style={{ fontSize: 'var(--fs-h2)', marginBottom: 'var(--space-2)', textAlign: 'center' }}>
             {t('auth.verifyTitle')}
           </h1>
-          <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-6)', textAlign: 'center' }}>
             {t('auth.verifySub')} <strong>{pendingEmail}</strong>
           </p>
 
@@ -86,7 +90,14 @@ export default function Auth() {
               id="auth-otp"
               type="text" inputMode="numeric" pattern="[0-9]{6,10}" minLength={6} maxLength={10} required
               value={form.otp} onChange={(e) => set('otp', e.target.value.replace(/\D/g, ''))}
-              style={{ letterSpacing: 6, fontSize: 22, textAlign: 'center', fontFamily: 'monospace' }}
+              style={{
+                letterSpacing: 6,
+                fontSize: 28,
+                textAlign: 'center',
+                fontFamily: 'monospace',
+                minHeight: 64,
+                borderRadius: 'var(--r-md)',
+              }}
               autoFocus
             />
             {err && <div className="error">{err}</div>}
@@ -96,14 +107,22 @@ export default function Auth() {
             <button
               type="button"
               onClick={resendOtp}
-              style={{ background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 600, cursor: 'pointer', padding: '8px 0' }}
+              className="btn btn-ghost btn-sm"
+              style={{ alignSelf: 'center' }}
             >
               {t('auth.resendCode')}
             </button>
             <button
               type="button"
               onClick={() => { setMode('signin'); setPendingEmail(null); setErr(null); }}
-              style={{ background: 'none', border: 'none', color: 'var(--gray-500)', fontSize: 13, cursor: 'pointer', padding: '8px 0' }}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-subtle)',
+                fontSize: 'var(--fs-sm)',
+                cursor: 'pointer',
+                padding: 'var(--space-2) 0',
+              }}
             >
               ← {t('auth.backToSignin')}
             </button>
@@ -116,14 +135,22 @@ export default function Auth() {
   return (
     <section className="section">
       <div className="card">
-        <h1 style={{ fontSize: 32, marginBottom: 8 }}>
+        <h1 style={{ fontSize: 'var(--fs-h2)', marginBottom: 'var(--space-2)' }}>
           {mode === 'signin' ? t('auth.signin') : t('auth.signup')}
         </h1>
-        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-6)' }}>
           {mode === 'signin' ? t('auth.noAccount') : t('auth.haveAccount')}{' '}
           <button
             onClick={() => { setMode(mode === 'signin' ? 'signup' : 'signin'); setErr(null); }}
-            style={{ background: 'none', border: 'none', color: 'var(--teal)', fontWeight: 700, cursor: 'pointer', padding: '4px 2px' }}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: 'var(--forest-600)',
+              fontWeight: 'var(--fw-bold)',
+              cursor: 'pointer',
+              padding: '4px 2px',
+              textDecoration: 'underline',
+            }}
           >
             {mode === 'signin' ? t('auth.signup') : t('auth.signin')}
           </button>
@@ -143,7 +170,15 @@ export default function Auth() {
               {busy ? '…' : t('auth.signin')}
             </button>
 
-            <Link to={'/' + lang + '/auth/forgot'} style={{ color: 'var(--gray-500)', fontSize: 13, textAlign: 'center', padding: '8px 0' }}>
+            <Link
+              to={'/' + lang + '/auth/forgot'}
+              style={{
+                color: 'var(--text-subtle)',
+                fontSize: 'var(--fs-sm)',
+                textAlign: 'center',
+                padding: 'var(--space-2) 0',
+              }}
+            >
               {t('auth.forgotPassword')}
             </Link>
           </form>

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import Icon from '../components/Icon.jsx';
 
 export default function Dashboard() {
   const { t } = useT();
@@ -32,14 +33,16 @@ export default function Dashboard() {
           <div className="mission-grid">
             {regions.map((r) => (
               <div key={r.region} className="mission-card">
-                <span className="mc-icon">🏔️</span>
+                <span className="mc-icon">
+                  <Icon name="mountain" size={22} />
+                </span>
                 <h4>{r.region}</h4>
                 <p>{r.count} schools</p>
               </div>
             ))}
             {regions.length === 0 && (
-              <div className="card" style={{ gridColumn: '1/-1' }}>
-                <p style={{ color: 'var(--gray-500)', textAlign: 'center' }}>
+              <div className="card" style={{ gridColumn: '1/-1', maxWidth: 'none' }}>
+                <p style={{ color: 'var(--text-subtle)', textAlign: 'center', margin: 0 }}>
                   No regions yet — once schools are approved they'll appear here.
                 </p>
               </div>

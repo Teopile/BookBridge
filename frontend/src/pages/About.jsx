@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
+import Icon from '../components/Icon.jsx';
 
 const HERO_PHOTO = 'https://picsum.photos/seed/bb-about/1200/450';
 
@@ -9,30 +10,68 @@ export default function About() {
 
   return (
     <section className="section">
-      <div className="container" style={{ maxWidth: 760 }}>
-        <div style={{
-          aspectRatio: '3 / 1',
-          borderRadius: 14,
-          overflow: 'hidden',
-          marginBottom: 32,
-          background: 'var(--gray-100)',
-          position: 'relative',
-        }}>
-          <img src={HERO_PHOTO} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      <div className="container container-narrow">
+        <div className="page-banner">
+          <img src={HERO_PHOTO} alt="" />
         </div>
 
-        <h1 style={{ marginBottom: 16 }}>{t('about.title')}</h1>
-        <p style={{ color: 'var(--gray-700)', fontSize: 17, lineHeight: 1.7, marginBottom: 24 }}>
-          {t('about.p1')}
-        </p>
-        <p style={{ color: 'var(--gray-700)', fontSize: 17, lineHeight: 1.7, marginBottom: 24 }}>
-          {t('about.p2')}
-        </p>
-        <p style={{ color: 'var(--gray-700)', fontSize: 17, lineHeight: 1.7, marginBottom: 40 }}>
-          {t('about.p3')}
-        </p>
+        <h1 style={{ marginBottom: 'var(--space-4)' }}>{t('about.title')}</h1>
 
-        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+          <div style={{
+            flexShrink: 0,
+            width: 40, height: 40,
+            background: 'var(--honey-50)',
+            color: 'var(--forest-600)',
+            borderRadius: 'var(--r-sm)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Icon name="sparkle" size={22} />
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: 'var(--fs-md)', lineHeight: 'var(--lh-relaxed)', margin: 0 }}>
+            {t('about.p1')}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
+          <div style={{
+            flexShrink: 0,
+            width: 40, height: 40,
+            background: 'var(--honey-50)',
+            color: 'var(--forest-600)',
+            borderRadius: 'var(--r-sm)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Icon name="bookOpen" size={22} />
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: 'var(--fs-md)', lineHeight: 'var(--lh-relaxed)', margin: 0 }}>
+            {t('about.p2')}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)', marginBottom: 'var(--space-8)' }}>
+          <div style={{
+            flexShrink: 0,
+            width: 40, height: 40,
+            background: 'var(--honey-50)',
+            color: 'var(--forest-600)',
+            borderRadius: 'var(--r-sm)',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}>
+            <Icon name="heart" size={22} fill="currentColor" stroke={0} />
+          </div>
+          <p style={{ color: 'var(--text-muted)', fontSize: 'var(--fs-md)', lineHeight: 'var(--lh-relaxed)', margin: 0 }}>
+            {t('about.p3')}
+          </p>
+        </div>
+
+        <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
           <Link to={prefix + '/donate'} className="btn btn-primary btn-lg">
             {t('home.ctaPrimary')}
           </Link>

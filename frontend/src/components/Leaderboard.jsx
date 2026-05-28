@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
-
-const RANK_BADGE = ['🥇', '🥈', '🥉'];
+import Icon from './Icon.jsx';
 
 export default function Leaderboard({ limit = 10 }) {
   const { t, lang } = useT();
@@ -22,7 +21,10 @@ export default function Leaderboard({ limit = 10 }) {
   if (items.length === 0) {
     return (
       <div className="leaderboard-empty">
-        <p style={{ marginBottom: 16 }}>{t('home.leaderboardEmpty')}</p>
+        <div className="leaderboard-empty-icon">
+          <Icon name="medal" size={32} />
+        </div>
+        <p style={{ marginBottom: 'var(--space-4)' }}>{t('home.leaderboardEmpty')}</p>
         <Link to={'/' + lang + '/donate'} className="btn btn-primary">
           {t('home.ctaPrimary')}
         </Link>
@@ -34,7 +36,7 @@ export default function Leaderboard({ limit = 10 }) {
     <ol className="leaderboard">
       {items.map((d, i) => (
         <li key={d.user_id}>
-          <span className="lb-rank">{RANK_BADGE[i] || i + 1}</span>
+          <span className="lb-rank">{i + 1}</span>
           <span className="lb-name">{d.username}</span>
           <span className="lb-count">
             <strong>{d.total_books}</strong>

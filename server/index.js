@@ -22,10 +22,15 @@ const app = express();
 // Behind nginx / Cloudflare: required for express-rate-limit and accurate req.ip.
 app.set('trust proxy', 1);
 
+// Each PUBLIC_*_ORIGIN may hold one origin or a comma-separated list, so the
+// API can serve the custom domain (bookbridge.ge) and the *.vercel.app URLs at once.
 const allowedOrigins = [
   process.env.PUBLIC_FRONTEND_ORIGIN || 'http://localhost:5173',
   process.env.PUBLIC_ADMIN_ORIGIN || 'http://localhost:5174',
-];
+]
+  .flatMap((v) => v.split(','))
+  .map((o) => o.trim())
+  .filter(Boolean);
 app.use(cors({
   origin(origin, cb) {
     if (!origin || allowedOrigins.includes(origin)) return cb(null, true);

@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import Nav from './components/Nav.jsx';
 import Footer from './components/Footer.jsx';
+import ErrorBoundary from './components/ErrorBoundary.jsx';
 import { useDocumentTitle } from './hooks/useDocumentTitle.js';
 
 // Eager-loaded — public landing surface, first visit hits one of these.
@@ -63,13 +64,15 @@ export default function App() {
     <>
       <Nav />
       <main>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Navigate to="/en" replace />} />
-            <Route path="/:lang/*" element={<LangGuard><LocalizedRoutes /></LangGuard>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/en" replace />} />
+              <Route path="/:lang/*" element={<LangGuard><LocalizedRoutes /></LangGuard>} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </main>
       <Footer />
     </>

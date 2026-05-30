@@ -4,7 +4,11 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { I18nProvider } from './i18n/I18nContext.jsx';
 import { AuthProvider } from './hooks/useAuth.jsx';
+import { initErrorReporter } from './errorReporter.js';
 import './styles/global.css';
+
+// Env-gated, dependency-free error reporting. No-op unless VITE_ERROR_WEBHOOK is set.
+initErrorReporter();
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

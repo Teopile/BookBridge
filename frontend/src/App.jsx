@@ -18,6 +18,11 @@ const About         = lazy(() => import('./pages/About.jsx'));
 const Search        = lazy(() => import('./pages/Search.jsx'));
 const Track         = lazy(() => import('./pages/Track.jsx'));
 
+// Lazy-loaded — legal / compliance pages.
+const Privacy       = lazy(() => import('./pages/Privacy.jsx'));
+const Terms         = lazy(() => import('./pages/Terms.jsx'));
+const Cookies       = lazy(() => import('./pages/Cookies.jsx'));
+
 // Lazy-loaded — authed surface.
 const Auth            = lazy(() => import('./pages/Auth.jsx'));
 const ForgotPassword  = lazy(() => import('./pages/ForgotPassword.jsx'));
@@ -84,6 +89,9 @@ function LocalizedRoutes() {
         <Route path="donate-money" element={<DonateMoney />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="about" element={<About />} />
+        <Route path="privacy" element={<Privacy />} />
+        <Route path="terms" element={<Terms />} />
+        <Route path="cookies" element={<Cookies />} />
         <Route path="search" element={<Search />} />
         <Route path="track/:token" element={<Track />} />
         <Route path="auth" element={<Auth />} />

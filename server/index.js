@@ -94,8 +94,34 @@ app.use('/api/admin/donations', adminDonationsRoutes);
 
 app.use('/api', (_req, res) => res.status(404).json({ error: 'not_found' }));
 
-app.use((err, _req, res, _next) => {
+// Env-gated, dependency-free error reporting. POSTs to ERROR_WEBHOOK if set,
+// otherwise this is a no-op and behavior is unchanged. Fire-and-forget so it
+// never delays or blocks the client response.
+function reportError(err, req) {
+  const webhook = process.env.ERROR_WEBHOOK;
+  if (!webhook) return;
+  try {
+    fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        kind: 'server_error',
+        message: err?.message || 'internal_error',
+        status: err?.status || 500,
+        stack: err?.stack,
+        method: req?.method,
+        path: req?.originalUrl || req?.url,
+        ts: new Date().toISOString(),
+      }),
+    }).catch(() => {});
+  } catch {
+    // Never let the reporter itself break error handling.
+  }
+}
+
+app.use((err, req, res, _next) => {
   console.error('[server] error:', err);
+  reportError(err, req);
   res.status(err.status || 500).json({ error: err.message || 'internal_error' });
 });
 

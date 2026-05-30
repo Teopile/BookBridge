@@ -93,6 +93,19 @@ export async function createDonation(donorUserId, payload) {
   return created;
 }
 
+// Attach courier details after a shipment is booked. Kept separate from
+// createDonation so the donation is durable even when courier booking fails.
+export async function setDonationCourier(donationId, provider, trackingId) {
+  const { data, error } = await supabaseAdmin
+    .from('donations')
+    .update({ courier_provider: provider, courier_tracking_id: trackingId })
+    .eq('id', donationId)
+    .select()
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 export async function getDonation(id) {
   const { data, error } = await supabaseAdmin
     .from('donations')

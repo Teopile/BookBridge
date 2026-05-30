@@ -174,6 +174,7 @@ export default {
     mission: 'Mission', newsletter: 'Newsletter', contact: 'Contact',
     rights: '© 2026 BookBridge · Georgia',
     tagline: 'Your book is awaited in the mountains',
+    legal: 'Legal', privacy: 'Privacy Policy', terms: 'Terms of Service', cookies: 'Cookie Policy',
   },
   auth: {
     signin: 'Sign in',
@@ -297,5 +298,89 @@ export default {
   },
   notFound: {
     body: 'This page got lost in the mountains.',
+  },
+  legal: {
+    eyebrow: 'Legal',
+    templateNotice: 'Template — review with a qualified lawyer before launch.',
+    lastUpdated: 'Last updated: {date}',
+    privacyTitle: 'Privacy Policy',
+    termsTitle: 'Terms of Service',
+    cookiesTitle: 'Cookie Policy',
+  },
+  privacy: {
+    intro:
+      'BookBridge is a Georgian nonprofit that helps people donate books to highland schools. This policy explains what personal data we collect, why we collect it, and the choices you have. We try to collect as little as possible.',
+    collectHeading: 'What data we collect',
+    collectBody: 'When you use BookBridge we may collect the following:',
+    whyHeading: 'Why we collect it',
+    whyBody: 'We use your data only to run the book-donation service:',
+    legalBasisHeading: 'Legal basis',
+    legalBasisBody: 'We process your personal data on one or more of these grounds:',
+    storageHeading: 'Where your data is stored',
+    storageBody:
+      'Your data is stored in our database hosted on Supabase (PostgreSQL, authentication, and file storage). Access is restricted to BookBridge and the service providers listed below, and is protected by authentication and access controls.',
+    thirdPartiesHeading: 'Who we share it with',
+    thirdPartiesBody:
+      'We do not sell your personal data. We share it only with service providers that help us run BookBridge, and only as needed:',
+    thirdPartiesNote:
+      'These providers process data on our behalf under their own security and privacy terms. Some may store data outside Georgia.',
+    retentionHeading: 'How long we keep it',
+    retentionBody:
+      'We keep your account and donation records for as long as your account is active and as long as we need them for the purposes above, or as required by law. When you ask us to delete your account, we remove your personal data except where we are legally required to keep certain records.',
+    rightsHeading: 'Your rights',
+    rightsBody: 'You have the right to:',
+    rightsHow:
+      'To exercise any of these rights, email us at {email}. We may need to verify your identity before acting on a request.',
+    childrenHeading: "Children's data",
+    childrenBody:
+      'Children use BookBridge, and we care about their privacy. We ask that an adult set up and manage any account, and we collect only the minimum information needed to deliver books. If you believe a child has given us personal data without appropriate consent, contact us and we will delete it.',
+    contactHeading: 'Contact us',
+    contactBody: 'For any privacy question or request, email us at',
+  },
+  terms: {
+    intro:
+      'These Terms of Service govern your use of BookBridge. Please read them carefully. By using the site you agree to these terms.',
+    acceptanceHeading: 'Acceptance of terms',
+    acceptanceBody:
+      'By creating an account or using BookBridge in any way, you agree to these terms and to our Privacy Policy and Cookie Policy. If you do not agree, please do not use the service.',
+    eligibilityHeading: 'Eligibility',
+    eligibilityBody:
+      'You may use BookBridge to browse and learn at any age. To create an account, make a donation, or arrange a courier, you should be an adult or have the permission and supervision of a parent or guardian.',
+    donationsHeading: 'Donations are gifts',
+    donationsBody:
+      'Book donations made through BookBridge are voluntary gifts to the schools you choose. Please note:',
+    acceptableUseHeading: 'Acceptable use',
+    acceptableUseBody: 'When using BookBridge, you agree that you will not:',
+    accountsHeading: 'Your account',
+    accountsBody:
+      'You are responsible for keeping your login details secure and for activity that happens under your account. Tell us promptly if you think your account has been used without your permission. We may suspend or close accounts that break these terms.',
+    liabilityHeading: 'Disclaimer and liability',
+    liabilityBody:
+      'BookBridge is provided "as is" and "as available". We work hard to keep it running and to deliver donated books, but we cannot guarantee that the service will always be uninterrupted or error-free. To the fullest extent allowed by law, BookBridge is not liable for indirect or consequential loss arising from your use of the service.',
+    governingLawHeading: 'Governing law',
+    governingLawBody:
+      'These terms are governed by the laws of Georgia. Any dispute relating to them will be subject to the courts of Georgia.',
+    changesHeading: 'Changes to these terms',
+    changesBody:
+      'We may update these terms from time to time. When we make material changes, we will update the date at the top of this page. Continuing to use BookBridge after changes take effect means you accept the updated terms.',
+    contactHeading: 'Contact us',
+    contactBody: 'Questions about these terms? Email us at',
+  },
+  cookies: {
+    intro:
+      'This Cookie Policy explains how BookBridge uses cookies. In short: we use only the cookies needed to make the site work and keep it secure. We do not use advertising or cross-site tracking cookies.',
+    whatHeading: 'What cookies are',
+    whatBody:
+      'Cookies are small files a website stores in your browser. They let a site remember things between pages and visits — for example that you are signed in.',
+    essentialHeading: 'Essential cookies only',
+    essentialBody:
+      'We use a small number of strictly necessary cookies. Without them the site cannot work properly:',
+    noTrackingHeading: 'No ad tracking',
+    noTrackingBody:
+      'We do not use advertising cookies, and we do not track you across other websites. We do not sell your data to advertisers.',
+    controlHeading: 'How to control cookies',
+    controlBody: 'You are in control of cookies in your browser:',
+    contactHeading: 'Contact us',
+    contactBody: 'Questions about cookies? Email us at',
   },
 };

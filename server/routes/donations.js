@@ -4,7 +4,7 @@ import { csrfProtection } from '../middleware/csrf.js';
 import { requireAuth } from '../middleware/auth.js';
 import { requireAdmin } from '../middleware/rbac.js';
 import {
-  createDonation, getDonation, getDonationByTrackToken,
+  createDonation, setDonationCourier, getDonation, getDonationByTrackToken,
   listDonationsForUser, updateDonationStatus, getSchoolById, recordNotification,
   listAllDonations, cancelDonation, getDonorContact,
 } from '../db/store.js';
@@ -20,20 +20,27 @@ function trackUrlFor(token) {
 
 router.post('/', csrfProtection, requireAuth, validate(DonationCreateSchema), async (req, res, next) => {
   try {
-    let payload = { ...req.body };
+    const payload = { ...req.body };
 
+    // Persist the donation FIRST so a failing courier provider can never lose it.
+    let created = await createDonation(req.user.id, payload);
+
+    // Best-effort courier booking. On failure we keep the donation (tracking id
+    // stays null) and log the error rather than rejecting the request.
     if (payload.delivery_method === 'courier') {
-      const ship = await createShipment({
-        origin: payload.volunteer_school_id,
-        destination: payload.beneficiary_school_id,
-        items: payload.items,
-        donorContact: { user_id: req.user.id, address: payload.donor_address },
-      });
-      payload.courier_provider = ship.provider;
-      payload.courier_tracking_id = ship.tracking_id;
+      try {
+        const ship = await createShipment({
+          origin: payload.volunteer_school_id,
+          destination: payload.beneficiary_school_id,
+          items: payload.items,
+          donorContact: { user_id: req.user.id, address: payload.donor_address },
+        });
+        created = await setDonationCourier(created.id, ship.provider, ship.tracking_id);
+      } catch (e) {
+        console.error('[donations] courier shipment booking failed:', e.message);
+      }
     }
 
-    const created = await createDonation(req.user.id, payload);
     const url = trackUrlFor(created.track_token);
     const tpl = Templates.donationConfirmed({ donationId: created.id, trackUrl: url, lang: req.user.language });
     try {

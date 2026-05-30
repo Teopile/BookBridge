@@ -70,6 +70,13 @@ export default function Footer() {
               <a href={facebook} target="_blank" rel="noopener noreferrer">Facebook</a>
             )}
           </div>
+
+          <div className="footer-col">
+            <h5>{t('footer.legal')}</h5>
+            <Link to={prefix + '/privacy'}>{t('footer.privacy')}</Link>
+            <Link to={prefix + '/terms'}>{t('footer.terms')}</Link>
+            <Link to={prefix + '/cookies'}>{t('footer.cookies')}</Link>
+          </div>
         </div>
 
         <div className="footer-bottom">

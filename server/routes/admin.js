@@ -96,7 +96,7 @@ router.put('/content', csrfProtection, requireAuth, requireAdmin, validate(SiteC
   } catch (err) { next(err); }
 });
 
-router.get('/nearest-volunteer', validate(NearestVolunteerSchema, 'query'), async (req, res, next) => {
+router.get('/nearest-volunteer', requireAuth, requireAdmin, validate(NearestVolunteerSchema, 'query'), async (req, res, next) => {
   try {
     const data = await nearestVolunteerSchools(req.query.lat, req.query.lng, req.query.limit);
     res.json(data);

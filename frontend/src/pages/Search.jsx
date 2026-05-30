@@ -33,7 +33,9 @@ export default function Search() {
     if (!q) { setSearchResults(null); return; }
     const handle = setTimeout(() => {
       apiGet(`/api/search?q=${encodeURIComponent(q)}&type=${type}`)
-        .then(setSearchResults).catch(() => setSearchResults(null));
+        .then(setSearchResults)
+        // On error, show "no results" rather than an endless skeleton.
+        .catch(() => setSearchResults({ schools: [], books: [] }));
     }, 250);
     return () => clearTimeout(handle);
   }, [q, type]);
@@ -150,7 +152,7 @@ function SchoolGrid({ items, prefix, t }) {
       {items.map((s, i) => (
         <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
           <div className="school-photo">
-            <img src={photoFor(s, i)} alt={s.name} loading="lazy" />
+            <img src={photoFor(s, i)} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
             <span className="school-badge">{t('schools.' + s.type)}</span>
           </div>
           <div className="school-body">

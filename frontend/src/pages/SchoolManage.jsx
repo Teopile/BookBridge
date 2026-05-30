@@ -6,7 +6,7 @@ import { apiGet, apiPost, apiPut, apiDelete } from '../api.js';
 import PhotoUpload from '../components/PhotoUpload.jsx';
 import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
 
-const BANNER = 'https://picsum.photos/seed/bb-manage/1200/420';
+const BANNER = 'https://picsum.photos/seed/bb-manage/900/300';
 
 export default function SchoolManage() {
   const { t, lang } = useT();
@@ -61,7 +61,7 @@ export default function SchoolManage() {
     <section className="section">
       <div className="container" style={{ maxWidth: 760 }}>
         <div className="page-banner">
-          <img src={BANNER} alt="" />
+          <img src={BANNER} alt="" width={900} height={300} loading="lazy" decoding="async" />
           <div className="page-banner-overlay" />
           <div className="page-banner-content">
             <div className="page-banner-eyebrow">{t('schoolManage.eyebrow')}</div>

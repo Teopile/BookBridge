@@ -23,6 +23,7 @@ export default function Account() {
   const [donations, setDonations] = useState(null);
   const [error, setError] = useState(null);
   const [editing, setEditing] = useState(false);
+  const [cancellingId, setCancellingId] = useState(null);
 
   function loadDonations() {
     setError(null);
@@ -33,10 +34,12 @@ export default function Account() {
 
   async function cancel(donationId) {
     if (!confirm(t('account.confirmCancel'))) return;
+    setCancellingId(donationId);
     try {
       await apiPost('/api/donations/' + donationId + '/cancel', {});
       loadDonations();
     } catch (e) { alert(e.message); }
+    finally { setCancellingId(null); }
   }
 
   if (authLoading) {
@@ -139,7 +142,7 @@ export default function Account() {
                 action={<Link to={prefix + '/donate'} className="btn btn-primary">{t('home.ctaPrimary')}</Link>}
               />
             ) : (
-              <DonationList items={active} prefix={prefix} t={t} cancellable onCancel={cancel} />
+              <DonationList items={active} prefix={prefix} t={t} cancellable onCancel={cancel} cancellingId={cancellingId} />
             )}
 
             <h2 style={{ fontSize: 'var(--fs-h3)', marginBottom: 'var(--space-3)', marginTop: 'var(--space-7)' }}>
@@ -225,7 +228,7 @@ function ProfileEditor({ profile, onSaved, onCancel, t, currentLang, setLang }) 
   );
 }
 
-function DonationList({ items, prefix, t, cancellable, onCancel }) {
+function DonationList({ items, prefix, t, cancellable, onCancel, cancellingId }) {
   return (
     <div className="row-list">
       {items.map((d) => {
@@ -247,8 +250,8 @@ function DonationList({ items, prefix, t, cancellable, onCancel }) {
             <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'center' }}>
               <span className={'badge ' + d.status}>{t(STATUS_KEY[d.status] || 'common.errorTitle')}</span>
               {cancellable && (
-                <button className="btn btn-ghost btn-sm" onClick={() => onCancel(d.id)}>
-                  {t('account.cancelDonation')}
+                <button className="btn btn-ghost btn-sm" disabled={cancellingId === d.id} onClick={() => onCancel(d.id)}>
+                  {cancellingId === d.id ? '…' : t('account.cancelDonation')}
                 </button>
               )}
             </div>

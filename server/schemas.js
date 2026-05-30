@@ -42,7 +42,9 @@ export const BookRequestSchema = z.object({
 });
 
 export const DonationCreateSchema = z.object({
-  beneficiary_school_id: z.string().uuid().optional(),
+  // A donation must always target a beneficiary school — otherwise it can never
+  // reach a recipient and breaks tracking, notifications, and admin display.
+  beneficiary_school_id: z.string().uuid(),
   volunteer_school_id: z.string().uuid().optional(),
   delivery_method: z.enum(['self', 'courier']),
   donor_address: z.string().max(500).optional(),

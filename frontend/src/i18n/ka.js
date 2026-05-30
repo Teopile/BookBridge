@@ -139,6 +139,7 @@ export default {
     pickVolunteer: 'მოხალისე სკოლა',
     pickOne: 'აირჩიე',
     pickupAddress: 'მისამართი',
+    needAtLeastOneBook: 'დადასტურებამდე დაამატე მინიმუმ ერთი წიგნი.',
     confirm: 'დონაციის დადასტურება',
     cancel: 'გაუქმება',
     next: 'შემდეგი →',

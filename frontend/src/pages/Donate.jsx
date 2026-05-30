@@ -5,9 +5,9 @@ import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost } from '../api.js';
 
 const SAMPLE_PHOTOS = [
-  'https://picsum.photos/seed/bb-school-1/1200/400',
-  'https://picsum.photos/seed/bb-school-2/1200/400',
-  'https://picsum.photos/seed/bb-school-3/1200/400',
+  'https://picsum.photos/seed/bb-school-1/900/225',
+  'https://picsum.photos/seed/bb-school-2/900/225',
+  'https://picsum.photos/seed/bb-school-3/900/225',
 ];
 const photoFor = (id) => {
   if (!id) return SAMPLE_PHOTOS[0];
@@ -68,14 +68,22 @@ export default function Donate() {
     if (!user) { navigate('/' + lang + '/auth?next=/donate'); return; }
     setSubmitting(true); setError(null);
     try {
-      const cleanItems = items.map((i) => {
-        const out = { quantity: Number(i.quantity) || 1 };
-        if (i.matched_request_id) out.matched_request_id = i.matched_request_id;
-        if (i.book_title)         out.book_title = i.book_title;
-        if (i.book_author)        out.book_author = i.book_author;
-        if (i.book_genre)         out.book_genre = i.book_genre;
-        return out;
-      });
+      const cleanItems = items
+        // Drop blank custom rows (no matched request and no title/author/genre).
+        .filter((i) => i.matched_request_id || i.book_title?.trim() || i.book_author?.trim() || i.book_genre?.trim())
+        .map((i) => {
+          const out = { quantity: Number(i.quantity) || 1 };
+          if (i.matched_request_id)    out.matched_request_id = i.matched_request_id;
+          if (i.book_title?.trim())    out.book_title = i.book_title.trim();
+          if (i.book_author?.trim())   out.book_author = i.book_author.trim();
+          if (i.book_genre?.trim())    out.book_genre = i.book_genre.trim();
+          return out;
+        });
+
+      if (cleanItems.length === 0) {
+        setError(t('donate.needAtLeastOneBook'));
+        return; // `finally` resets the submitting flag.
+      }
 
       const payload = { delivery_method: delivery, items: cleanItems };
       if (chosenSchool)                           payload.beneficiary_school_id = chosenSchool;
@@ -107,7 +115,7 @@ export default function Donate() {
       <div className="container container-narrow">
         {/* Soft banner with school photo */}
         <div className="wizard-banner">
-          <img src={photoFor(chosenSchool)} alt="" />
+          <img src={photoFor(chosenSchool)} alt="" width={900} height={225} loading="lazy" decoding="async" />
           <div className="wizard-banner-overlay" />
           <div className="wizard-banner-content">
             <div className="wizard-step-label">
@@ -314,7 +322,13 @@ export default function Donate() {
 
               <div style={{ marginTop: 'var(--space-6)', display: 'flex', gap: 'var(--space-3)' }}>
                 <button className="btn btn-ghost" onClick={() => setStep(2)}>{t('donate.back')}</button>
-                <button className="btn btn-primary" onClick={() => setStep(4)}>{t('donate.next')}</button>
+                <button
+                  className="btn btn-primary"
+                  disabled={delivery === 'courier' && !donorAddress.trim()}
+                  onClick={() => setStep(4)}
+                >
+                  {t('donate.next')}
+                </button>
               </div>
             </>
           )}

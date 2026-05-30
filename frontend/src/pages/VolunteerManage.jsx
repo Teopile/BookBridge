@@ -5,7 +5,7 @@ import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost } from '../api.js';
 import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
 
-const BANNER = 'https://picsum.photos/seed/bb-volunteer/1200/420';
+const BANNER = 'https://picsum.photos/seed/bb-volunteer/900/300';
 
 const STATUS_KEY = {
   pending:       'track.statusPending',
@@ -23,6 +23,7 @@ export default function VolunteerManage() {
   const [selected, setSelected] = useState(null);
   const [donations, setDonations] = useState(null);
   const [error, setError] = useState(null);
+  const [busyId, setBusyId] = useState(null);
 
   useEffect(() => {
     if (!user) return;
@@ -45,10 +46,12 @@ export default function VolunteerManage() {
   useEffect(reload, [selected]);
 
   async function setStatus(donationId, status) {
+    setBusyId(donationId);
     try {
       await apiPost('/api/volunteer/donations/' + donationId + '/status', { status });
       reload();
     } catch (e) { alert(e.message); }
+    finally { setBusyId(null); }
   }
 
   if (authLoading) {
@@ -73,7 +76,7 @@ export default function VolunteerManage() {
     <section className="section">
       <div className="container" style={{ maxWidth: 760 }}>
         <div className="page-banner">
-          <img src={BANNER} alt="" />
+          <img src={BANNER} alt="" width={900} height={300} loading="lazy" decoding="async" />
           <div className="page-banner-overlay" />
           <div className="page-banner-content">
             <div className="page-banner-eyebrow">{t('volunteerManage.eyebrow')}</div>
@@ -137,12 +140,12 @@ export default function VolunteerManage() {
                     </div>
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {d.status === 'pending' && (
-                        <button className="btn btn-primary btn-sm" onClick={() => setStatus(d.id, 'at_volunteer')}>
+                        <button className="btn btn-primary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'at_volunteer')}>
                           ✓ {t('volunteerManage.markReceived')}
                         </button>
                       )}
                       {(d.status === 'pending' || d.status === 'at_volunteer') && (
-                        <button className="btn btn-secondary btn-sm" onClick={() => setStatus(d.id, 'in_transit')}>
+                        <button className="btn btn-secondary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'in_transit')}>
                           🚚 {t('volunteerManage.markShipped')}
                         </button>
                       )}

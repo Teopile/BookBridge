@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Icon from '../components/Icon.jsx';
+import { Loading, ErrorState } from '../components/States.jsx';
 
 // Map (Leaflet + tiles) only loads when the user clicks the Map toggle.
 const MapView = lazy(() => import('../components/MapView.jsx'));
@@ -25,7 +26,8 @@ function photoFor(s, i) {
 export default function Schools({ type }) {
   const { t, lang } = useT();
   const prefix = '/' + lang;
-  const [items, setItems] = useState([]);
+  const [items, setItems] = useState(null);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState(type || 'all');
   const [region, setRegion] = useState('');
   const [regions, setRegions] = useState([]);
@@ -36,16 +38,20 @@ export default function Schools({ type }) {
     apiGet('/api/regions').then(setRegions).catch(() => setRegions([]));
   }, []);
 
-  useEffect(() => {
+  function loadSchools() {
+    setError(null);
+    setItems(null);
     const params = new URLSearchParams();
     if (filter !== 'all') params.set('type', filter);
     if (region)            params.set('region', region);
     const qs = params.toString();
     const url = '/api/schools' + (qs ? '?' + qs : '');
-    apiGet(url).then(setItems).catch(() => setItems([]));
-  }, [filter, region]);
+    apiGet(url).then(setItems).catch((e) => { setItems([]); setError(e.message); });
+  }
 
-  const filtered = items.filter((s) =>
+  useEffect(loadSchools, [filter, region]);
+
+  const filtered = (items || []).filter((s) =>
     !q || s.name?.toLowerCase().includes(q.toLowerCase()) || s.region?.toLowerCase().includes(q.toLowerCase()),
   );
 
@@ -111,13 +117,21 @@ export default function Schools({ type }) {
             <MapView schools={filtered} />
           </Suspense>
         )}
-        {view === 'list' && (
+        {view === 'list' && items === null && !error && (
+          <Loading kind="list" />
+        )}
+
+        {view === 'list' && error && (
+          <ErrorState message={error} onRetry={loadSchools} />
+        )}
+
+        {view === 'list' && items !== null && !error && (
 
         <div className="school-grid">
           {filtered.map((s, i) => (
             <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
               <div className="school-photo">
-                <img src={photoFor(s, i)} alt={s.name} loading="lazy" />
+                <img src={photoFor(s, i)} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
                 <span className="school-badge">{t('schools.' + s.type)}</span>
               </div>
               <div className="school-body">

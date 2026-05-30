@@ -23,7 +23,7 @@ let _pngStatus = 'checking'; // 'checking' | 'loaded' | 'failed'
  *   - When withWordmark is false (decorative hero illustration), the img alt
  *     carries the accessible name.
  */
-export default function Logo({ size = 36, withWordmark = true, wordmarkColor }) {
+export default function Logo({ size = 36, withWordmark = true, wordmarkColor, priority = false }) {
   const [pngStatus, setPngStatus] = useState(_pngStatus);
 
   useEffect(() => {
@@ -45,6 +45,9 @@ export default function Logo({ size = 36, withWordmark = true, wordmarkColor }) 
         className="logo-img"
         width={size}
         height={size}
+        decoding="async"
+        loading={priority ? 'eager' : 'lazy'}
+        fetchpriority={priority ? 'high' : undefined}
       />
       {withWordmark && (
         <span

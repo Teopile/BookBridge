@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Icon from '../components/Icon.jsx';
+import { Loading } from '../components/States.jsx';
 
 const FALLBACK_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/1200/450',
@@ -54,7 +55,7 @@ export default function SchoolDetail() {
             <Icon name="search" size={48} color="var(--forest-500)" />
           </div>
           <h2 style={{ marginBottom: 'var(--space-2)' }}>{t('schools.empty')}</h2>
-          <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-6)' }}>{error}</p>
+          <p style={{ color: 'var(--text-muted)', marginBottom: 'var(--space-6)' }}>{t('schools.emptyHint')}</p>
           <Link to={prefix + '/schools'} className="btn btn-secondary">← {t('schools.backToAll')}</Link>
         </div>
       </section>
@@ -63,8 +64,8 @@ export default function SchoolDetail() {
   if (!school) {
     return (
       <section className="section">
-        <div className="card" style={{ textAlign: 'center', color: 'var(--text-subtle)' }}>
-          {t('common.loading')}
+        <div className="container" style={{ maxWidth: 820 }}>
+          <Loading kind="banner" />
         </div>
       </section>
     );
@@ -88,6 +89,7 @@ export default function SchoolDetail() {
           boxShadow: 'var(--sh-1)',
         }}>
           <img src={photoFor(school)} alt={school.name}
+            width={1000} height={400} decoding="async"
             style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           <div style={{
             position: 'absolute', inset: 0,

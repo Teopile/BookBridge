@@ -30,7 +30,7 @@ export default function PhotoUpload({ bucket = 'school-photos', onUploaded, labe
   return (
     <div className="photo-upload">
       {preview && (
-        <img src={preview} alt="" className="photo-upload-preview" />
+        <img src={preview} alt="" className="photo-upload-preview" width={64} height={64} loading="lazy" decoding="async" />
       )}
       <label className="btn btn-secondary btn-sm photo-upload-label">
         {busy ? '…' : label}

@@ -191,13 +191,20 @@ export async function getPublicStats() {
 
 // ---------- search ----------
 
-// Escape LIKE wildcards and backslash. The ilike pattern is built with %…%.
-function escapeLike(raw) {
-  return String(raw).replace(/[\\%_]/g, '\\$&');
+// Build a PostgREST `or(...)` value that is safe even when the user query
+// contains the reserved characters the `or` grammar uses (commas, parentheses,
+// dots). The ilike pattern is wrapped in double quotes so PostgREST treats the
+// whole value as a literal; LIKE wildcards (% _) and the escape char (\) are
+// neutralised, and any embedded double-quote/backslash is stripped so it can't
+// terminate the quoted value or escape out of it.
+function buildIlikeOr(columns, raw) {
+  const sanitized = String(raw).replace(/["\\]/g, '');
+  const escapedForLike = sanitized.replace(/[%_]/g, '\\$&');
+  const pattern = `%${escapedForLike}%`;
+  return columns.map((col) => `${col}.ilike."${pattern}"`).join(',');
 }
 
 export async function search({ q, type }) {
-  const like = `%${escapeLike(q)}%`;
   const results = { schools: [], books: [] };
 
   if (type === 'all' || type === 'beneficiary' || type === 'volunteer') {
@@ -205,17 +212,19 @@ export async function search({ q, type }) {
       .from('schools')
       .select('id, name, type, region, city, photo_url')
       .eq('status', 'approved')
-      .or(`name.ilike.${like},region.ilike.${like},city.ilike.${like}`);
+      .or(buildIlikeOr(['name', 'region', 'city'], q));
     if (type === 'beneficiary' || type === 'volunteer') query = query.eq('type', type);
-    const { data } = await query;
+    const { data, error } = await query;
+    if (error) throw error;
     results.schools = data || [];
   }
 
   if (type === 'all' || type === 'book') {
-    const { data } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from('book_requests')
       .select('id, title, author, genre, school_id, schools(name, region)')
-      .or(`title.ilike.${like},author.ilike.${like},genre.ilike.${like}`);
+      .or(buildIlikeOr(['title', 'author', 'genre'], q));
+    if (error) throw error;
     results.books = data || [];
   }
 

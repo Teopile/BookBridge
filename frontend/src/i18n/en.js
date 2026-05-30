@@ -139,6 +139,7 @@ export default {
     pickVolunteer: 'Volunteer school',
     pickOne: 'Pick one',
     pickupAddress: 'Pickup address',
+    needAtLeastOneBook: 'Add at least one book before confirming.',
     confirm: 'Confirm donation',
     cancel: 'Cancel',
     next: 'Next →',

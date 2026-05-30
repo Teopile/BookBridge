@@ -1,0 +1,9 @@
+# Local-only: junction to the prebuilt Playwright install at C:\Users\User\bb-pw.
+# Recreate with:
+#   New-Item -ItemType Junction -Path node_modules -Target C:\Users\User\bb-pw\node_modules
+node_modules/
+
+# Playwright run artifacts.
+test-results/
+playwright-report/
+.last-run.json

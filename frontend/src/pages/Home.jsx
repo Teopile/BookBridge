@@ -69,7 +69,7 @@ export default function Home() {
       <section className="hero">
         <div className="hero-inner">
           <div className="hero-illustration">
-            <Logo size={180} withWordmark={false} />
+            <Logo size={180} withWordmark={false} priority />
           </div>
           <h1>{t('home.heroTitle')}</h1>
           <p>{t('home.heroSub')}</p>
@@ -131,7 +131,7 @@ export default function Home() {
             {schools.map((s) => (
               <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
                 <div className="school-photo">
-                  <img src={s.photo} alt={s.name} loading="lazy" />
+                  <img src={s.photo} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
                   {s.urgent && <span className="school-badge urgent">{t('home.urgentBadge')}</span>}
                 </div>
                 <div className="school-body">

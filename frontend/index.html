@@ -2,9 +2,14 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#2D8B7A" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#2D5C3E" />
     <meta name="color-scheme" content="light" />
+    <!-- iOS home-screen / standalone web-app behavior -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="BookBridge" />
 
     <title>BookBridge — Your book is awaited in the mountains</title>
     <meta name="description" content="BookBridge connects donors with Georgian highland schools. Pick a school, choose books, we deliver. Built for transparency — track every donation end to end." />
@@ -36,8 +41,7 @@
     <meta name="twitter:image" content="https://bookbridge.ge/logo.svg" />
 
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
-    <!-- TODO before launch: add a real 180x180 PNG at /public/apple-touch-icon.png (file is currently MISSING -> this link 404s on iOS home-screen add). -->
-    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 
     <!-- Preconnect -->

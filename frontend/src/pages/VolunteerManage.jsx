@@ -148,7 +148,7 @@ export default function VolunteerManage() {
                         onChange={(e) => setTracking((m) => ({ ...m, [d.id]: e.target.value }))}
                         placeholder={t('volunteerManage.trackingPlaceholder')}
                         aria-label={t('volunteerManage.trackingLabel')}
-                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--gray-200)', fontSize: 14, marginBottom: 10 }}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--gray-200)', fontSize: 16, marginBottom: 10 }}
                       />
                     )}
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>

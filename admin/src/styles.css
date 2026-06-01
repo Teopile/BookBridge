@@ -259,4 +259,7 @@ h3 { font-size: 17px; margin-bottom: 8px; }
   .sidebar-link { white-space: nowrap; }
   .stats-grid { grid-template-columns: repeat(2, 1fr); }
   .main { padding: 16px; }
+  /* Wide tables (donations, school queue, users) scroll horizontally instead of
+     overflowing the viewport on a phone. */
+  .table { display: block; overflow-x: auto; white-space: nowrap; -webkit-overflow-scrolling: touch; }
 }

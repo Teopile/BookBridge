@@ -6,7 +6,7 @@ import { requireAdmin } from '../middleware/rbac.js';
 import {
   createDonation, setDonationCourier, getDonation, getDonationByTrackToken,
   listDonationsForUser, updateDonationStatus, getSchoolById, recordNotification,
-  listAllDonations, cancelDonation, getDonorContact,
+  listAllDonations, cancelDonation, getDonorContact, canTransition,
 } from '../db/store.js';
 import { DonationCreateSchema, DonationStatusUpdateSchema, AdminDonationsListSchema } from '../schemas.js';
 import { createShipment } from '../lib/courier.js';
@@ -90,6 +90,32 @@ router.post('/:id/cancel', csrfProtection, requireAuth, async (req, res, next) =
       return res.status(403).json({ error: 'forbidden' });
     }
     const updated = await cancelDonation(req.params.id, req.user.id, req.body?.note);
+    res.json(updated);
+  } catch (err) { next(err); }
+});
+
+// Receiving (beneficiary) school confirms it physically received the books.
+// Allowed for the owner of the donation's beneficiary school (or admin), and
+// only as a valid transition (at_volunteer / in_transit -> delivered).
+router.post('/:id/confirm-receipt', csrfProtection, requireAuth, async (req, res, next) => {
+  try {
+    const d = await getDonation(req.params.id);
+    if (!d) return res.status(404).json({ error: 'not_found' });
+    const isAdmin = req.user.role === 'admin';
+    let allowed = isAdmin;
+    if (!allowed && d.beneficiary_school_id) {
+      const sch = await getSchoolById(d.beneficiary_school_id);
+      allowed = sch?.owner_user_id === req.user.id;
+    }
+    if (!allowed) return res.status(403).json({ error: 'forbidden' });
+    if (!isAdmin && !canTransition(d.status, 'delivered')) {
+      return res.status(409).json({ error: 'invalid_transition', from: d.status, to: 'delivered' });
+    }
+    const updated = await updateDonationStatus(
+      req.params.id, 'delivered', req.user.id, req.body?.note || 'received by school',
+    );
+    try { await fireStatusNotifications(updated); }
+    catch (e) { console.error('[donations] confirm-receipt notify failed:', e.message); }
     res.json(updated);
   } catch (err) { next(err); }
 });

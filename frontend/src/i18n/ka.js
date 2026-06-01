@@ -187,7 +187,7 @@ export default {
   },
   footer: {
     platform: 'პლატფორმა', donate: 'წიგნის გაჩუქება', request: 'წიგნის მოთხოვნა',
-    findSchools: 'სკოლების ძებნა', company: 'კომპანია', about: 'ჩვენ შესახებ',
+    findSchools: 'სკოლების ძებნა', volunteerHub: 'გახდი მოხალისე ჰაბი', company: 'კომპანია', about: 'ჩვენ შესახებ',
     mission: 'მისია', newsletter: 'ნიუსლეთერი', contact: 'კავშირი',
     rights: '© 2026 BookBridge · საქართველო',
     tagline: 'შენს წიგნს ელიან მთაში',
@@ -299,6 +299,11 @@ export default {
     fieldLat: 'განედი',
     fieldLng: 'გრძედი',
     latLngHint: 'არასავალდებულო — საჭიროა მხოლოდ თუ რუკაზე გამოჩენა გინდა.',
+    incomingTitle: 'შემოსული დონაციები',
+    incomingHint: 'დადასტურებული დონაციები, რომლებიც შენი სკოლისკენ მოდის. დონაცია აქ გამოჩნდება მას შემდეგ, რაც ჰაბი მიიღებს წიგნებს.',
+    noIncoming: 'დადასტურებული დონაცია ჯერ არ არის.',
+    confirmReceipt: 'მიღების დადასტურება',
+    viaHub: 'ჰაბი:',
   },
   volunteerManage: {
     eyebrow: 'მოხალისე პანელი',
@@ -312,6 +317,9 @@ export default {
     autoPick: 'ავტო-არჩევა',
     markReceived: 'მიღებულია სკოლაში',
     markShipped: 'გაიგზავნა ბენეფიციართან',
+    markDelivered: 'მიტანილია სკოლაში',
+    trackingLabel: 'ტრეკინგის ნომერი',
+    trackingPlaceholder: 'ტრეკინგის ნომერი (არასავალდებულო)',
     viewTrack: 'ტრეკერი',
   },
   notFound: {

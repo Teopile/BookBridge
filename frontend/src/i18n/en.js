@@ -187,7 +187,7 @@ export default {
   },
   footer: {
     platform: 'Platform', donate: 'Donate a book', request: 'Request a book',
-    findSchools: 'Find schools', company: 'Company', about: 'About us',
+    findSchools: 'Find schools', volunteerHub: 'Become a volunteer hub', company: 'Company', about: 'About us',
     mission: 'Mission', newsletter: 'Newsletter', contact: 'Contact',
     rights: '© 2026 BookBridge · Georgia',
     tagline: 'Your book is awaited in the mountains',
@@ -299,6 +299,11 @@ export default {
     fieldLat: 'Latitude',
     fieldLng: 'Longitude',
     latLngHint: 'Optional — needed only if you want the school to show on the map.',
+    incomingTitle: 'Incoming donations',
+    incomingHint: 'Confirmed donations on their way to your school. A donation shows up here once a hub has received the books.',
+    noIncoming: 'No confirmed donations yet.',
+    confirmReceipt: 'Confirm receipt',
+    viaHub: 'via',
   },
   volunteerManage: {
     eyebrow: 'Volunteer dashboard',
@@ -312,6 +317,9 @@ export default {
     autoPick: 'auto-pick',
     markReceived: 'Received at school',
     markShipped: 'Shipped to beneficiary',
+    markDelivered: 'Delivered to school',
+    trackingLabel: 'Tracking number',
+    trackingPlaceholder: 'Tracking number (optional)',
     viewTrack: 'View tracker',
   },
   notFound: {

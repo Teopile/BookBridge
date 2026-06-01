@@ -24,6 +24,7 @@ export default function VolunteerManage() {
   const [donations, setDonations] = useState(null);
   const [error, setError] = useState(null);
   const [busyId, setBusyId] = useState(null);
+  const [tracking, setTracking] = useState({});
 
   useEffect(() => {
     if (!user) return;
@@ -45,10 +46,12 @@ export default function VolunteerManage() {
   }
   useEffect(reload, [selected]);
 
-  async function setStatus(donationId, status) {
+  async function setStatus(donationId, status, courierTrackingId) {
     setBusyId(donationId);
     try {
-      await apiPost('/api/volunteer/donations/' + donationId + '/status', { status });
+      const body = { status };
+      if (courierTrackingId) body.courier_tracking_id = courierTrackingId;
+      await apiPost('/api/volunteer/donations/' + donationId + '/status', body);
       reload();
     } catch (e) { alert(e.message); }
     finally { setBusyId(null); }
@@ -138,6 +141,16 @@ export default function VolunteerManage() {
                       {(d.donation_items || []).length} {t('account.lineItems')} · {d.delivery_method}
                       {d.courier_tracking_id ? ' · 📦 ' + d.courier_tracking_id : ''}
                     </div>
+                    {(d.status === 'at_volunteer' || d.status === 'in_transit') && (
+                      <input
+                        type="text"
+                        value={tracking[d.id] ?? d.courier_tracking_id ?? ''}
+                        onChange={(e) => setTracking((m) => ({ ...m, [d.id]: e.target.value }))}
+                        placeholder={t('volunteerManage.trackingPlaceholder')}
+                        aria-label={t('volunteerManage.trackingLabel')}
+                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--gray-200)', fontSize: 14, marginBottom: 10 }}
+                      />
+                    )}
                     <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                       {d.status === 'pending' && (
                         <button className="btn btn-primary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'at_volunteer')}>
@@ -145,8 +158,13 @@ export default function VolunteerManage() {
                         </button>
                       )}
                       {(d.status === 'pending' || d.status === 'at_volunteer') && (
-                        <button className="btn btn-secondary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'in_transit')}>
+                        <button className="btn btn-secondary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'in_transit', tracking[d.id])}>
                           🚚 {t('volunteerManage.markShipped')}
+                        </button>
+                      )}
+                      {(d.status === 'at_volunteer' || d.status === 'in_transit') && (
+                        <button className="btn btn-primary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'delivered', tracking[d.id])}>
+                          📚 {t('volunteerManage.markDelivered')}
                         </button>
                       )}
                       <Link to={prefix + '/track/' + d.track_token} className="btn btn-ghost btn-sm">

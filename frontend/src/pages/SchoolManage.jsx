@@ -108,6 +108,10 @@ export default function SchoolManage() {
               />
             )}
 
+            {selected && !editingSchool && selectedSchool?.type === 'beneficiary' && (
+              <IncomingDonations schoolId={selected} prefix={prefix} t={t} />
+            )}
+
             {selected && !editingSchool && (
               <BookRequestsManager
                 schoolId={selected}
@@ -406,6 +410,82 @@ function BookRequestsManager({ schoolId, requests, reload, t }) {
           {busy ? '…' : t('schoolManage.addRequestButton')}
         </button>
       </form>
+    </div>
+  );
+}
+
+// Confirmed donations addressed to this beneficiary school. Only books that
+// are actually committed and in the pipeline (at a hub / in transit / already
+// delivered) appear — pending and cancelled donations are hidden by the API.
+const INC_STATUS_KEY = {
+  at_volunteer: 'track.statusAtVolunteer',
+  in_transit:   'track.statusInTransit',
+  delivered:    'track.statusDelivered',
+};
+
+function IncomingDonations({ schoolId, prefix, t }) {
+  const [donations, setDonations] = useState(null);
+  const [error, setError] = useState(null);
+  const [busyId, setBusyId] = useState(null);
+
+  function reload() {
+    setDonations(null); setError(null);
+    apiGet('/api/schools/' + schoolId + '/donations')
+      .then(setDonations)
+      .catch((e) => { setError(e.message); setDonations([]); });
+  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(reload, [schoolId]);
+
+  async function confirmReceipt(id) {
+    setBusyId(id);
+    try { await apiPost('/api/donations/' + id + '/confirm-receipt', {}); reload(); }
+    catch (e) { alert(e.message); }
+    finally { setBusyId(null); }
+  }
+
+  return (
+    <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+      <h3 style={{ marginBottom: 6 }}>📦 {t('schoolManage.incomingTitle')}</h3>
+      <p style={{ color: 'var(--gray-500)', fontSize: 13, marginBottom: 16 }}>{t('schoolManage.incomingHint')}</p>
+
+      {error && <ErrorState message={error} onRetry={reload} />}
+      {donations === null && !error && <Loading kind="list" />}
+      {donations !== null && donations.length === 0 && !error && (
+        <p style={{ color: 'var(--gray-500)', margin: 0 }}>{t('schoolManage.noIncoming')}</p>
+      )}
+
+      {donations !== null && donations.length > 0 && (
+        <div className="row-list">
+          {donations.map((d) => (
+            <div className="row-item" key={d.id} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                <div className="row-item-title">
+                  #{d.id?.slice(0, 8)}
+                  {d.volunteer_school?.name && (
+                    <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}> · {t('schoolManage.viaHub')} {d.volunteer_school.name}</span>
+                  )}
+                </div>
+                <span className={'badge ' + d.status}>{t(INC_STATUS_KEY[d.status] || 'common.errorTitle')}</span>
+              </div>
+              <div className="row-item-sub" style={{ marginBottom: d.status === 'delivered' ? 0 : 12 }}>
+                {(d.donation_items || []).length} {t('account.lineItems')}
+                {d.courier_tracking_id ? ' · 📦 ' + d.courier_tracking_id : ''}
+              </div>
+              {d.status !== 'delivered' && (
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button className="btn btn-primary btn-sm" disabled={busyId === d.id} onClick={() => confirmReceipt(d.id)}>
+                    ✓ {t('schoolManage.confirmReceipt')}
+                  </button>
+                  <Link to={prefix + '/track/' + d.track_token} className="btn btn-ghost btn-sm">
+                    {t('volunteerManage.viewTrack')} →
+                  </Link>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

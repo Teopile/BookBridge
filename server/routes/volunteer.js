@@ -6,6 +6,7 @@ import { requireAuth } from '../middleware/auth.js';
 import {
   listSchoolsByOwner, getSchoolById, listDonationsForVolunteer,
   updateDonationStatus, getDonorContact, getDonation, recordNotification,
+  canTransition,
 } from '../db/store.js';
 import { sendEmail, Templates } from '../lib/mailer.js';
 
@@ -36,8 +37,10 @@ router.get('/incoming/:schoolId', requireAuth, async (req, res, next) => {
   } catch (err) { next(err); }
 });
 
+// A hub may store (at_volunteer), ship (in_transit), hand-deliver (delivered),
+// or cancel. The full lifecycle is enforced by canTransition below.
 const VolStatusSchema = z.object({
-  status: z.enum(['at_volunteer', 'in_transit', 'cancelled']),
+  status: z.enum(['at_volunteer', 'in_transit', 'delivered', 'cancelled']),
   note: z.string().max(500).optional(),
   courier_tracking_id: z.string().max(120).optional(),
 });
@@ -46,12 +49,18 @@ router.post('/donations/:id/status', csrfProtection, requireAuth, validate(VolSt
   try {
     const d = await getDonation(req.params.id);
     if (!d) return res.status(404).json({ error: 'not_found' });
-    let allowed = req.user.role === 'admin';
+    const isAdmin = req.user.role === 'admin';
+    let allowed = isAdmin;
     if (!allowed && d.volunteer_school_id) {
       const sch = await getSchoolById(d.volunteer_school_id);
       allowed = sch?.owner_user_id === req.user.id;
     }
     if (!allowed) return res.status(403).json({ error: 'forbidden' });
+
+    // Non-admins are held to the lifecycle order (no skipping/rewinding).
+    if (!isAdmin && !canTransition(d.status, req.body.status)) {
+      return res.status(409).json({ error: 'invalid_transition', from: d.status, to: req.body.status });
+    }
 
     const updated = await updateDonationStatus(
       req.params.id, req.body.status, req.user.id, req.body.note, req.body.courier_tracking_id,
@@ -60,14 +69,20 @@ router.post('/donations/:id/status', csrfProtection, requireAuth, validate(VolSt
     try {
       const contact = await getDonorContact(updated.id);
       if (contact?.email) {
-        const tpl = Templates.statusChanged({
-          donationId: updated.id, status: updated.status,
-          trackUrl: trackUrlFor(updated.track_token), lang: contact.language,
-        });
+        const trackUrl = trackUrlFor(updated.track_token);
+        let tpl;
+        if (updated.status === 'delivered') {
+          // getDonation doesn't join the school, so resolve its name explicitly.
+          const ben = updated.beneficiary_school_id ? await getSchoolById(updated.beneficiary_school_id) : null;
+          tpl = Templates.donationDelivered({ donationId: updated.id, schoolName: ben?.name || '', trackUrl, lang: contact.language });
+        } else {
+          tpl = Templates.statusChanged({ donationId: updated.id, status: updated.status, trackUrl, lang: contact.language });
+        }
         await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
         await recordNotification({
           user_id: contact.user_id, donation_id: updated.id, channel: 'email',
-          template: 'status_changed', recipient: contact.email, subject: tpl.subject, status: 'sent',
+          template: updated.status === 'delivered' ? 'donation_delivered' : 'status_changed',
+          recipient: contact.email, subject: tpl.subject, status: 'sent',
         });
       }
     } catch (e) {

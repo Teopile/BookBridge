@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Routes, Route, NavLink, Navigate } from 'react-router-dom';
-import { apiGet, apiPost, apiPut } from './api.js';
+import { apiGet, apiPost, apiPut, apiDownload } from './api.js';
 
 const STATUS_LABEL = {
   pending:       'Pending',
@@ -37,6 +37,7 @@ export default function App() {
         <NavLink to="/schools" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>School queue</NavLink>
         <NavLink to="/donations" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>Donations</NavLink>
         <NavLink to="/content" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>Site content</NavLink>
+        <NavLink to="/tools" className={({ isActive }) => 'sidebar-link' + (isActive ? ' active' : '')}>Tools</NavLink>
 
         <div className="sidebar-spacer" />
         <div className="sidebar-user">
@@ -58,6 +59,7 @@ export default function App() {
           <Route path="/schools"   element={<SchoolsQueue />} />
           <Route path="/donations" element={<DonationsList />} />
           <Route path="/content"   element={<SiteContent />} />
+          <Route path="/tools"     element={<Tools />} />
           <Route path="*"          element={<Navigate to="/" />} />
         </Routes>
       </main>
@@ -261,7 +263,7 @@ function Dashboard() {
         ) : (
           <table className="table" style={{ marginTop: 12 }}>
             <thead>
-              <tr><th>Username</th><th>Role</th><th>Joined</th></tr>
+              <tr><th>Username</th><th>Role</th><th>Joined</th><th>Set role</th></tr>
             </thead>
             <tbody>
               {data.recent_users.map((u) => (
@@ -269,6 +271,7 @@ function Dashboard() {
                   <td><strong>{u.username || '—'}</strong></td>
                   <td><span className={'badge ' + (u.role === 'admin' ? 'approved' : '')}>{u.role}</span></td>
                   <td className="muted">{relTime(u.created_at)}</td>
+                  <td><RoleSelect user={u} /></td>
                 </tr>
               ))}
             </tbody>
@@ -414,14 +417,22 @@ function DonationsList() {
           <h1>Donations</h1>
           <div className="sub">{total} total · click any row to update status.</div>
         </div>
-        <select className="input" style={{ maxWidth: 220 }} value={status} onChange={(e) => setStatus(e.target.value)}>
-          <option value="">All statuses</option>
-          <option value="pending">Pending</option>
-          <option value="at_volunteer">At volunteer</option>
-          <option value="in_transit">In transit</option>
-          <option value="delivered">Delivered</option>
-          <option value="cancelled">Cancelled</option>
-        </select>
+        <div className="row" style={{ gap: 8 }}>
+          <select className="input" style={{ maxWidth: 220 }} value={status} onChange={(e) => setStatus(e.target.value)}>
+            <option value="">All statuses</option>
+            <option value="pending">Pending</option>
+            <option value="at_volunteer">At volunteer</option>
+            <option value="in_transit">In transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+          <button
+            className="btn btn-secondary"
+            onClick={() => apiDownload('/api/admin/export.csv?resource=donations' + (status ? '&status=' + status : ''), `donations-${new Date().toISOString().slice(0, 10)}.csv`).catch((e) => alert(e.message))}
+          >
+            ⬇ Export CSV
+          </button>
+        </div>
       </div>
 
       {items === null && <div className="table-empty">Loading…</div>}
@@ -631,5 +642,150 @@ function SiteContent() {
         );
       })}
     </>
+  );
+}
+
+// ============================================================
+//  Role selector (inline on the dashboard users table)
+// ============================================================
+function RoleSelect({ user }) {
+  const [role, setRole] = useState(user.role || 'donor');
+  const [busy, setBusy] = useState(false);
+
+  async function change(next) {
+    setBusy(true);
+    try { await apiPost('/api/admin/users/role', { user_id: user.id, role: next }); setRole(next); }
+    catch (e) { alert(e.message); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <select
+      className="input"
+      style={{ maxWidth: 150, padding: '4px 8px' }}
+      value={role}
+      disabled={busy}
+      onChange={(e) => change(e.target.value)}
+    >
+      <option value="donor">donor</option>
+      <option value="beneficiary">beneficiary</option>
+      <option value="volunteer">volunteer</option>
+      <option value="admin">admin</option>
+    </select>
+  );
+}
+
+// ============================================================
+//  Tools — CSV export, ownership transfer, manual email
+// ============================================================
+function Tools() {
+  return (
+    <>
+      <div className="main-header">
+        <div>
+          <h1>Tools</h1>
+          <div className="sub">CSV exports, school ownership transfer, and manual email.</div>
+        </div>
+      </div>
+      <ExportCard />
+      <TransferCard />
+      <NotifyCard />
+    </>
+  );
+}
+
+function ExportCard() {
+  const [busy, setBusy] = useState(null);
+  function dl(resource) {
+    setBusy(resource);
+    apiDownload(`/api/admin/export.csv?resource=${resource}`, `${resource}-${new Date().toISOString().slice(0, 10)}.csv`)
+      .catch((e) => alert(e.message))
+      .finally(() => setBusy(null));
+  }
+  return (
+    <div className="card">
+      <h3 style={{ marginBottom: 12 }}>CSV export</h3>
+      <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+        <button className="btn btn-secondary" disabled={!!busy} onClick={() => dl('donations')}>⬇ Donations</button>
+        <button className="btn btn-secondary" disabled={!!busy} onClick={() => dl('schools')}>⬇ Schools</button>
+        <button className="btn btn-secondary" disabled={!!busy} onClick={() => dl('monetary_donations')}>⬇ Monetary</button>
+      </div>
+    </div>
+  );
+}
+
+function TransferCard() {
+  const [schools, setSchools] = useState([]);
+  const [schoolId, setSchoolId] = useState('');
+  const [email, setEmail] = useState('');
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  useEffect(() => { apiGet('/api/admin/schools/all').then(setSchools).catch(() => setSchools([])); }, []);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true); setMsg(null);
+    try {
+      await apiPost(`/api/admin/schools/${schoolId}/transfer`, { owner_email: email });
+      setMsg({ ok: true, text: 'Ownership transferred to ' + email });
+      setEmail('');
+    } catch (e) { setMsg({ ok: false, text: e.message }); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div className="card">
+      <h3 style={{ marginBottom: 8 }}>Transfer school ownership</h3>
+      <p className="muted" style={{ marginBottom: 12 }}>
+        Hand a school to the account of the person who runs it. They must have signed up first.
+      </p>
+      <form className="form" onSubmit={submit}>
+        <label>School</label>
+        <select className="input" required value={schoolId} onChange={(e) => setSchoolId(e.target.value)}>
+          <option value="">Select a school…</option>
+          {schools.map((s) => <option key={s.id} value={s.id}>{s.name} ({s.type})</option>)}
+        </select>
+        <label>New owner email</label>
+        <input className="input" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        {msg && <div className={msg.ok ? 'ok' : 'error'}>{msg.text}</div>}
+        <button className="btn btn-primary" disabled={busy || !schoolId} type="submit">{busy ? '…' : 'Transfer ownership'}</button>
+      </form>
+    </div>
+  );
+}
+
+function NotifyCard() {
+  const [to, setTo] = useState('');
+  const [subject, setSubject] = useState('');
+  const [html, setHtml] = useState('');
+  const [msg, setMsg] = useState(null);
+  const [busy, setBusy] = useState(false);
+
+  async function submit(e) {
+    e.preventDefault();
+    setBusy(true); setMsg(null);
+    try {
+      await apiPost('/api/admin/notify', { to, subject, html });
+      setMsg({ ok: true, text: 'Email sent to ' + to });
+      setTo(''); setSubject(''); setHtml('');
+    } catch (e) { setMsg({ ok: false, text: e.message }); }
+    finally { setBusy(false); }
+  }
+
+  return (
+    <div className="card">
+      <h3 style={{ marginBottom: 12 }}>Send an email</h3>
+      <form className="form" onSubmit={submit}>
+        <label>To</label>
+        <input className="input" type="email" required value={to} onChange={(e) => setTo(e.target.value)} />
+        <label>Subject</label>
+        <input className="input" required value={subject} onChange={(e) => setSubject(e.target.value)} />
+        <label>Message (HTML allowed)</label>
+        <textarea className="input" rows={5} required value={html} onChange={(e) => setHtml(e.target.value)} />
+        {msg && <div className={msg.ok ? 'ok' : 'error'}>{msg.text}</div>}
+        <button className="btn btn-primary" disabled={busy} type="submit">{busy ? '…' : 'Send email'}</button>
+      </form>
+    </div>
   );
 }

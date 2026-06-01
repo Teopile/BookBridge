@@ -155,6 +155,23 @@ export async function updateDonationStatus(donationId, newStatus, changedBy, not
   return data;
 }
 
+// Allowed forward transitions of the donation lifecycle. Admins bypass this
+// (they can correct a status), but the volunteer hub and the receiving school
+// are held to it so the pipeline can't skip or rewind steps.
+export const DONATION_TRANSITIONS = {
+  pending:      ['at_volunteer', 'in_transit', 'cancelled'],
+  at_volunteer: ['in_transit', 'delivered', 'cancelled'],
+  in_transit:   ['delivered', 'cancelled'],
+  delivered:    [],
+  cancelled:    [],
+};
+
+// Idempotent re-clicks (from === to) are allowed; genuine illegal jumps are not.
+export function canTransition(from, to) {
+  if (from === to) return true;
+  return (DONATION_TRANSITIONS[from] || []).includes(to);
+}
+
 // ---------- monetary_donations ----------
 
 export async function createMonetaryDonation(donorUserId, payload) {
@@ -291,6 +308,25 @@ export async function listDonationsForVolunteer(volunteerSchoolId) {
   return data;
 }
 
+// Donations addressed to a beneficiary (receiving) school, CONFIRMED ONLY —
+// i.e. the books are actually committed and in the pipeline (at a hub, in
+// transit, or delivered). Pending (not yet confirmed by a hub) and cancelled
+// donations are intentionally hidden from the school.
+const BENEFICIARY_VISIBLE_STATUSES = ['at_volunteer', 'in_transit', 'delivered'];
+
+export async function listDonationsForBeneficiary(beneficiarySchoolId) {
+  // Explicit projection — never expose donor PII (donor_user_id, donor_address)
+  // to the receiving school. Only fields the school legitimately needs.
+  const { data, error } = await supabaseAdmin
+    .from('donations')
+    .select('id, status, created_at, delivery_method, courier_provider, courier_tracking_id, track_token, notes, donation_items(*), volunteer_school:volunteer_school_id(name,region,city)')
+    .eq('beneficiary_school_id', beneficiarySchoolId)
+    .in('status', BENEFICIARY_VISIBLE_STATUSES)
+    .order('created_at', { ascending: false });
+  if (error) throw error;
+  return data;
+}
+
 export async function getDonorContact(donationId) {
   // donor email — used for email notifications when admin updates status.
   const { data, error } = await supabaseAdmin
@@ -326,6 +362,68 @@ export async function listSchoolsByOwner(ownerUserId) {
     .order('created_at', { ascending: false });
   if (error) throw error;
   return data;
+}
+
+// All schools regardless of status — admin-only, used by the ownership-transfer
+// picker (the imported schools to reassign may be approved or pending).
+export async function listAllSchools() {
+  const { data, error } = await supabaseAdmin
+    .from('schools').select('id, name, type, status, region').order('name');
+  if (error) throw error;
+  return data || [];
+}
+
+// Hand a school over to its real owner (admin tool). The imported schools are
+// all owned by one admin account; this lets an admin assign a school to the
+// account of the person who actually runs it.
+export async function transferSchoolOwnership(schoolId, newOwnerUserId) {
+  return updateSchool(schoolId, { owner_user_id: newOwnerUserId });
+}
+
+// Look up an auth user by email (case-insensitive). GoTrue's admin listUsers is
+// paginated and has no email filter, so we scan a bounded number of pages —
+// fine at BookBridge's user scale.
+export async function findUserByEmail(email) {
+  const target = String(email).trim().toLowerCase();
+  for (let page = 1; page <= 20; page++) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 200 });
+    if (error) throw error;
+    const users = data?.users || [];
+    const found = users.find((u) => (u.email || '').toLowerCase() === target);
+    if (found) return found;
+    if (users.length < 200) break;
+  }
+  return null;
+}
+
+// Email + language to notify a school (on approval/rejection). Prefer the
+// school's public contact_email; fall back to the owner account's email.
+export async function getSchoolOwnerContact(school) {
+  if (!school) return null;
+  let language = 'en';
+  if (school.owner_user_id) {
+    const { data: p } = await supabaseAdmin
+      .from('profiles').select('language').eq('id', school.owner_user_id).maybeSingle();
+    language = p?.language || 'en';
+  }
+  if (school.contact_email) return { email: school.contact_email, language };
+  if (!school.owner_user_id) return null;
+  const { data: u } = await supabaseAdmin.auth.admin.getUserById(school.owner_user_id);
+  return { email: u?.user?.email || null, language };
+}
+
+// Email addresses of all admins — used to alert them when a new school is
+// submitted for approval.
+export async function getAdminEmails() {
+  const { data: admins, error } = await supabaseAdmin
+    .from('profiles').select('id').eq('role', 'admin');
+  if (error) throw error;
+  const emails = [];
+  for (const a of admins || []) {
+    const { data: u } = await supabaseAdmin.auth.admin.getUserById(a.id);
+    if (u?.user?.email) emails.push(u.user.email);
+  }
+  return emails;
 }
 
 // ---------- site_content (admin CMS) ----------

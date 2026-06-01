@@ -339,6 +339,68 @@ export const Templates = {
       text:    textShell({ lang, heading: cfg.heading, intro: cfg.intro, body: `Amount: ${formatted}\nDate: ${new Date().toISOString().slice(0, 10)}`, secondary: cfg.secondary }),
     };
   },
+
+  // Sent to the school owner when an admin approves their listing.
+  schoolApproved({ schoolName, manageUrl, publicUrl, lang = 'en' }) {
+    const name = schoolName || (lang === 'ka' ? 'შენი სკოლა' : 'your school');
+    const cfg = lang === 'ka'
+      ? {
+          subject: `დამტკიცდა: ${name}`,
+          heading: 'შენი სკოლა დამტკიცდა!',
+          intro:   `<strong>${escape(name)}</strong> ახლა ხილვადია BookBridge-ზე და მზადაა მიიღოს წიგნები. შეგიძლია მართო პროფილი და დაამატო სასურველი წიგნების სია.`,
+          ctaLabel: 'სკოლის მართვა',
+        }
+      : {
+          subject: `Approved: ${name}`,
+          heading: 'Your school is approved!',
+          intro:   `<strong>${escape(name)}</strong> is now visible on BookBridge and ready to receive books. You can manage its profile and post a wishlist of the books you need.`,
+          ctaLabel: 'Manage your school',
+        };
+    return {
+      subject: cfg.subject,
+      html:    shell({ lang, preheader: cfg.intro, heading: cfg.heading, intro: cfg.intro, ctaLabel: cfg.ctaLabel, ctaUrl: manageUrl, secondary: publicUrl ? `Public page: <a href="${publicUrl}" style="color:${BRAND.teal};">${publicUrl}</a>` : '' }),
+      text:    textShell({ lang, heading: cfg.heading, intro: stripTags(cfg.intro), ctaLabel: cfg.ctaLabel, ctaUrl: manageUrl }),
+    };
+  },
+
+  // Sent to the school owner when an admin rejects their listing.
+  schoolRejected({ schoolName, note, lang = 'en' }) {
+    const name = schoolName || (lang === 'ka' ? 'შენი სკოლა' : 'your school');
+    const noteBlock = note
+      ? `<p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:${BRAND.gray};"><strong>${lang === 'ka' ? 'შენიშვნა' : 'Note'}:</strong> ${escape(note)}</p>`
+      : '';
+    const cfg = lang === 'ka'
+      ? {
+          subject: `განახლება: ${name}`,
+          heading: 'შენი სკოლის განაცხადი ვერ დამტკიცდა',
+          intro:   `სამწუხაროდ, <strong>${escape(name)}</strong> ამჟამად ვერ დამტკიცდა. გთხოვ, შეამოწმო დეტალები და ხელახლა გამოაგზავნო.`,
+        }
+      : {
+          subject: `Update on ${name}`,
+          heading: 'Your school submission needs another look',
+          intro:   `Unfortunately <strong>${escape(name)}</strong> wasn't approved yet. Please review the details and resubmit.`,
+        };
+    return {
+      subject: cfg.subject,
+      html:    shell({ lang, preheader: stripTags(cfg.intro), heading: cfg.heading, intro: cfg.intro, body: noteBlock }),
+      text:    textShell({ lang, heading: cfg.heading, intro: stripTags(cfg.intro), body: note ? `Note: ${note}` : '' }),
+    };
+  },
+
+  // Sent to admins when a new school is submitted and awaits approval.
+  schoolSubmitted({ schoolName, schoolType, reviewUrl, lang = 'en' }) {
+    const cfg = {
+      subject: `New ${schoolType || 'school'} awaiting approval: ${schoolName || ''}`.trim(),
+      heading: 'A new school needs approval',
+      intro:   `<strong>${escape(schoolName || 'A school')}</strong> (${escape(schoolType || 'school')}) was just submitted on BookBridge and is waiting in the approval queue.`,
+      ctaLabel: 'Review in admin',
+    };
+    return {
+      subject: cfg.subject,
+      html:    shell({ lang, preheader: cfg.intro, heading: cfg.heading, intro: cfg.intro, ctaLabel: cfg.ctaLabel, ctaUrl: reviewUrl }),
+      text:    textShell({ lang, heading: cfg.heading, intro: stripTags(cfg.intro), ctaLabel: cfg.ctaLabel, ctaUrl: reviewUrl }),
+    };
+  },
 };
 
 function stripTags(s) {

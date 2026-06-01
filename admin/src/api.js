@@ -47,3 +47,22 @@ export async function api(path, opts = {}) {
 export const apiGet = (p) => api(p);
 export const apiPost = (p, b) => api(p, { method: 'POST', body: JSON.stringify(b || {}) });
 export const apiPut = (p, b) => api(p, { method: 'PUT', body: JSON.stringify(b || {}) });
+
+// Download a non-JSON response (e.g. CSV export) as a file. Uses the same
+// credentialed fetch so the admin session cookie is sent cross-origin.
+export async function apiDownload(path, filename) {
+  const res = await fetch(API_BASE + path, { credentials: 'include' });
+  if (!res.ok) {
+    const text = await res.text().catch(() => '');
+    throw new Error(`Export failed (${res.status}) ${text}`.trim());
+  }
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}

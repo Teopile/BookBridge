@@ -57,6 +57,7 @@ export default function Footer() {
             <Link to={prefix + '/schools'}>{t('footer.findSchools')}</Link>
             <Link to={prefix + '/how-it-works'}>{t('nav.how')}</Link>
             <Link to={prefix + '/school/manage'}>{t('nav.beneficiaryCta')}</Link>
+            <Link to={prefix + '/volunteer/manage'}>{t('footer.volunteerHub')}</Link>
           </div>
 
           <div className="footer-col">

@@ -210,7 +210,7 @@ export async function getPublicStats() {
 // whole value as a literal; LIKE wildcards (% _) and the escape char (\) are
 // neutralised, and any embedded double-quote/backslash is stripped so it can't
 // terminate the quoted value or escape out of it.
-function buildIlikeOr(columns, raw) {
+export function buildIlikeOr(columns, raw) {
   const sanitized = String(raw).replace(/["\\]/g, '');
   const escapedForLike = sanitized.replace(/[%_]/g, '\\$&');
   const pattern = `%${escapedForLike}%`;

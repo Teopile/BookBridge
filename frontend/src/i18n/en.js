@@ -13,20 +13,31 @@ export default {
   },
   home: {
     heroTitle: 'Donate books to mountain schools.',
-    heroSub: 'Pick a school. Choose books. We deliver.',
+    heroSub: 'Pick a school, choose the books they need, and we ship them from Tbilisi into the mountains — every parcel tracked to a child\'s hands.',
     ctaPrimary: 'Donate a book',
     ctaSecondary: 'See schools',
 
+    heroKicker: 'Book donations · Georgia\'s highland schools',
+    heroCaption: '— Books, opened for the first time',
+    heroStep1: 'Pick a school',
+    heroStep2: 'Choose books',
+    heroStep3: 'We deliver',
+
     bignumLabel: 'books delivered to {schools} schools',
 
+    howStamp: 'The route a book travels',
     howTitle: 'How it works',
     step1Title: 'Pick a school',
     step1Body: 'Browse schools and what they need.',
+    step1Where: 'Stop 1 · choose a classroom',
     step2Title: 'Choose books',
     step2Body: 'Pick from their list or add your own.',
+    step2Where: 'Stop 2 · Tbilisi hub',
     step3Title: 'Send them',
     step3Body: 'Drop off in Tbilisi or book a free courier.',
+    step3Where: 'Stop 3 · a child\'s hands',
 
+    schoolsStamp: 'Schools waiting for books',
     schoolsTitle: 'Schools waiting now',
     urgentBadge: 'Urgent',
     fulfilledLabel: 'Fulfilled',
@@ -121,7 +132,13 @@ export default {
     emailNotConfirmed: 'Please check your inbox to confirm your email.',
     invalidToken: 'That code is wrong or expired. Try again.',
   },
+  dashboard: {
+    regionsTag: 'Regions',
+    geographicReach: 'Geographic reach',
+    schoolsCount: '{count} schools',
+  },
   donate: {
+    removeBook: 'Remove book',
     step1: 'Choose a school', step2: 'Pick books',
     step3: 'Choose delivery', step4: 'Confirm',
     step1Help: 'Pick which school you want to support.',
@@ -174,6 +191,7 @@ export default {
     mission: 'Mission', newsletter: 'Newsletter', contact: 'Contact',
     rights: '© 2026 BookBridge · Georgia',
     tagline: 'Your book is awaited in the mountains',
+    taglineKa: 'შენს წიგნს ელიან მთაში',
     legal: 'Legal', privacy: 'Privacy Policy', terms: 'Terms of Service', cookies: 'Cookie Policy',
   },
   auth: {
@@ -312,16 +330,43 @@ export default {
       'BookBridge is a Georgian nonprofit that helps people donate books to highland schools. This policy explains what personal data we collect, why we collect it, and the choices you have. We try to collect as little as possible.',
     collectHeading: 'What data we collect',
     collectBody: 'When you use BookBridge we may collect the following:',
+    collectItems: [
+      'Account details: your name (or username) and email address.',
+      'Donation records: the schools you support, the books you pledge, and delivery status.',
+      'Delivery information: an optional pickup or postal address when you ask us to arrange a courier.',
+      'Contact messages: anything you send us by email or through a form.',
+      'Basic technical data: the language you use the site in and security tokens needed to keep you signed in.',
+    ],
     whyHeading: 'Why we collect it',
     whyBody: 'We use your data only to run the book-donation service:',
+    whyItems: [
+      'To create and secure your account.',
+      'To record and deliver your book donations to the right school.',
+      'To arrange courier pickup when you request it.',
+      'To send transactional email — for example sign-in codes, password resets, and donation status updates.',
+      'To respond to your questions and support requests.',
+      'To keep BookBridge safe and prevent abuse.',
+    ],
     legalBasisHeading: 'Legal basis',
     legalBasisBody: 'We process your personal data on one or more of these grounds:',
+    legalBasisItems: [
+      'Performance of a service you asked for — for example processing a donation you started.',
+      'Your consent — for example when you give us an address for courier pickup. You can withdraw consent at any time.',
+      'Our legitimate interest in running a safe, working platform — for example security and fraud prevention.',
+      'Compliance with the law — for example keeping records we are legally required to keep.',
+    ],
     storageHeading: 'Where your data is stored',
     storageBody:
       'Your data is stored in our database hosted on Supabase (PostgreSQL, authentication, and file storage). Access is restricted to BookBridge and the service providers listed below, and is protected by authentication and access controls.',
     thirdPartiesHeading: 'Who we share it with',
     thirdPartiesBody:
       'We do not sell your personal data. We share it only with service providers that help us run BookBridge, and only as needed:',
+    thirdPartiesItems: [
+      'Supabase — database, authentication, and file storage.',
+      'Vercel — website and API hosting.',
+      'Our email provider — to send transactional email such as sign-in codes and status updates.',
+      'A payment provider — only if and when monetary donations are enabled; card details are handled by the provider, not stored by us.',
+    ],
     thirdPartiesNote:
       'These providers process data on our behalf under their own security and privacy terms. Some may store data outside Georgia.',
     retentionHeading: 'How long we keep it',
@@ -329,6 +374,13 @@ export default {
       'We keep your account and donation records for as long as your account is active and as long as we need them for the purposes above, or as required by law. When you ask us to delete your account, we remove your personal data except where we are legally required to keep certain records.',
     rightsHeading: 'Your rights',
     rightsBody: 'You have the right to:',
+    rightsItems: [
+      'Access — ask for a copy of the personal data we hold about you.',
+      'Correction — ask us to fix data that is wrong or out of date.',
+      'Deletion — ask us to delete your account and personal data, subject to records we must keep by law.',
+      'Objection and restriction — ask us to stop or limit certain uses of your data.',
+      'Withdraw consent — where we rely on your consent, you can withdraw it at any time.',
+    ],
     rightsHow:
       'To exercise any of these rights, email us at {email}. We may need to verify your identity before acting on a request.',
     childrenHeading: "Children's data",
@@ -349,8 +401,21 @@ export default {
     donationsHeading: 'Donations are gifts',
     donationsBody:
       'Book donations made through BookBridge are voluntary gifts to the schools you choose. Please note:',
+    donationsItems: [
+      'Donated books are gifts. Once a donation is handed over, it cannot be returned or refunded.',
+      'You confirm that you own the books you donate and have the right to give them away.',
+      'Books should be in usable condition and suitable for the school you choose.',
+      'If monetary donations are enabled in the future, any refund terms for those will be stated at the point of payment.',
+    ],
     acceptableUseHeading: 'Acceptable use',
     acceptableUseBody: 'When using BookBridge, you agree that you will not:',
+    acceptableUseItems: [
+      'Do not use BookBridge for any unlawful purpose.',
+      'Do not submit false, misleading, or harmful information.',
+      'Do not attempt to access accounts, data, or systems that are not yours.',
+      'Do not disrupt, overload, or attempt to break the service.',
+      'Do not upload content you do not have the right to share.',
+    ],
     accountsHeading: 'Your account',
     accountsBody:
       'You are responsible for keeping your login details secure and for activity that happens under your account. Tell us promptly if you think your account has been used without your permission. We may suspend or close accounts that break these terms.',
@@ -375,11 +440,21 @@ export default {
     essentialHeading: 'Essential cookies only',
     essentialBody:
       'We use a small number of strictly necessary cookies. Without them the site cannot work properly:',
+    essentialItems: [
+      'Authentication — to keep you signed in as you move between pages.',
+      'Security (CSRF) — to protect forms and requests from cross-site attacks.',
+      'Preferences — to remember your chosen language.',
+    ],
     noTrackingHeading: 'No ad tracking',
     noTrackingBody:
       'We do not use advertising cookies, and we do not track you across other websites. We do not sell your data to advertisers.',
     controlHeading: 'How to control cookies',
     controlBody: 'You are in control of cookies in your browser:',
+    controlItems: [
+      'Most browsers let you view, block, and delete cookies in their settings.',
+      'Blocking essential cookies may stop you from signing in or completing a donation.',
+      'Signing out clears your session cookie.',
+    ],
     contactHeading: 'Contact us',
     contactBody: 'Questions about cookies? Email us at',
   },

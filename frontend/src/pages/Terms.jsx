@@ -18,27 +18,12 @@ export default function Terms() {
 
       <LegalSection heading={t('terms.donationsHeading')}>
         <LegalParagraph>{t('terms.donationsBody')}</LegalParagraph>
-        <LegalList
-          items={[
-            'Donated books are gifts. Once a donation is handed over, it cannot be returned or refunded.',
-            'You confirm that you own the books you donate and have the right to give them away.',
-            'Books should be in usable condition and suitable for the school you choose.',
-            'If monetary donations are enabled in the future, any refund terms for those will be stated at the point of payment.',
-          ]}
-        />
+        <LegalList items={t('terms.donationsItems')} />
       </LegalSection>
 
       <LegalSection heading={t('terms.acceptableUseHeading')}>
         <LegalParagraph>{t('terms.acceptableUseBody')}</LegalParagraph>
-        <LegalList
-          items={[
-            'Do not use BookBridge for any unlawful purpose.',
-            'Do not submit false, misleading, or harmful information.',
-            'Do not attempt to access accounts, data, or systems that are not yours.',
-            'Do not disrupt, overload, or attempt to break the service.',
-            'Do not upload content you do not have the right to share.',
-          ]}
-        />
+        <LegalList items={t('terms.acceptableUseItems')} />
       </LegalSection>
 
       <LegalSection heading={t('terms.accountsHeading')}>

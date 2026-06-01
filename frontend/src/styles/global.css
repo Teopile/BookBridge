@@ -77,7 +77,7 @@
   --sh-focus-dark: 0 0 0 3px rgba(217, 184, 114, 0.55);
 
   /* ============ TYPOGRAPHY ============ */
-  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', Roboto, Arial, sans-serif;
+  --font-sans: 'Hanken Grotesk', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans Georgian', Roboto, Arial, sans-serif;
   --font-display: 'Fraunces', Georgia, 'Noto Serif Georgian', serif;
 
   --fs-xs:   13px;
@@ -126,6 +126,30 @@
   --teal: var(--forest-600);
   --teal-dark: var(--forest-700);
   --teal-soft: var(--forest-50);
+
+  /* ============ DIRECTION F — "Trail Journal" tokens ============
+     Warm field-notebook palette + motion. forest-600/700, honey-400/500,
+     and cream-page already map 1:1 to F's --forest / --honey / --cream. */
+  --cream-warm-F: #FAF5E8;   /* warm cream bands (how / mission) */
+  --sand:         #EFE7D6;   /* kraft/sand card surface */
+  --kraft:        #E6DAC0;   /* progress-bar track, parcel chip */
+  --kraft-edge:   #D8C9A8;   /* dashed/solid card borders */
+  --clay:         #B07A4F;   /* hand-stamp underline + pins (graphical) */
+  --sage:         #7A8B6F;   /* ghost-button border, "where" line */
+  --forest-dark:  #1F4530;   /* footer ground */
+  --line:         var(--border-default);
+
+  /* motion */
+  --ease-F:    cubic-bezier(.22, .61, .36, 1);
+  --ease-soft: ease-out;
+  --dur-F:      .55s;
+  --dur-slow-F: .7s;
+  --rise:       16px;
+  --stagger:    80ms;
+
+  /* shadow aliases used by F classes */
+  --shadow-soft: var(--sh-2);
+  --shadow-lift: var(--sh-3);
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -139,15 +163,27 @@ body {
   -webkit-font-smoothing: antialiased;
   position: relative;
 }
+/* Paper-grain texture overlay — the signature of Direction F.
+   z-index:-1 (NOT the mockup's 0) since the live app has no global .wrap{z-index:1}
+   wrapper — a negative layer guarantees the grain never covers content. */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
-  pointer-events: none;
   z-index: -1;
-  background:
-    radial-gradient(60vw 50vh at 90% -10%, rgba(217, 184, 114, 0.18), transparent 60%),
-    radial-gradient(50vw 40vh at -10% 100%, rgba(58, 107, 74, 0.10), transparent 65%);
+  pointer-events: none;
+  opacity: 0.5;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+}
+/* Faint ruled-baseline feel across the page */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(124, 110, 86, 0.05) 31px, rgba(124, 110, 86, 0.05) 32px);
 }
 a {
   color: var(--forest-600);
@@ -178,6 +214,33 @@ img, svg { display: block; max-width: 100%; }
   box-shadow: 0 0 0 5px var(--honey-200);
   border-radius: var(--r-xs);
 }
+
+/* =============== STAMPED SECTION LABEL (Direction F) ===============
+   Hand-stamped small-caps eyebrow with a wobbly hand-drawn underline (SVG
+   <path> supplied in JSX). Body text uses forest-600 on light surfaces for
+   true AA at 12.5px; clay is reserved for the graphical underline/pins. */
+.stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-semibold);
+  font-size: 12.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--forest-600);
+  position: relative;
+  padding-bottom: 7px;
+  margin-bottom: 18px;
+}
+.stamp svg { flex: 0 0 auto; }
+.stamp .underline {
+  position: absolute;
+  left: 0; bottom: -2px;
+  width: 100%; height: 6px;
+  overflow: visible;
+}
+.stamp.on-dark { color: var(--honey-400); }
 
 h1, h2, h3, h4 {
   font-weight: var(--fw-bold);
@@ -228,9 +291,9 @@ p  { color: var(--text-muted); }
 .logo-text {
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
-  font-size: var(--fs-h4);
+  font-size: 21px;
   color: var(--text-default);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 .nav-links { display: flex; align-items: center; gap: var(--space-7); }
 .nav-links a {
@@ -339,6 +402,7 @@ main {
 }
 .btn:active { transform: translateY(1px); }
 
+/* forest = F's .btn-forest */
 .btn-primary {
   background: var(--forest-600);
   color: var(--text-on-dark);
@@ -348,29 +412,34 @@ main {
   background: var(--forest-700);
   border-color: var(--forest-700);
   color: var(--text-on-dark);
+  transform: translateY(-1px);
   box-shadow: var(--sh-2);
 }
 
+/* honey CTA = F's .btn-donate — the primary "Donate Books" action */
 .btn-secondary {
   background: var(--honey-400);
   color: var(--text-on-honey);
   border-color: var(--honey-500);
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04), 0 6px 16px rgba(201, 160, 82, 0.32);
 }
 .btn-secondary:hover {
   background: var(--honey-500);
   border-color: var(--honey-500);
   color: var(--text-on-honey);
-  box-shadow: var(--sh-2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05), 0 10px 22px rgba(201, 160, 82, 0.4);
 }
 
+/* bordered ghost (F's sage-outlined ghost) */
 .btn-ghost {
   color: var(--forest-600);
   background: transparent;
   padding: var(--space-3) var(--space-6);
-  border-color: transparent;
+  border-color: var(--sage);
 }
 .btn-ghost:hover {
-  background: var(--honey-50);
+  background: rgba(122, 139, 111, 0.12);
   color: var(--forest-700);
 }
 
@@ -412,7 +481,7 @@ main {
 }
 .container-narrow { max-width: var(--container-narrow); }
 .section { padding: var(--space-9) 0; }
-.section.alt { background: var(--surface); }
+.section.alt { background: var(--cream-warm-F); }
 .section.dark {
   background: var(--forest-700);
   color: var(--text-on-dark);
@@ -428,15 +497,12 @@ main {
   font-size: var(--fs-md);
 }
 
-/* =============== HERO =============== */
+/* =============== HERO (Direction F — editorial asymmetry) =============== */
 .hero {
   padding: var(--space-10) 0 var(--space-9);
-  background:
-    radial-gradient(ellipse 50% 70% at 30% 30%, rgba(45, 92, 62, 0.10) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 60% at 80% 80%, rgba(217, 184, 114, 0.18) 0%, transparent 60%),
-    linear-gradient(180deg, var(--cream-warm) 0%, transparent 100%);
-  text-align: center;
+  position: relative;
 }
+/* Legacy centered hero (kept for any page still using .hero-inner) */
 .hero-inner { max-width: 720px; margin: 0 auto; padding: 0 var(--space-5); }
 .hero h1 {
   font-size: var(--fs-h1-fluid);
@@ -456,6 +522,163 @@ main {
 .hero-illustration .logo-mark-fallback,
 .hero-illustration .logo-img {
   box-shadow: var(--sh-2);
+}
+
+/* F's 2-column hero grid */
+.hero-grid {
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0 var(--space-5);
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 54px;
+  align-items: center;
+}
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-sans);
+  font-weight: var(--fw-semibold);
+  font-size: 12.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--clay);
+  background: var(--cream-warm-F);
+  border: 1px solid var(--line);
+  padding: 7px 15px;
+  border-radius: 30px;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-2);
+  line-height: 1.3;
+}
+.hero-kicker svg { flex: 0 0 auto; color: var(--clay); }
+h1.hero-title {
+  font-size: clamp(36px, 5vw, 58px);
+  font-weight: var(--fw-semibold);
+  line-height: 1.07;
+  letter-spacing: -0.025em;
+  margin-bottom: 14px;
+}
+h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: var(--fw-medium); }
+.hero-poetic {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--forest-600);
+  line-height: 1.4;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.hero-poetic .ka { font-family: var(--font-sans); font-style: normal; font-size: 15px; color: var(--text-muted); }
+.hero-lede { font-size: 18px; color: var(--text-muted); max-width: 33em; margin-bottom: 26px; }
+.hero-cta { display: flex; gap: 14px; flex-wrap: wrap; align-items: center; }
+.hero-steps {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 4px;
+  margin-top: 22px;
+  font-size: 13.5px;
+  font-weight: var(--fw-semibold);
+  background: var(--cream-warm-F);
+  border: 1px dashed var(--kraft-edge);
+  border-radius: 10px;
+  padding: 12px 16px;
+  box-shadow: var(--sh-2);
+}
+.hero-steps .hs { display: inline-flex; align-items: center; gap: 8px; }
+.hero-steps .n {
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  border: 1.4px solid var(--clay);
+  color: var(--clay);
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+}
+.hero-steps .arr { color: var(--sage); margin: 0 6px; flex: 0 0 auto; }
+.hero-photo { position: relative; }
+
+/* =============== TAPE-FRAME PHOTO (hero + mission) =============== */
+.photo-frame {
+  position: relative;
+  background: var(--cream-warm-F);
+  padding: 12px 12px 46px;
+  border: 1px solid var(--kraft-edge);
+  border-radius: 6px;
+  box-shadow: var(--sh-3);
+  transform: rotate(-1.4deg);
+}
+.photo-frame img { border-radius: 4px; width: 100%; height: clamp(320px, 42vw, 460px); object-fit: cover; }
+.photo-frame .caption {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--text-muted);
+  text-align: center;
+  padding-top: 12px;
+}
+.photo-frame .ov {
+  position: absolute;
+  inset: 12px 12px 46px;
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(217, 184, 114, 0.05), rgba(176, 122, 79, 0.12));
+  pointer-events: none;
+}
+.tape {
+  position: absolute;
+  width: 96px; height: 28px;
+  background: rgba(217, 184, 114, 0.45);
+  border: 1px dashed rgba(176, 122, 79, 0.4);
+  box-shadow: 0 2px 6px rgba(43, 42, 40, 0.08);
+}
+.tape.t1 { top: -12px; left: 30px; transform: rotate(-6deg); }
+.tape.t2 { bottom: 18px; right: 24px; transform: rotate(4deg); }
+.mission-photo .photo-frame { transform: rotate(1.2deg); }
+
+/* =============== DOTTED TRAIL ROUTE + PINS (Home "how it works") =============== */
+.trail { position: relative; }
+.trail-route {
+  position: absolute;
+  top: 46px; left: 8%; right: 8%;
+  height: 120px;
+  z-index: 1;
+  pointer-events: none;
+}
+.trail-route svg { width: 100%; height: 100%; overflow: visible; }
+.steps.trail-steps,
+.trail .steps { position: relative; z-index: 2; }
+.step .pin {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--cream-warm-F);
+  border: 1.5px solid var(--clay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: var(--fw-bold);
+  font-size: 20px;
+  color: var(--clay);
+  margin-bottom: 16px;
+  box-shadow: 0 2px 0 rgba(176, 122, 79, 0.18);
+}
+.step .where {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--sage);
+  font-weight: var(--fw-semibold);
+  margin-top: 14px;
 }
 
 /* =============== ONE BIG NUMBER =============== */
@@ -482,8 +705,8 @@ main {
   max-width: var(--container); margin: 0 auto;
 }
 .step {
-  background: var(--surface);
-  border: 1px solid var(--border-default);
+  background: var(--sand);
+  border: 1px solid var(--kraft-edge);
   border-radius: var(--r-md);
   padding: var(--space-7);
   box-shadow: var(--sh-1);
@@ -519,8 +742,8 @@ main {
   max-width: var(--container); margin: 0 auto;
 }
 .school {
-  background: var(--surface);
-  border: 1px solid var(--border-default);
+  background: var(--sand);
+  border: 1px solid var(--kraft-edge);
   border-radius: var(--r-md);
   overflow: hidden;
   display: flex; flex-direction: column;
@@ -549,6 +772,25 @@ main {
   font-size: var(--fs-xs); font-weight: var(--fw-bold);
 }
 .school-badge.urgent { background: var(--forest-700); color: var(--text-on-dark); }
+/* F school-photo tags (presentational; pair with B5 JSX) */
+.region-tag {
+  position: absolute; top: 12px; left: 12px;
+  background: var(--sage); color: var(--text-on-dark);
+  font-size: 11.5px; font-weight: var(--fw-semibold);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  padding: 5px 10px; border-radius: var(--r-xs);
+  box-shadow: 0 2px 6px rgba(43, 42, 40, 0.18);
+}
+.books-tag {
+  position: absolute; bottom: 12px; right: 12px;
+  background: var(--cream-warm-F); color: var(--forest-600);
+  font-size: 12px; font-weight: var(--fw-bold); letter-spacing: 0.02em;
+  padding: 5px 11px 5px 9px; border-radius: var(--r-xs);
+  box-shadow: 0 2px 6px rgba(43, 42, 40, 0.18);
+  display: inline-flex; align-items: center; gap: 6px;
+  border: 1px solid var(--kraft-edge);
+}
+.books-tag svg { flex: 0 0 auto; color: var(--clay); }
 .school-body {
   padding: var(--space-4); flex: 1;
   display: flex; flex-direction: column;
@@ -605,21 +847,27 @@ main {
 
 /* =============== FOOTER =============== */
 footer {
-  background: var(--text-default);
-  color: rgba(250, 245, 232, 0.72);
+  background: var(--forest-dark);
+  color: rgba(245, 240, 228, 0.82);
   padding: var(--space-8) var(--space-5) var(--space-6);
 }
 .footer-grid {
-  display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-7);
+  display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: var(--space-7);
   max-width: var(--container); margin: 0 auto var(--space-7);
 }
 .footer-brand-row { display: flex; align-items: center; gap: var(--space-2); }
 .footer-brand p {
-  color: rgba(250, 245, 232, 0.65);
+  color: rgba(245, 240, 228, 0.72);
   font-size: var(--fs-sm);
   max-width: 320px;
   margin-top: var(--space-2);
   line-height: var(--lh-normal);
+}
+.foot-ka {
+  font-family: var(--font-sans);
+  color: var(--honey-400);
+  font-size: 15px;
+  margin-top: 14px;
 }
 .footer-col h5 {
   font-size: var(--fs-xs); font-weight: var(--fw-bold);
@@ -1207,6 +1455,12 @@ footer {
   .stats-grid { grid-template-columns: 1fr 1fr; }
   .search-bar { flex-direction: column; align-items: stretch; }
   .search-bar input { width: 100%; }
+  /* Direction F: stack hero/mission, photo first; hide the dotted trail line */
+  .hero-grid { grid-template-columns: 1fr; gap: 42px; }
+  .hero-photo { max-width: 520px; margin: 0 auto; width: 100%; order: -1; }
+  .mission-grid { grid-template-columns: 1fr; }
+  .mission-photo { max-width: 520px; margin: 0 auto; width: 100%; order: -1; }
+  .trail-route { display: none; }
 }
 @media (min-width: 881px) {
   .nav-burger, .nav-backdrop { display: none !important; }
@@ -1225,6 +1479,39 @@ footer {
   .wizard-banner-content { left: var(--space-4); right: var(--space-4); bottom: var(--space-4); }
 }
 
+/* =============== MOTION LAYER (Direction F) ===============
+   Scroll-reveal cascade + hand-drawn underline draw-on + dotted-trail wipe.
+   ALL hidden states are gated on `html.js` so if JS fails (or never adds the
+   class) everything stays visible — the `.reveal` default is opacity:1.
+   transform / opacity / clip-path only. */
+.reveal { opacity: 1; }
+
+@media (prefers-reduced-motion: no-preference) {
+  html.js .reveal {
+    opacity: 0;
+    transform: translateY(var(--rise));
+    transition: opacity var(--dur-F) var(--ease-F), transform var(--dur-F) var(--ease-F);
+    transition-delay: calc(var(--i, 0) * var(--stagger));
+    will-change: opacity, transform;
+  }
+  html.js .reveal.is-in,
+  html.js .is-in .reveal { opacity: 1; transform: none; }
+
+  html.js .stamp .underline path {
+    stroke-dasharray: 140;
+    stroke-dashoffset: 140;
+    transition: stroke-dashoffset 0.6s var(--ease-soft) 0.25s;
+  }
+  html.js .is-in .stamp .underline path,
+  html.js .stamp.is-in .underline path { stroke-dashoffset: 0; }
+
+  html.js .trail-route svg { clip-path: inset(0 100% 0 0); }
+  html.js .trail.is-in .trail-route svg {
+    transition: clip-path 1.6s var(--ease-soft);
+    clip-path: inset(0 0 0 0);
+  }
+}
+
 /* =============== REDUCED MOTION =============== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -1232,4 +1519,8 @@ footer {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+  /* Force F motion states to their final, visible form. */
+  html.js .reveal { opacity: 1 !important; transform: none !important; }
+  html.js .stamp .underline path { stroke-dashoffset: 0 !important; }
+  html.js .trail-route svg { clip-path: none !important; }
 }

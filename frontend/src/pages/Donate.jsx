@@ -239,8 +239,8 @@ export default function Donate() {
                     <button
                       onClick={() => removeItem(realIdx)}
                       className="btn btn-ghost btn-sm"
-                      aria-label="Remove book"
-                      title="Remove book"
+                      aria-label={t('donate.removeBook')}
+                      title={t('donate.removeBook')}
                     >
                       ×
                     </button>

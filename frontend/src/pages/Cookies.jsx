@@ -14,13 +14,7 @@ export default function Cookies() {
 
       <LegalSection heading={t('cookies.essentialHeading')}>
         <LegalParagraph>{t('cookies.essentialBody')}</LegalParagraph>
-        <LegalList
-          items={[
-            'Authentication — to keep you signed in as you move between pages.',
-            'Security (CSRF) — to protect forms and requests from cross-site attacks.',
-            'Preferences — to remember your chosen language.',
-          ]}
-        />
+        <LegalList items={t('cookies.essentialItems')} />
       </LegalSection>
 
       <LegalSection heading={t('cookies.noTrackingHeading')}>
@@ -29,13 +23,7 @@ export default function Cookies() {
 
       <LegalSection heading={t('cookies.controlHeading')}>
         <LegalParagraph>{t('cookies.controlBody')}</LegalParagraph>
-        <LegalList
-          items={[
-            'Most browsers let you view, block, and delete cookies in their settings.',
-            'Blocking essential cookies may stop you from signing in or completing a donation.',
-            'Signing out clears your session cookie.',
-          ]}
-        />
+        <LegalList items={t('cookies.controlItems')} />
       </LegalSection>
 
       <LegalSection heading={t('cookies.contactHeading')}>

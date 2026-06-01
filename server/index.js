@@ -7,6 +7,7 @@ import rateLimit from 'express-rate-limit';
 
 import { csrfInit } from './middleware/csrf.js';
 import { attachUser } from './middleware/auth.js';
+import { isUpstashConfigured, createUpstashLimiter } from './lib/ratelimit.js';
 
 import publicRoutes from './routes/public.js';
 import authRoutes from './routes/auth.js';
@@ -67,13 +68,28 @@ app.use(express.urlencoded({ extended: false, limit: '1mb' }));
 app.use(cookieParser(process.env.COOKIE_SECRET));
 app.use(csrfInit);
 
-const limiter = rateLimit({
+// Default limiter: express-rate-limit's in-memory store (per-instance, resets
+// on serverless cold start). When the optional Upstash env vars are present we
+// swap in a shared, dependency-free distributed limiter instead; otherwise this
+// behaves exactly as before.
+const inMemoryLimiter = rateLimit({
   windowMs: 60_000,
   limit: Number(process.env.RATE_LIMIT_PER_MIN) || 120,
   standardHeaders: true,
   legacyHeaders: false,
   skip: () => process.env.NODE_ENV !== 'production',
 });
+
+let limiter = inMemoryLimiter;
+if (isUpstashConfigured()) {
+  const distributed = createUpstashLimiter();
+  // Keep the same prod-only behavior as the in-memory limiter so local/dev and
+  // test runs are never throttled.
+  limiter = (req, res, next) =>
+    (process.env.NODE_ENV !== 'production' ? next() : distributed(req, res, next));
+  console.log('[ratelimit] Upstash distributed limiter enabled');
+}
+
 app.use('/api/', (req, res, next) => {
   if (req.path.endsWith('/webhook')) return next();
   return limiter(req, res, next);

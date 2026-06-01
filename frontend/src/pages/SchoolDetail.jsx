@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Icon from '../components/Icon.jsx';
+import StampLabel from '../components/StampLabel.jsx';
 import { Loading } from '../components/States.jsx';
 
 const FALLBACK_PHOTOS = [
@@ -150,6 +151,9 @@ export default function SchoolDetail() {
           </div>
         </div>
 
+        <div style={{ marginBottom: 'var(--space-3)' }}>
+          <StampLabel>{t('home.schoolsStamp')}</StampLabel>
+        </div>
         <h3 style={{ marginBottom: 'var(--space-3)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-2)' }}>
           <Icon name="books" size={22} color="var(--forest-600)" />
           {t('schools.requestedBooks')}

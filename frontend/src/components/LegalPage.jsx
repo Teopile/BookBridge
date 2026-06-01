@@ -13,18 +13,18 @@ export default function LegalPage({ titleKey, introKey, children }) {
   return (
     <section className="section">
       <div className="container container-narrow">
-        <p
-          style={{
-            textTransform: 'uppercase',
-            letterSpacing: '0.08em',
-            fontSize: 'var(--fs-xs)',
-            fontWeight: 'var(--fw-bold)',
-            color: 'var(--honey-500)',
-            marginBottom: 'var(--space-2)',
-          }}
-        >
+        <span className="stamp">
           {t('legal.eyebrow')}
-        </p>
+          <svg className="underline" viewBox="0 0 120 6" preserveAspectRatio="none" aria-hidden="true">
+            <path
+              d="M1 4 C30 2, 60 5, 90 2 S118 4, 119 4"
+              fill="none"
+              stroke="var(--clay)"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
 
         <h1 style={{ marginBottom: 'var(--space-3)' }}>{t(titleKey)}</h1>
 
@@ -101,6 +101,10 @@ export function LegalParagraph({ children }) {
 }
 
 export function LegalList({ items }) {
+  // t() returns the raw i18n value; arrays render directly. Guard against a
+  // missing key (t() falls back to returning the key string) so a typo never
+  // crashes the page on a .map of a non-array.
+  const list = Array.isArray(items) ? items : [];
   return (
     <ul
       style={{
@@ -112,7 +116,7 @@ export function LegalList({ items }) {
         listStyle: 'disc',
       }}
     >
-      {items.map((item, i) => (
+      {list.map((item, i) => (
         <li key={i} style={{ marginBottom: 'var(--space-2)' }}>
           {item}
         </li>

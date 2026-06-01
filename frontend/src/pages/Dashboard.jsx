@@ -27,8 +27,8 @@ export default function Dashboard() {
       <section className="section">
         <div className="section-inner">
           <div className="section-header">
-            <div className="section-tag">Regions</div>
-            <h2 className="section-title">Geographic reach</h2>
+            <div className="section-tag">{t('dashboard.regionsTag')}</div>
+            <h2 className="section-title">{t('dashboard.geographicReach')}</h2>
           </div>
           <div className="mission-grid">
             {regions.map((r) => (
@@ -37,7 +37,7 @@ export default function Dashboard() {
                   <Icon name="mountain" size={22} />
                 </span>
                 <h4>{r.region}</h4>
-                <p>{r.count} schools</p>
+                <p>{t('dashboard.schoolsCount', { count: r.count })}</p>
               </div>
             ))}
             {regions.length === 0 && (

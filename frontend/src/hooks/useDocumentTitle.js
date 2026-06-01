@@ -12,7 +12,6 @@ const TITLE_KEYS = {
   'schools':             'schools.title',
   'how-it-works':        'nav.how',
   'donate':              'home.ctaPrimary',
-  'donate-money':        'home.ctaPrimary',
   'about':               'nav.about',
   'privacy':             'legal.privacyTitle',
   'terms':               'legal.termsTitle',

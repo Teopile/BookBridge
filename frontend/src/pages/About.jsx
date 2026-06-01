@@ -72,10 +72,10 @@ export default function About() {
         </div>
 
         <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap' }}>
-          <Link to={prefix + '/donate'} className="btn btn-primary btn-lg">
+          <Link to={prefix + '/donate'} className="btn btn-secondary btn-lg">
             {t('home.ctaPrimary')}
           </Link>
-          <Link to={prefix + '/schools'} className="btn btn-secondary btn-lg">
+          <Link to={prefix + '/schools'} className="btn btn-ghost btn-lg">
             {t('home.ctaSecondary')}
           </Link>
         </div>

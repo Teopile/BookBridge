@@ -13,7 +13,6 @@ import Donate from './pages/Donate.jsx';
 // Lazy-loaded — secondary public pages.
 const HowItWorks    = lazy(() => import('./pages/HowItWorks.jsx'));
 const SchoolDetail  = lazy(() => import('./pages/SchoolDetail.jsx'));
-const DonateMoney   = lazy(() => import('./pages/DonateMoney.jsx'));
 const Dashboard     = lazy(() => import('./pages/Dashboard.jsx'));
 const About         = lazy(() => import('./pages/About.jsx'));
 const Search        = lazy(() => import('./pages/Search.jsx'));
@@ -89,7 +88,6 @@ function LocalizedRoutes() {
         <Route path="schools/:id" element={<SchoolDetail />} />
         <Route path="volunteer-schools" element={<Schools type="volunteer" />} />
         <Route path="donate/*" element={<Donate />} />
-        <Route path="donate-money" element={<DonateMoney />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="about" element={<About />} />
         <Route path="privacy" element={<Privacy />} />

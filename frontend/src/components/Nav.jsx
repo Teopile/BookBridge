@@ -65,7 +65,7 @@ export default function Nav() {
           )}
           <Link
             to={prefix + '/donate'}
-            className="btn btn-primary btn-sm nav-donate-cta"
+            className="btn btn-secondary btn-sm nav-donate-cta"
             aria-label={t('hero.ctaDonate')}
           >
             <Icon name="heart" size={14} fill="currentColor" stroke={0} />
@@ -105,7 +105,7 @@ export default function Nav() {
         ) : (
           <Link to={prefix + '/auth'}>{t('nav.login')}</Link>
         )}
-        <Link to={prefix + '/donate'} className="btn btn-primary btn-block" style={{ marginTop: 'var(--space-3)' }}>
+        <Link to={prefix + '/donate'} className="btn btn-secondary btn-block" style={{ marginTop: 'var(--space-3)' }}>
           {t('hero.ctaDonate')}
         </Link>
       </div>

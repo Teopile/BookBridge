@@ -5,7 +5,10 @@ import { apiGet } from '../api.js';
 import Leaderboard from '../components/Leaderboard.jsx';
 import Activity from '../components/Activity.jsx';
 import Icon from '../components/Icon.jsx';
-import Logo from '../components/Logo.jsx';
+import StampLabel from '../components/StampLabel.jsx';
+
+// Hero photo — a warm field-notebook shot wrapped in a tape frame.
+const HERO_PHOTO = 'https://picsum.photos/seed/bb-hero-trail/800/620';
 
 const SAMPLE_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -65,17 +68,49 @@ export default function Home() {
 
   return (
     <>
-      {/* HERO */}
+      {/* HERO — Direction F editorial asymmetry: copy left, tape-frame photo right */}
       <section className="hero">
-        <div className="hero-inner">
-          <div className="hero-illustration">
-            <Logo size={180} withWordmark={false} priority />
+        <div className="hero-grid">
+          <div className="hero-copy">
+            <span className="hero-kicker reveal">
+              <Icon name="books" size={17} color="var(--clay)" />
+              {t('home.heroKicker')}
+            </span>
+            <h1 className="hero-title reveal">{t('home.heroTitle')}</h1>
+            <p className="hero-poetic reveal">
+              {t('hero.slogan')}
+              <span className="ka">{t('footer.taglineKa')}</span>
+            </p>
+            <p className="hero-lede reveal">{t('home.heroSub')}</p>
+            <div className="hero-cta reveal">
+              {/* "Donate Books" — the primary honey CTA. Must stay. */}
+              <Link to={prefix + '/donate'} className="btn btn-secondary btn-lg">{t('home.ctaPrimary')}</Link>
+              <Link to={prefix + '/schools'} className="btn btn-ghost btn-lg">{t('home.ctaSecondary')}</Link>
+            </div>
+            <div className="hero-steps reveal" aria-label={t('home.howTitle')}>
+              <span className="hs"><span className="n" aria-hidden="true">1</span>{t('home.heroStep1')}</span>
+              <span className="arr" aria-hidden="true"><Icon name="arrowRight" size={16} color="var(--sage)" /></span>
+              <span className="hs"><span className="n" aria-hidden="true">2</span>{t('home.heroStep2')}</span>
+              <span className="arr" aria-hidden="true"><Icon name="arrowRight" size={16} color="var(--sage)" /></span>
+              <span className="hs"><span className="n" aria-hidden="true">3</span>{t('home.heroStep3')}</span>
+            </div>
           </div>
-          <h1>{t('home.heroTitle')}</h1>
-          <p>{t('home.heroSub')}</p>
-          <div className="hero-actions">
-            <Link to={prefix + '/donate'} className="btn btn-primary btn-lg">{t('home.ctaPrimary')}</Link>
-            <Link to={prefix + '/schools'} className="btn btn-secondary btn-lg">{t('home.ctaSecondary')}</Link>
+
+          <div className="hero-photo">
+            <div className="photo-frame">
+              <span className="tape t1" aria-hidden="true" />
+              <span className="tape t2" aria-hidden="true" />
+              <img
+                src={HERO_PHOTO}
+                alt={t('home.heroCaption').replace(/^—\s*/, '')}
+                width={800}
+                height={620}
+                loading="eager"
+                decoding="async"
+              />
+              <div className="ov" aria-hidden="true" />
+              <p className="caption">{t('home.heroCaption')}</p>
+            </div>
           </div>
         </div>
       </section>
@@ -86,53 +121,72 @@ export default function Home() {
         <div className="bignum-l">{t('home.bignumLabel', { schools: stats.beneficiary_schools })}</div>
       </section>
 
-      {/* HOW IT WORKS */}
+      {/* HOW IT WORKS — dotted "route" line threading the 3 trail stops */}
       <section className="section">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('home.howTitle')}</h2>
+          <div className="section-header" style={{ textAlign: 'left', marginLeft: 0 }}>
+            <StampLabel>{t('home.howStamp')}</StampLabel>
+            <h2 className="section-title reveal">{t('home.howTitle')}</h2>
           </div>
-          <div className="steps">
-            <div className="step">
-              <div className="step-icon">
-                <Icon name="search" size={28} />
-              </div>
-              <div className="step-num">1</div>
-              <h3>{t('home.step1Title')}</h3>
-              <p>{t('home.step1Body')}</p>
+          <div className="trail">
+            {/* the dotted hand-drawn route connecting the stops; hidden on mobile via CSS */}
+            <div className="trail-route" aria-hidden="true">
+              <svg viewBox="0 0 1000 120" preserveAspectRatio="none">
+                <path
+                  d="M40 40 C220 -10, 320 90, 500 50 S780 0, 960 56"
+                  fill="none"
+                  stroke="var(--clay)"
+                  strokeWidth="2"
+                  strokeDasharray="2 9"
+                  strokeLinecap="round"
+                  opacity="0.75"
+                />
+                <circle cx="40" cy="40" r="5" fill="var(--clay)" />
+                <circle cx="500" cy="50" r="5" fill="var(--clay)" />
+                <path d="M952 50 l12 6 -12 6" fill="none" stroke="var(--clay)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
             </div>
-            <div className="step">
-              <div className="step-icon">
-                <Icon name="gift" size={28} />
-              </div>
-              <div className="step-num">2</div>
-              <h3>{t('home.step2Title')}</h3>
-              <p>{t('home.step2Body')}</p>
-            </div>
-            <div className="step">
-              <div className="step-icon">
-                <Icon name="truck" size={28} />
-              </div>
-              <div className="step-num">3</div>
-              <h3>{t('home.step3Title')}</h3>
-              <p>{t('home.step3Body')}</p>
+            <div className="steps trail-steps">
+              <article className="step reveal" style={{ '--i': 0 }}>
+                <div className="pin" aria-hidden="true">1</div>
+                <h3>{t('home.step1Title')}</h3>
+                <p>{t('home.step1Body')}</p>
+                <div className="where">{t('home.step1Where')}</div>
+              </article>
+              <article className="step reveal" style={{ '--i': 1 }}>
+                <div className="pin" aria-hidden="true">2</div>
+                <h3>{t('home.step2Title')}</h3>
+                <p>{t('home.step2Body')}</p>
+                <div className="where">{t('home.step2Where')}</div>
+              </article>
+              <article className="step reveal" style={{ '--i': 2 }}>
+                <div className="pin" aria-hidden="true">3</div>
+                <h3>{t('home.step3Title')}</h3>
+                <p>{t('home.step3Body')}</p>
+                <div className="where">{t('home.step3Where')}</div>
+              </article>
             </div>
           </div>
         </div>
       </section>
 
-      {/* SCHOOLS */}
+      {/* SCHOOLS — kraft cards with region + fulfilment field-notebook tags */}
       <section className="section alt">
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('home.schoolsTitle')}</h2>
+          <div className="section-header" style={{ textAlign: 'left', marginLeft: 0 }}>
+            <StampLabel>{t('home.schoolsStamp')}</StampLabel>
+            <h2 className="section-title reveal">{t('home.schoolsTitle')}</h2>
           </div>
           <div className="school-grid">
             {schools.map((s) => (
               <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
                 <div className="school-photo">
                   <img src={s.photo} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
-                  {s.urgent && <span className="school-badge urgent">{t('home.urgentBadge')}</span>}
+                  {s.region && <span className="region-tag">{s.region.split(' · ')[0]}</span>}
+                  <span className="books-tag">
+                    <Icon name="book" size={14} color="var(--clay)" />
+                    {t('home.fulfilledLabel')} · {s.need_pct}%
+                  </span>
                 </div>
                 <div className="school-body">
                   <h3>{s.name}</h3>
@@ -147,7 +201,7 @@ export default function Home() {
                   </div>
                 </div>
                 <div className="school-cta">
-                  <span className="btn btn-primary btn-block">{t('home.donateToSchool')}</span>
+                  <span className="btn btn-secondary btn-block">{t('home.donateToSchool')}</span>
                 </div>
               </Link>
             ))}

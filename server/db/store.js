@@ -198,6 +198,48 @@ export async function recordNotification(payload) {
   return data;
 }
 
+// ---------- in-app (in-website) notifications ----------
+
+// Record a user-facing in-app notification. Reuses the notifications table with
+// channel='in_app' and an unread read_at. Safe no-op if there's no user.
+export async function createInAppNotification(userId, donationId, subject, body) {
+  if (!userId) return null;
+  const { data, error } = await supabaseAdmin.from('notifications').insert({
+    user_id: userId, donation_id: donationId, channel: 'in_app',
+    template: 'status_changed', recipient: 'in_app', subject, body, status: 'sent',
+  }).select().single();
+  if (error) throw error;
+  return data;
+}
+
+export async function listUserNotifications(userId, { limit = 30 } = {}) {
+  const { data, error } = await supabaseAdmin.from('notifications')
+    .select('id, donation_id, subject, body, sent_at, read_at')
+    .eq('user_id', userId).eq('channel', 'in_app')
+    .order('sent_at', { ascending: false }).limit(limit);
+  if (error) throw error;
+  return data || [];
+}
+
+export async function countUnreadNotifications(userId) {
+  const { count, error } = await supabaseAdmin.from('notifications')
+    .select('id', { count: 'exact', head: true })
+    .eq('user_id', userId).eq('channel', 'in_app').is('read_at', null);
+  if (error) throw error;
+  return count ?? 0;
+}
+
+// Mark the user's in-app notifications read. Pass specific ids, or omit to mark
+// all currently-unread ones read.
+export async function markNotificationsRead(userId, ids) {
+  let q = supabaseAdmin.from('notifications')
+    .update({ read_at: new Date().toISOString() })
+    .eq('user_id', userId).eq('channel', 'in_app').is('read_at', null);
+  if (Array.isArray(ids) && ids.length) q = q.in('id', ids);
+  const { error } = await q;
+  if (error) throw error;
+}
+
 // ---------- stats (public dashboard) ----------
 
 export async function getPublicStats() {

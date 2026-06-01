@@ -5,17 +5,11 @@ import { csrfProtection } from '../middleware/csrf.js';
 import { requireAuth } from '../middleware/auth.js';
 import {
   listSchoolsByOwner, getSchoolById, listDonationsForVolunteer,
-  updateDonationStatus, getDonorContact, getDonation, recordNotification,
-  canTransition,
+  updateDonationStatus, getDonation, canTransition,
 } from '../db/store.js';
-import { sendEmail, Templates } from '../lib/mailer.js';
+import { notifyDonorOfStatus } from '../lib/notify.js';
 
 const router = Router();
-
-function trackUrlFor(token) {
-  const origin = process.env.PUBLIC_FRONTEND_ORIGIN || 'http://localhost:5173';
-  return `${origin}/en/track/${token}`;
-}
 
 router.get('/my-schools', requireAuth, async (req, res, next) => {
   try {
@@ -66,28 +60,8 @@ router.post('/donations/:id/status', csrfProtection, requireAuth, validate(VolSt
       req.params.id, req.body.status, req.user.id, req.body.note, req.body.courier_tracking_id,
     );
 
-    try {
-      const contact = await getDonorContact(updated.id);
-      if (contact?.email) {
-        const trackUrl = trackUrlFor(updated.track_token);
-        let tpl;
-        if (updated.status === 'delivered') {
-          // getDonation doesn't join the school, so resolve its name explicitly.
-          const ben = updated.beneficiary_school_id ? await getSchoolById(updated.beneficiary_school_id) : null;
-          tpl = Templates.donationDelivered({ donationId: updated.id, schoolName: ben?.name || '', trackUrl, lang: contact.language });
-        } else {
-          tpl = Templates.statusChanged({ donationId: updated.id, status: updated.status, trackUrl, lang: contact.language });
-        }
-        await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
-        await recordNotification({
-          user_id: contact.user_id, donation_id: updated.id, channel: 'email',
-          template: updated.status === 'delivered' ? 'donation_delivered' : 'status_changed',
-          recipient: contact.email, subject: tpl.subject, status: 'sent',
-        });
-      }
-    } catch (e) {
-      console.error('[volunteer] notify failed:', e.message);
-    }
+    try { await notifyDonorOfStatus(updated); }
+    catch (e) { console.error('[volunteer] notify failed:', e.message); }
 
     res.json(updated);
   } catch (err) { next(err); }

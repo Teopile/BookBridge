@@ -6,11 +6,12 @@ import { requireAdmin } from '../middleware/rbac.js';
 import {
   createDonation, setDonationCourier, getDonation, getDonationByTrackToken,
   listDonationsForUser, updateDonationStatus, getSchoolById, recordNotification,
-  listAllDonations, cancelDonation, getDonorContact, canTransition,
+  listAllDonations, cancelDonation, canTransition,
 } from '../db/store.js';
 import { DonationCreateSchema, DonationStatusUpdateSchema, AdminDonationsListSchema } from '../schemas.js';
 import { createShipment } from '../lib/courier.js';
 import { sendEmail, Templates } from '../lib/mailer.js';
+import { notifyDonorOfStatus } from '../lib/notify.js';
 const router = Router();
 
 function trackUrlFor(token) {
@@ -114,7 +115,7 @@ router.post('/:id/confirm-receipt', csrfProtection, requireAuth, async (req, res
     const updated = await updateDonationStatus(
       req.params.id, 'delivered', req.user.id, req.body?.note || 'received by school',
     );
-    try { await fireStatusNotifications(updated); }
+    try { await notifyDonorOfStatus(updated); }
     catch (e) { console.error('[donations] confirm-receipt notify failed:', e.message); }
     res.json(updated);
   } catch (err) { next(err); }
@@ -144,9 +145,9 @@ adminRouter.post('/:id/status', csrfProtection, requireAuth, requireAdmin, valid
       req.params.id, req.body.status, req.user.id, req.body.note, req.body.courier_tracking_id,
     );
 
-    // Fire notifications based on what changed. Best-effort, don't fail the request.
+    // Fan out email + in-app notification. Best-effort, don't fail the request.
     try {
-      await fireStatusNotifications(updated);
+      await notifyDonorOfStatus(updated);
     } catch (e) {
       console.error('[donations] notification dispatch failed:', e.message);
     }
@@ -154,40 +155,5 @@ adminRouter.post('/:id/status', csrfProtection, requireAuth, requireAdmin, valid
     res.json(updated);
   } catch (err) { next(err); }
 });
-
-// ---------- Notification fan-out ----------
-async function fireStatusNotifications(donation) {
-  const contact = await getDonorContact(donation.id);
-  if (!contact) return;
-  const url = trackUrlFor(donation.track_token);
-  const lang = contact.language || 'en';
-  const school = donation.beneficiary_school_id ? await getSchoolById(donation.beneficiary_school_id) : null;
-
-  let tpl;
-  if (donation.status === 'delivered') {
-    tpl = Templates.donationDelivered({ donationId: donation.id, schoolName: school?.name || '', trackUrl: url, lang });
-  } else {
-    tpl = Templates.statusChanged({ donationId: donation.id, status: donation.status, trackUrl: url, lang });
-  }
-
-  // Email.
-  if (contact.email) {
-    try {
-      await sendEmail({ to: contact.email, subject: tpl.subject, html: tpl.html, text: tpl.text });
-      await recordNotification({
-        user_id: contact.user_id, donation_id: donation.id, channel: 'email',
-        template: donation.status === 'delivered' ? 'donation_delivered' : 'status_changed',
-        recipient: contact.email, subject: tpl.subject, status: 'sent',
-      });
-    } catch (e) {
-      await recordNotification({
-        user_id: contact.user_id, donation_id: donation.id, channel: 'email',
-        template: 'status_changed', recipient: contact.email,
-        subject: tpl.subject, status: 'failed', error_message: e.message,
-      });
-    }
-  }
-
-}
 
 export default router;

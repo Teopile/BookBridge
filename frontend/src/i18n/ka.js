@@ -322,6 +322,11 @@ export default {
     trackingPlaceholder: 'ტრეკინგის ნომერი (არასავალდებულო)',
     viewTrack: 'ტრეკერი',
   },
+  notif: {
+    title: 'შეტყობინებები',
+    empty: 'ყველაფერი ნანახია.',
+    viewAccount: 'ანგარიშზე გადასვლა',
+  },
   notFound: {
     body: 'ეს გვერდი მთებში დაიკარგა.',
   },

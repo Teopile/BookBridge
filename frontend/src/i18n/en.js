@@ -322,6 +322,11 @@ export default {
     trackingPlaceholder: 'Tracking number (optional)',
     viewTrack: 'View tracker',
   },
+  notif: {
+    title: 'Notifications',
+    empty: "You're all caught up.",
+    viewAccount: 'Go to your account',
+  },
   notFound: {
     body: 'This page got lost in the mountains.',
   },

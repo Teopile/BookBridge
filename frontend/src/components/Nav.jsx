@@ -4,6 +4,7 @@ import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import Icon from './Icon.jsx';
 import Logo from './Logo.jsx';
+import NotificationBell from './NotificationBell.jsx';
 
 export default function Nav() {
   const { t, lang, setLang } = useT();
@@ -53,6 +54,8 @@ export default function Nav() {
           >
             {lang === 'en' ? 'KA' : 'EN'}
           </button>
+
+          <NotificationBell />
 
           {user ? (
             <Link to={prefix + '/account'} className="btn btn-ghost btn-sm nav-desktop-only">

@@ -16,6 +16,7 @@ import donationsRoutes, { adminRouter as adminDonationsRoutes } from './routes/d
 import paymentsRoutes from './routes/payments.js';
 import volunteerRoutes from './routes/volunteer.js';
 import storageRoutes from './routes/storage.js';
+import notificationsRoutes from './routes/notifications.js';
 import adminRoutes from './routes/admin.js';
 
 const app = express();
@@ -104,6 +105,7 @@ app.use('/api/donations', donationsRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/volunteer', volunteerRoutes);
 app.use('/api/storage', storageRoutes);
+app.use('/api/notifications', notificationsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/schools', adminSchoolsRoutes);
 app.use('/api/admin/donations', adminDonationsRoutes);

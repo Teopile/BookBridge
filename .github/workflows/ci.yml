@@ -45,6 +45,44 @@ jobs:
         run: npm run build
 
   # ----------------------------------------------------------------
+  # 1b. Server unit tests — hard gate (deterministic, no network/DB).
+  # ----------------------------------------------------------------
+  server-tests:
+    name: Server unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install server deps
+        working-directory: server
+        run: npm ci || npm install
+      - name: Run unit tests
+        working-directory: server
+        run: npm run test:unit
+
+  # ----------------------------------------------------------------
+  # 1c. Admin build — hard gate.
+  # ----------------------------------------------------------------
+  admin-build:
+    name: Admin build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Node 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install admin deps
+        working-directory: admin
+        run: npm ci || npm install
+      - name: Build admin
+        working-directory: admin
+        run: npm run build
+
+  # ----------------------------------------------------------------
   # 2. Live API smoke test — read-only, non-blocking.
   # ----------------------------------------------------------------
   api-smoke:

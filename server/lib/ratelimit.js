@@ -14,6 +14,8 @@
 //     error, the request is allowed through. A limiter outage must never take
 //     down the API for real users.
 
+import { supabaseAdmin } from './supabase.js';
+
 const WINDOW_SECONDS = 60;
 
 /**
@@ -114,6 +116,46 @@ export function createUpstashLimiter() {
     } catch (err) {
       // Fail OPEN: never block real users because the limiter backend is down.
       console.error('[ratelimit] Upstash unavailable, allowing request:', err?.message || err);
+      return next();
+    }
+  };
+}
+
+// Client IP from the proxy header (Vercel sets x-forwarded-for) with fallbacks.
+function clientIp(req) {
+  const xff = req.headers['x-forwarded-for'];
+  if (xff) return String(xff).split(',')[0].trim();
+  return req.ip || req.socket?.remoteAddress || 'unknown';
+}
+
+/**
+ * Postgres-backed fixed-window limiter middleware. Unlike the in-memory limiter,
+ * the count is shared across all serverless instances (stored in the DB via the
+ * bb_rate_limit function), so it actually enforces a global per-IP limit on
+ * Vercel — no Upstash/Redis account needed. Fails OPEN on any error so a DB
+ * hiccup never locks users out. Skipped outside production for local testing.
+ * @param {{ limit?: number, windowSec?: number, name?: string }} opts
+ * @returns {import('express').RequestHandler}
+ */
+export function dbRateLimit({ limit = 10, windowSec = 60, name = 'rl' } = {}) {
+  return async function dbLimiter(req, res, next) {
+    if (process.env.NODE_ENV !== 'production') return next();
+    try {
+      const key = `${name}:${clientIp(req)}`;
+      const { data, error } = await supabaseAdmin.rpc('bb_rate_limit', {
+        p_key: key, p_limit: limit, p_window: windowSec,
+      });
+      if (error) {
+        console.error('[ratelimit] db rpc error, allowing:', error.message);
+        return next();
+      }
+      if (data === false) {
+        res.setHeader('Retry-After', String(windowSec));
+        return res.status(429).json({ error: 'rate_limited' });
+      }
+      return next();
+    } catch (e) {
+      console.error('[ratelimit] db limiter failed open:', e?.message || e);
       return next();
     }
   };

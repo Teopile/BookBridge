@@ -10,6 +10,7 @@ import {
   VerifyOtpSchema, ResendOtpSchema,
 } from '../schemas.js';
 import { supabaseAuth, supabaseAdmin } from '../lib/supabase.js';
+import { dbRateLimit } from '../lib/ratelimit.js';
 
 const router = Router();
 
@@ -24,6 +25,11 @@ const authStrictLimiter = rateLimit({
   skip: () => process.env.NODE_ENV !== 'production',
 });
 
+// Global (cross-serverless) per-IP limiter for auth-sensitive routes, backed by
+// Postgres so it actually enforces on Vercel (the in-memory limiter above is
+// per-instance). Layered: the DB limiter is the real global cap.
+const authDbLimiter = dbRateLimit({ limit: 12, windowSec: 60, name: 'auth' });
+
 const cookieOpts = () => {
   const isProd = process.env.NODE_ENV === 'production';
   return {
@@ -37,7 +43,7 @@ const cookieOpts = () => {
 };
 
 // ---------- Signup (email + username + password, sends 6-digit OTP) ----------
-router.post('/register', authStrictLimiter, csrfProtection, validate(RegisterSchema), async (req, res, next) => {
+router.post('/register', authDbLimiter, authStrictLimiter, csrfProtection, validate(RegisterSchema), async (req, res, next) => {
   try {
     const { email, username, password, language } = req.body;
 
@@ -66,7 +72,7 @@ router.post('/register', authStrictLimiter, csrfProtection, validate(RegisterSch
 });
 
 // ---------- Verify signup OTP — completes the account and signs the user in ----------
-router.post('/verify-otp', authStrictLimiter, csrfProtection, validate(VerifyOtpSchema), async (req, res, next) => {
+router.post('/verify-otp', authDbLimiter, authStrictLimiter, csrfProtection, validate(VerifyOtpSchema), async (req, res, next) => {
   try {
     const { email, token } = req.body;
     const { data, error } = await supabaseAuth.auth.verifyOtp({ email, token, type: 'signup' });
@@ -85,7 +91,7 @@ router.post('/verify-otp', authStrictLimiter, csrfProtection, validate(VerifyOtp
 });
 
 // ---------- Resend the signup OTP if the user lost the first email ----------
-router.post('/resend-otp', authStrictLimiter, csrfProtection, validate(ResendOtpSchema), async (req, res, next) => {
+router.post('/resend-otp', authDbLimiter, authStrictLimiter, csrfProtection, validate(ResendOtpSchema), async (req, res, next) => {
   try {
     const { email } = req.body;
     const { error } = await supabaseAuth.auth.resend({ type: 'signup', email });
@@ -95,7 +101,7 @@ router.post('/resend-otp', authStrictLimiter, csrfProtection, validate(ResendOtp
 });
 
 // ---------- Login (email + password) ----------
-router.post('/login', authStrictLimiter, csrfProtection, validate(LoginSchema), async (req, res, next) => {
+router.post('/login', authDbLimiter, authStrictLimiter, csrfProtection, validate(LoginSchema), async (req, res, next) => {
   try {
     const { email, password } = req.body;
     const { data, error } = await supabaseAuth.auth.signInWithPassword({ email, password });
@@ -179,7 +185,7 @@ router.delete('/me', csrfProtection, requireAuth, async (req, res, next) => {
 });
 
 // ---------- Password reset (code-based: forgot → email arrives with 6-digit code → enter code + new password) ----------
-router.post('/forgot-password', authStrictLimiter, csrfProtection, validate(ForgotPasswordSchema), async (req, res, next) => {
+router.post('/forgot-password', authDbLimiter, authStrictLimiter, csrfProtection, validate(ForgotPasswordSchema), async (req, res, next) => {
   try {
     const { email } = req.body;
     // The "Reset Password" email template must use {{ .Token }} so the user gets a 6-digit code.
@@ -190,7 +196,7 @@ router.post('/forgot-password', authStrictLimiter, csrfProtection, validate(Forg
   } catch (err) { next(err); }
 });
 
-router.post('/reset-password', authStrictLimiter, csrfProtection, validate(ResetPasswordSchema), async (req, res, next) => {
+router.post('/reset-password', authDbLimiter, authStrictLimiter, csrfProtection, validate(ResetPasswordSchema), async (req, res, next) => {
   try {
     const { email, token, new_password } = req.body;
 

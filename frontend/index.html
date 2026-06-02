@@ -23,24 +23,21 @@
     <meta property="og:url" content="https://bookbridge.ge/" />
     <meta property="og:locale" content="en_US" />
     <meta property="og:locale:alternate" content="ka_GE" />
-    <!--
-      TODO before public launch: add a real 1200x630 PNG at /public/og-image.png
-      and switch the two og:image / twitter:image tags below back to
-      https://bookbridge.ge/og-image.png (and restore og:image:width/height 1200x630).
-      Until then we point at the existing /logo.svg so the tag resolves instead of 404ing.
-      Note: many social scrapers (e.g. Facebook) ignore SVG previews — the PNG is required for rich cards.
-    -->
-    <meta property="og:image" content="https://bookbridge.ge/logo.svg" />
-    <meta property="og:image:type" content="image/svg+xml" />
+    <meta property="og:image" content="https://bookbridge.ge/og-image.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content="BookBridge — Donate books to Georgian highland schools" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="BookBridge — Your book is awaited in the mountains" />
     <meta name="twitter:description" content="Donate books to Georgian highland schools. Pick a school, choose books, we deliver." />
-    <meta name="twitter:image" content="https://bookbridge.ge/logo.svg" />
+    <meta name="twitter:image" content="https://bookbridge.ge/og-image.png" />
 
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <link rel="manifest" href="/site.webmanifest" />
 

@@ -152,7 +152,34 @@ export async function updateDonationStatus(donationId, newStatus, changedBy, not
     note,
   });
 
+  // When a donation first becomes delivered, credit any matched book requests so
+  // the school's wishlist "fulfilled" counts reflect real deliveries.
+  if (newStatus === 'delivered' && current.status !== 'delivered') {
+    try { await applyFulfillment(donationId); }
+    catch (e) { console.error('[store] applyFulfillment failed:', e.message); }
+  }
+
   return data;
+}
+
+// Increment quantity_fulfilled on the book requests matched by this donation's
+// items, capped at quantity_needed. Best-effort; never blocks the status update.
+async function applyFulfillment(donationId) {
+  const { data: items } = await supabaseAdmin
+    .from('donation_items')
+    .select('matched_request_id, quantity')
+    .eq('donation_id', donationId)
+    .not('matched_request_id', 'is', null);
+  for (const it of items || []) {
+    const { data: req } = await supabaseAdmin
+      .from('book_requests')
+      .select('quantity_needed, quantity_fulfilled')
+      .eq('id', it.matched_request_id)
+      .maybeSingle();
+    if (!req) continue;
+    const next = Math.min((req.quantity_fulfilled || 0) + (it.quantity || 0), req.quantity_needed || 0);
+    await supabaseAdmin.from('book_requests').update({ quantity_fulfilled: next }).eq('id', it.matched_request_id);
+  }
 }
 
 // Allowed forward transitions of the donation lifecycle. Admins bypass this

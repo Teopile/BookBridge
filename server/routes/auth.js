@@ -165,6 +165,19 @@ router.put('/me', csrfProtection, requireAuth, validate(ProfileUpdateSchema), as
   } catch (err) { next(err); }
 });
 
+// ---------- Delete my account (GDPR erasure) ----------
+// Deletes the auth user. The DB cascades the profile row and sets the user's
+// donor_user_id / owner_user_id / notification refs to NULL (donations are
+// anonymized but kept; any school the user managed becomes unowned, not deleted).
+router.delete('/me', csrfProtection, requireAuth, async (req, res, next) => {
+  try {
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(req.user.id);
+    if (error) return res.status(400).json({ error: error.message });
+    res.clearCookie(SESSION_COOKIE_NAME, { path: '/' });
+    res.json({ ok: true });
+  } catch (err) { next(err); }
+});
+
 // ---------- Password reset (code-based: forgot → email arrives with 6-digit code → enter code + new password) ----------
 router.post('/forgot-password', authStrictLimiter, csrfProtection, validate(ForgotPasswordSchema), async (req, res, next) => {
   try {

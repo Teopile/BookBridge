@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
-import { apiGet, apiPost, apiPut } from '../api.js';
+import { apiGet, apiPost, apiPut, apiDelete } from '../api.js';
 import { Loading, ErrorState, EmptyState } from '../components/States.jsx';
 import Icon from '../components/Icon.jsx';
 
@@ -156,8 +156,51 @@ export default function Account() {
             )}
           </>
         )}
+
+        <DeleteAccountCard t={t} prefix={prefix} />
       </div>
     </section>
+  );
+}
+
+function DeleteAccountCard({ t, prefix }) {
+  const [confirming, setConfirming] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState(null);
+
+  async function del() {
+    setBusy(true); setErr(null);
+    try {
+      await apiDelete('/api/auth/me');
+      // Full reload so all in-memory auth/session state is cleared.
+      window.location.href = prefix;
+    } catch (e) { setErr(e.message); setBusy(false); }
+  }
+
+  return (
+    <div className="card" style={{ maxWidth: 'none', marginTop: 'var(--space-8)', border: '1.5px solid var(--clay, #C0594A)' }}>
+      <h3 style={{ marginBottom: 'var(--space-2)', color: 'var(--clay, #C0594A)' }}>{t('account.deleteTitle')}</h3>
+      <p style={{ color: 'var(--text-muted)', fontSize: 'var(--fs-sm)', lineHeight: 'var(--lh-relaxed)', marginBottom: 'var(--space-4)' }}>
+        {t('account.deleteWarning')}
+      </p>
+      {!confirming ? (
+        <button className="btn btn-ghost btn-sm" onClick={() => setConfirming(true)}>{t('account.deleteButton')}</button>
+      ) : (
+        <div style={{ display: 'flex', gap: 'var(--space-3)', flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>{t('account.deleteConfirmQ')}</span>
+          <button
+            className="btn btn-sm"
+            disabled={busy}
+            onClick={del}
+            style={{ background: 'var(--clay, #C0594A)', color: '#fff' }}
+          >
+            {busy ? '…' : t('account.deleteConfirmYes')}
+          </button>
+          <button className="btn btn-ghost btn-sm" disabled={busy} onClick={() => setConfirming(false)}>{t('common.cancel')}</button>
+        </div>
+      )}
+      {err && <div className="error" style={{ marginTop: 'var(--space-3)' }}>{err}</div>}
+    </div>
   );
 }
 

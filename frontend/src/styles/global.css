@@ -286,6 +286,14 @@ p  { color: var(--text-muted); }
   backdrop-filter: blur(12px) saturate(1.2);
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
   border-bottom: 1px solid var(--border-default);
+  transition: transform var(--t-slow);
+}
+/* Hide-on-scroll: nav slides up out of view when scrolling down the page and
+   returns on scroll up — the reverse of its navDrop entrance. Driven by Nav.jsx,
+   which toggles .is-hidden once the entrance releases .reveal-load. Reduced-motion
+   users keep a static, always-visible nav. */
+@media (prefers-reduced-motion: no-preference) {
+  .nav.is-hidden { transform: translateY(-100%); }
 }
 .nav-logo {
   display: flex; align-items: center; gap: var(--space-2);

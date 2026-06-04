@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
@@ -12,9 +12,53 @@ export default function Nav() {
   const prefix = '/' + lang;
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState(false);
+  const [loaded, setLoaded] = useState(false);
+  const navRef = useRef(null);
 
   // Auto-close drawer whenever the route changes.
   useEffect(() => { setOpen(false); }, [location.pathname]);
+
+  // Release the entrance animation once it finishes (or immediately under
+  // reduced motion), so the scroll handler can drive the nav's transform.
+  useEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setLoaded(true);
+      return;
+    }
+    let done = false;
+    const finish = (e) => {
+      if (e && e.animationName && e.animationName !== 'navDrop') return;
+      if (done) return;
+      done = true;
+      setLoaded(true);
+    };
+    el.addEventListener('animationend', finish);
+    const timer = setTimeout(() => finish(), 1000); // fallback if animationend never fires
+    return () => { el.removeEventListener('animationend', finish); clearTimeout(timer); };
+  }, []);
+
+  // Hide-on-scroll: scrolling down slides the nav up out of view; scrolling up
+  // brings it back. Always visible near the top of the page.
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => {
+        const y = window.scrollY;
+        if (y < 80) setHidden(false);
+        else if (Math.abs(y - lastY) > 6) setHidden(y > lastY);
+        lastY = y;
+        ticking = false;
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   // Escape closes the drawer; lock body scroll while open.
   useEffect(() => {
@@ -33,7 +77,10 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="nav reveal-load">
+      <nav
+        ref={navRef}
+        className={'nav' + (loaded ? '' : ' reveal-load') + (loaded && hidden && !open ? ' is-hidden' : '')}
+      >
         <Link to={prefix} className="nav-logo" aria-label="BookBridge home">
           <Logo size={36} />
         </Link>

@@ -1,19 +1,14 @@
-// Unit tests for the donation status-transition guard (db/store.js -> canTransition).
+// Unit tests for the donation status-transition guard (db/transitions.js).
 //
 // Run with: npm run test:unit
 //
-// store.js imports lib/supabase.js, which throws at load time when Supabase env
-// vars are missing, so we set throwaway values BEFORE importing. createClient is
-// lazy and never opens a connection here, so this stays a true unit test.
+// Imports the pure rules module directly — no Supabase client, env vars, or
+// network — so this is a hermetic unit test that can't be broken by missing
+// env or a future @supabase/* version bump.
 
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-
-process.env.SUPABASE_URL ||= 'https://test.supabase.co';
-process.env.SUPABASE_SECRET_KEY ||= 'test-secret-key';
-process.env.SUPABASE_PUBLISHABLE_KEY ||= 'test-publishable-key';
-
-const { canTransition, DONATION_TRANSITIONS } = await import('../db/store.js');
+import { canTransition, DONATION_TRANSITIONS } from '../db/transitions.js';
 
 test('allows the forward lifecycle steps a hub/school can perform', () => {
   assert.equal(canTransition('pending', 'at_volunteer'), true);

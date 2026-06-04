@@ -1,6 +1,10 @@
 // All Supabase queries live here. Routes call these helpers; they don't touch supabaseAdmin directly.
 
 import { supabaseAdmin } from '../lib/supabase.js';
+import { buildIlikeOr } from './queryHelpers.js';
+
+// Pure helper, re-exported so existing importers keep getting it from store.js.
+export { buildIlikeOr };
 
 // ---------- schools ----------
 
@@ -185,19 +189,11 @@ async function applyFulfillment(donationId) {
 // Allowed forward transitions of the donation lifecycle. Admins bypass this
 // (they can correct a status), but the volunteer hub and the receiving school
 // are held to it so the pipeline can't skip or rewind steps.
-export const DONATION_TRANSITIONS = {
-  pending:      ['at_volunteer', 'in_transit', 'cancelled'],
-  at_volunteer: ['in_transit', 'delivered', 'cancelled'],
-  in_transit:   ['delivered', 'cancelled'],
-  delivered:    [],
-  cancelled:    [],
-};
-
-// Idempotent re-clicks (from === to) are allowed; genuine illegal jumps are not.
-export function canTransition(from, to) {
-  if (from === to) return true;
-  return (DONATION_TRANSITIONS[from] || []).includes(to);
-}
+//
+// The rules + canTransition() live in a pure, Supabase-free module so they can
+// be unit-tested without instantiating a client. Re-exported here to keep
+// store.js's public API unchanged for existing importers.
+export { DONATION_TRANSITIONS, canTransition } from './transitions.js';
 
 // ---------- monetary_donations ----------
 
@@ -296,13 +292,6 @@ export async function getPublicStats() {
 // whole value as a literal; LIKE wildcards (% _) and the escape char (\) are
 // neutralised, and any embedded double-quote/backslash is stripped so it can't
 // terminate the quoted value or escape out of it.
-export function buildIlikeOr(columns, raw) {
-  const sanitized = String(raw).replace(/["\\]/g, '');
-  const escapedForLike = sanitized.replace(/[%_]/g, '\\$&');
-  const pattern = `%${escapedForLike}%`;
-  return columns.map((col) => `${col}.ilike."${pattern}"`).join(',');
-}
-
 export async function search({ q, type }) {
   const results = { schools: [], books: [] };
 

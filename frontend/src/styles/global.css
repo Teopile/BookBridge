@@ -618,6 +618,66 @@ h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: va
 .hero-steps .arr { color: var(--sage); margin: 0 6px; flex: 0 0 auto; }
 .hero-photo { position: relative; }
 
+/* =============== HERO — FULL-BLEED PHOTO BACKGROUND (Home) =============== */
+.hero--bg {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  /* Fallback if /hero.jpg is missing: warm forest→honey dusk gradient. */
+  background-color: var(--forest-700);
+  background-image:
+    linear-gradient(105deg, rgba(31,69,48,0.92) 0%, rgba(176,122,79,0.45) 55%, rgba(217,184,114,0.35) 100%),
+    var(--hero-bg, none);
+  background-size: cover;
+  background-position: center 38%;
+  background-repeat: no-repeat;
+  margin-top: calc(var(--nav-h) * -1);
+  padding: calc(var(--nav-h) + clamp(40px, 9vh, 96px)) 0 clamp(48px, 9vh, 104px);
+}
+.hero-bg-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    linear-gradient(90deg, rgba(20,32,24,0.82) 0%, rgba(20,32,24,0.58) 38%, rgba(20,32,24,0.18) 70%, rgba(20,32,24,0.05) 100%),
+    linear-gradient(0deg, rgba(20,32,24,0.45) 0%, rgba(20,32,24,0) 45%);
+}
+.hero--bg .hero-grid { grid-template-columns: 1fr; gap: 0; }
+.hero--bg .hero-copy { max-width: 640px; }
+.hero--bg .hero-title { color: var(--text-on-dark); text-shadow: 0 2px 18px rgba(20,32,24,0.45); }
+.hero--bg .hero-title em { color: var(--honey-200); }
+.hero--bg .hero-lede { color: rgba(250,245,232,0.92); }
+.hero--bg .hero-poetic { color: var(--honey-200); }
+.hero--bg .hero-poetic .ka { color: rgba(250,245,232,0.82); }
+.hero--bg .hero-kicker {
+  color: var(--honey-200);
+  background: rgba(31,69,48,0.55);
+  border-color: rgba(250,245,232,0.28);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 18px rgba(20,32,24,0.35);
+}
+.hero--bg .hero-kicker svg { color: var(--honey-200); }
+.hero--bg .hero-steps {
+  color: var(--text-on-dark);
+  background: rgba(31,69,48,0.5);
+  border: 1px dashed rgba(250,245,232,0.35);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 22px rgba(20,32,24,0.35);
+}
+.hero--bg .hero-steps .n { border-color: var(--honey-200); color: var(--honey-200); }
+.hero--bg .hero-steps .arr { color: var(--honey-200); }
+
+@media (max-width: 600px) {
+  .hero-bg-scrim {
+    background:
+      linear-gradient(90deg, rgba(20,32,24,0.86) 0%, rgba(20,32,24,0.66) 55%, rgba(20,32,24,0.3) 100%),
+      linear-gradient(0deg, rgba(20,32,24,0.5) 0%, rgba(20,32,24,0) 50%);
+  }
+  .hero--bg .hero-copy { max-width: 100%; }
+}
+
 /* =============== TAPE-FRAME PHOTO (hero + mission) =============== */
 .photo-frame {
   position: relative;
@@ -1494,13 +1554,16 @@ footer {
 }
 
 /* =============== MOTION LAYER (Direction F) ===============
-   Scroll-reveal cascade + hand-drawn underline draw-on + dotted-trail wipe.
-   ALL hidden states are gated on `html.js` so if JS fails (or never adds the
-   class) everything stays visible — the `.reveal` default is opacity:1.
-   transform / opacity / clip-path only. */
-.reveal { opacity: 1; }
+   (A) Hero LOAD cascade — CSS @keyframes gated on `html.hero-ready`, authored
+       order via --d. Fires once on first paint (rAF in main.jsx). Nav included.
+   (B) Scroll REVEAL — IntersectionObserver toggles `.is-in` on `.reveal`.
+   ALL hidden states gated on `html.js`: if JS never runs everything is visible
+   (base `.reveal`/`.reveal-load` = opacity:1). transform / opacity / clip-path only. */
+.reveal, .reveal-load { opacity: 1; }
 
 @media (prefers-reduced-motion: no-preference) {
+
+  /* ---------- (B) SCROLL REVEAL ---------- */
   html.js .reveal {
     opacity: 0;
     transform: translateY(var(--rise));
@@ -1524,6 +1587,34 @@ footer {
     transition: clip-path 1.6s var(--ease-soft);
     clip-path: inset(0 0 0 0);
   }
+
+  /* ---------- (A) HERO LOAD CASCADE ---------- */
+  /* Hidden the instant `html.js` is set (before hero-ready) so there's no flash
+     of a fully-laid-out hero before the animation starts. */
+  html.js .reveal-load {
+    opacity: 0;
+    transform: translateY(22px);
+    will-change: opacity, transform;
+  }
+  html.js .nav.reveal-load { transform: translateY(-100%); }
+
+  html.hero-ready .reveal-load {
+    animation: heroRise var(--dur-slow-F) var(--ease-F) both;
+    animation-delay: calc(0.06s + var(--d, 0) * var(--stagger));
+  }
+  html.hero-ready .nav.reveal-load {
+    animation: navDrop 0.5s var(--ease-F) both;
+    animation-delay: 0s; /* nav leads the cascade */
+  }
+
+  @keyframes heroRise {
+    from { opacity: 0; transform: translateY(22px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes navDrop {
+    from { transform: translateY(-100%); }
+    to   { transform: translateY(0); }
+  }
 }
 
 /* =============== REDUCED MOTION =============== */
@@ -1533,8 +1624,64 @@ footer {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  /* Force F motion states to their final, visible form. */
-  html.js .reveal { opacity: 1 !important; transform: none !important; }
+  html.js .reveal,
+  html.js .reveal-load { opacity: 1 !important; transform: none !important; }
+  html.js .nav.reveal-load { transform: none !important; }
   html.js .stamp .underline path { stroke-dashoffset: 0 !important; }
   html.js .trail-route svg { clip-path: none !important; }
+}
+
+/* =============== TARGET REGIONS (Home) =============== */
+.regions {
+  position: relative;
+  overflow: hidden;
+  background: var(--cream-warm-F);
+}
+.regions-mountains {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: clamp(160px, 26vw, 300px);
+  z-index: 0;
+  pointer-events: none;
+}
+.regions-mountains svg { width: 100%; height: 100%; display: block; }
+.regions-mountains .ridge { stroke: none; }
+.regions-mountains .ridge-far  { fill: rgba(122, 139, 111, 0.18); }
+.regions-mountains .ridge-mid  { fill: rgba(122, 139, 111, 0.30); }
+.regions-mountains .ridge-near { fill: rgba(45, 92, 62, 0.32); }
+.regions .container { position: relative; z-index: 1; }
+
+.region-tags {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-6);
+  padding-bottom: clamp(120px, 20vw, 220px);
+}
+.region-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  border: 1.5px solid var(--kraft-edge);
+  color: var(--forest-700);
+  font-size: var(--fs-sm);
+  font-weight: var(--fw-semibold);
+  letter-spacing: 0.01em;
+  padding: 10px 16px;
+  border-radius: var(--r-pill);
+  box-shadow: var(--sh-1);
+  transition: transform var(--t-base), box-shadow var(--t-base), border-color var(--t-base);
+}
+.region-chip:hover {
+  transform: translateY(-2px);
+  border-color: var(--honey-500);
+  box-shadow: var(--sh-2);
+}
+.region-chip svg { flex: 0 0 auto; }
+
+@media (max-width: 600px) {
+  .region-tags { gap: var(--space-2); padding-bottom: clamp(100px, 38vw, 180px); }
+  .region-chip { font-size: var(--fs-xs); padding: 9px 13px; }
 }

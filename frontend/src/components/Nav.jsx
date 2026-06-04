@@ -33,7 +33,7 @@ export default function Nav() {
 
   return (
     <>
-      <nav className="nav">
+      <nav className="nav reveal-load">
         <Link to={prefix} className="nav-logo" aria-label="BookBridge home">
           <Logo size={36} />
         </Link>

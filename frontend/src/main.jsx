@@ -22,6 +22,15 @@ function initTrailMotion() {
 
   document.documentElement.classList.add('js');
 
+  // Hero LOAD cascade trigger. `html.js` already hides .reveal-load (opacity:0)
+  // synchronously; adding `hero-ready` on the next frame starts the keyframes.
+  // Double-rAF guarantees the hidden state paints first, so the animation plays.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.documentElement.classList.add('hero-ready');
+    });
+  });
+
   const observer = new IntersectionObserver(
     (entries) => {
       for (const entry of entries) {

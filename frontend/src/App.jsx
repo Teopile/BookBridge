@@ -46,6 +46,14 @@ function RouteFallback() {
   );
 }
 
+// Reset scroll to the top on every route change, so a new page never opens
+// mid-scroll (e.g. clicking "About"/"Terms" used to keep the previous offset).
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  return null;
+}
+
 function LangGuard({ children }) {
   const location = useLocation();
   const seg = location.pathname.split('/').filter(Boolean)[0];
@@ -62,6 +70,7 @@ function LangGuard({ children }) {
 export default function App() {
   return (
     <>
+      <ScrollToTop />
       <Nav />
       <main>
         <ErrorBoundary>

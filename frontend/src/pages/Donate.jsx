@@ -338,8 +338,25 @@ export default function Donate() {
               <h2 style={{ marginBottom: 'var(--space-4)' }}>{t('donate.step4')}</h2>
               <ul style={{ listStyle: 'none', padding: 0, lineHeight: 'var(--lh-relaxed)', color: 'var(--text-muted)' }}>
                 <li><strong>{t('donate.summarySchool')}:</strong> {chosenSchoolObj?.name || '—'}</li>
-                <li><strong>{t('donate.summaryItems')}:</strong> {items.length}</li>
+                <li>
+                  <strong>{t('donate.summaryItems')}:</strong> {items.length}
+                  <ul style={{ listStyle: 'disc', margin: 'var(--space-2) 0 0', paddingLeft: 'var(--space-5)' }}>
+                    {items.map((it, i) => {
+                      const label = (it.book_title || '').trim() || (it.book_author || '').trim() || (it.book_genre || '').trim() || t('donate.untitledBook');
+                      return (
+                        <li key={it.matched_request_id || 'custom-' + i}>
+                          {label}
+                          {it.book_author?.trim() && (it.book_title || '').trim() ? ' · ' + it.book_author.trim() : ''}
+                          {Number(it.quantity) > 1 ? ` ×${Number(it.quantity)}` : ''}
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </li>
                 <li><strong>{t('donate.summaryDelivery')}:</strong> {delivery === 'self' ? t('donate.methodSelf') : t('donate.methodCourier')}</li>
+                {delivery === 'courier' && donorAddress.trim() && (
+                  <li><strong>{t('donate.summaryAddress')}:</strong> {donorAddress.trim()}</li>
+                )}
               </ul>
               {error && <div className="error" style={{ marginTop: 'var(--space-4)' }}>{error}</div>}
               <div style={{ marginTop: 'var(--space-6)', display: 'flex', gap: 'var(--space-3)' }}>

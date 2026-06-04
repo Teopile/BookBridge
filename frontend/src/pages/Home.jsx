@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Leaderboard from '../components/Leaderboard.jsx';
-import Activity from '../components/Activity.jsx';
 import Icon from '../components/Icon.jsx';
 import StampLabel from '../components/StampLabel.jsx';
+import en from '../i18n/en.js';
+import ka from '../i18n/ka.js';
 
-// Hero photo — a warm field-notebook shot wrapped in a tape frame.
-const HERO_PHOTO = 'https://picsum.photos/seed/bb-hero-trail/800/620';
+// Hero background — warm documentary photo of highland kids reading.
+// Drop a 1600x1000 image at frontend/public/hero.jpg; a gradient shows if missing.
+const HERO_BG = '/hero.jpg';
 
 const SAMPLE_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -68,48 +70,33 @@ export default function Home() {
 
   return (
     <>
-      {/* HERO — Direction F editorial asymmetry: copy left, tape-frame photo right */}
-      <section className="hero">
+      {/* HERO — full-bleed warm photo background; copy left, scrim keeps it legible,
+          staggered first-load cascade via reveal-load + --d */}
+      <section className="hero hero--bg" style={{ '--hero-bg': `url(${HERO_BG})` }}>
+        <div className="hero-bg-scrim" aria-hidden="true" />
         <div className="hero-grid">
           <div className="hero-copy">
-            <span className="hero-kicker reveal">
+            <span className="hero-kicker reveal-load" style={{ '--d': 1 }}>
               <Icon name="books" size={17} color="var(--clay)" />
               {t('home.heroKicker')}
             </span>
-            <h1 className="hero-title reveal">{t('home.heroTitle')}</h1>
-            <p className="hero-poetic reveal">
+            <h1 className="hero-title reveal-load" style={{ '--d': 2 }}>{t('home.heroTitle')}</h1>
+            <p className="hero-poetic reveal-load" style={{ '--d': 3 }}>
               {t('hero.slogan')}
               <span className="ka">{t('footer.taglineKa')}</span>
             </p>
-            <p className="hero-lede reveal">{t('home.heroSub')}</p>
-            <div className="hero-cta reveal">
+            <p className="hero-lede reveal-load" style={{ '--d': 4 }}>{t('home.heroSub')}</p>
+            <div className="hero-cta reveal-load" style={{ '--d': 5 }}>
               {/* "Donate Books" — the primary honey CTA. Must stay. */}
               <Link to={prefix + '/donate'} className="btn btn-secondary btn-lg">{t('home.ctaPrimary')}</Link>
-              <Link to={prefix + '/schools'} className="btn btn-ghost btn-lg">{t('home.ctaSecondary')}</Link>
+              <Link to={prefix + '/schools'} className="btn btn-outline-white btn-lg">{t('home.ctaSecondary')}</Link>
             </div>
-            <div className="hero-steps reveal" aria-label={t('home.howTitle')}>
+            <div className="hero-steps reveal-load" style={{ '--d': 6 }} aria-label={t('home.howTitle')}>
               <span className="hs"><span className="n" aria-hidden="true">1</span>{t('home.heroStep1')}</span>
-              <span className="arr" aria-hidden="true"><Icon name="arrowRight" size={16} color="var(--sage)" /></span>
+              <span className="arr" aria-hidden="true"><Icon name="arrowRight" size={16} color="var(--honey-200)" /></span>
               <span className="hs"><span className="n" aria-hidden="true">2</span>{t('home.heroStep2')}</span>
-              <span className="arr" aria-hidden="true"><Icon name="arrowRight" size={16} color="var(--sage)" /></span>
+              <span className="arr" aria-hidden="true"><Icon name="arrowRight" size={16} color="var(--honey-200)" /></span>
               <span className="hs"><span className="n" aria-hidden="true">3</span>{t('home.heroStep3')}</span>
-            </div>
-          </div>
-
-          <div className="hero-photo">
-            <div className="photo-frame">
-              <span className="tape t1" aria-hidden="true" />
-              <span className="tape t2" aria-hidden="true" />
-              <img
-                src={HERO_PHOTO}
-                alt={t('home.heroCaption').replace(/^—\s*/, '')}
-                width={800}
-                height={620}
-                loading="eager"
-                decoding="async"
-              />
-              <div className="ov" aria-hidden="true" />
-              <p className="caption">{t('home.heroCaption')}</p>
             </div>
           </div>
         </div>
@@ -212,14 +199,29 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ACTIVITY FEED */}
-      <section className="section">
+      {/* TARGET REGIONS — highland regions BookBridge serves, over a mountains silhouette */}
+      <section className="section regions">
+        <div className="regions-mountains" aria-hidden="true">
+          <svg viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice">
+            <path className="ridge ridge-far" d="M0 230 L180 150 L330 215 L520 120 L700 205 L880 130 L1080 210 L1280 140 L1440 200 L1440 320 L0 320 Z" />
+            <path className="ridge ridge-mid" d="M0 270 L160 205 L340 260 L540 185 L760 255 L980 195 L1200 258 L1380 210 L1440 245 L1440 320 L0 320 Z" />
+            <path className="ridge ridge-near" d="M0 300 L240 250 L470 295 L700 245 L940 292 L1180 250 L1440 290 L1440 320 L0 320 Z" />
+          </svg>
+        </div>
         <div className="container">
-          <div className="section-header">
-            <h2 className="section-title">{t('home.activityTitle')}</h2>
-            <p className="section-lede">{t('home.activitySub')}</p>
+          <div className="section-header" style={{ textAlign: 'left', marginLeft: 0 }}>
+            <StampLabel>{t('home.regionsStamp')}</StampLabel>
+            <h2 className="section-title reveal">{t('home.regionsTitle')}</h2>
+            <p className="section-lede reveal">{t('home.regionsSub')}</p>
           </div>
-          <Activity limit={6} />
+          <ul className="region-tags">
+            {(lang === 'ka' ? ka : en).home.regionsList.map((region, i) => (
+              <li key={region} className="region-chip reveal" style={{ '--i': i }}>
+                <Icon name="pin" size={15} color="var(--clay)" />
+                {region}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

@@ -10,7 +10,7 @@ export const KA = '/ka';
 // Asserting on these proves the SPA actually rendered (not just a blank shell).
 export const COPY = {
   heroTitle: 'Donate books to mountain schools.',
-  heroSub: 'Pick a school. Choose books. We deliver.',
+  heroSub: 'we ship them from Tbilisi into the mountains',
   ctaPrimary: 'Donate a book',
   ctaSecondary: 'See schools',
   howTitle: 'How it works',

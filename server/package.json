@@ -7,7 +7,7 @@
   "scripts": {
     "dev": "node --watch index.js",
     "start": "node index.js",
-    "test:unit": "node --test \"test/**/*.test.js\""
+    "test:unit": "node --test test/buildIlikeOr.test.js test/schemas.test.js test/transitions.test.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",

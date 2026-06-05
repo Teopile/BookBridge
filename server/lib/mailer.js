@@ -3,35 +3,59 @@
 
 const ENDPOINT = 'https://smtp.maileroo.com/send';
 
+// True when at least one delivery path is configured (HTTPS API key OR SMTP creds).
+// Routes use this to decide whether to take the self-send code path.
+export function mailerConfigured() {
+  return !!(process.env.MAILEROO_API_KEY || (process.env.MAILEROO_SMTP_USER && process.env.MAILEROO_SMTP_PASS));
+}
+
 export async function sendEmail({ to, subject, html, text, replyTo } = {}) {
   const apiKey = process.env.MAILEROO_API_KEY;
-  const from = process.env.MAILEROO_FROM || 'noreply@example.com';
+  const smtpUser = process.env.MAILEROO_SMTP_USER;
+  const smtpPass = process.env.MAILEROO_SMTP_PASS;
+  const from = process.env.MAILEROO_FROM || smtpUser || 'noreply@example.com';
   const fromName = process.env.MAILEROO_FROM_NAME || 'BookBridge';
 
-  if (!apiKey) {
-    console.warn('[mailer] MAILEROO_API_KEY not set — skipping email to', to);
-    return { skipped: true };
+  // Preferred path: Maileroo HTTPS API (X-API-Key) — best for serverless.
+  if (apiKey) {
+    const body = new URLSearchParams();
+    body.set('from', `${fromName} <${from}>`);
+    body.set('to', to);
+    body.set('subject', subject);
+    if (html) body.set('html', html);
+    if (text) body.set('plain', text);
+    if (replyTo) body.set('reply_to', replyTo);
+
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/x-www-form-urlencoded' },
+      body,
+    });
+
+    if (!res.ok) {
+      const errText = await res.text().catch(() => '');
+      throw new Error(`Maileroo error ${res.status}: ${errText}`);
+    }
+    return res.json().catch(() => ({}));
   }
 
-  const body = new URLSearchParams();
-  body.set('from', `${fromName} <${from}>`);
-  body.set('to', to);
-  body.set('subject', subject);
-  if (html) body.set('html', html);
-  if (text) body.set('plain', text);
-  if (replyTo) body.set('reply_to', replyTo);
-
-  const res = await fetch(ENDPOINT, {
-    method: 'POST',
-    headers: { 'X-API-Key': apiKey, 'Content-Type': 'application/x-www-form-urlencoded' },
-    body,
-  });
-
-  if (!res.ok) {
-    const errText = await res.text().catch(() => '');
-    throw new Error(`Maileroo error ${res.status}: ${errText}`);
+  // Fallback: Maileroo SMTP (used when no HTTPS API key is set). Maileroo requires
+  // the From address to equal the authenticated SMTP account. nodemailer is
+  // imported lazily so the module never hard-depends on it.
+  if (smtpUser && smtpPass) {
+    const { default: nodemailer } = await import('nodemailer');
+    const transport = nodemailer.createTransport({
+      host: process.env.MAILEROO_SMTP_HOST || 'smtp.maileroo.com',
+      port: Number(process.env.MAILEROO_SMTP_PORT || 587),
+      secure: String(process.env.MAILEROO_SMTP_PORT) === '465',
+      auth: { user: smtpUser, pass: smtpPass },
+    });
+    const info = await transport.sendMail({ from: `${fromName} <${from}>`, to, subject, html, text, replyTo });
+    return { messageId: info.messageId };
   }
-  return res.json().catch(() => ({}));
+
+  console.warn('[mailer] no MAILEROO_API_KEY or SMTP creds — skipping email to', to);
+  return { skipped: true };
 }
 
 // -------------------------------------------------------------------------

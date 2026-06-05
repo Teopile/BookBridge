@@ -11,7 +11,7 @@ import {
 } from '../schemas.js';
 import { supabaseAuth, supabaseAdmin } from '../lib/supabase.js';
 import { dbRateLimit } from '../lib/ratelimit.js';
-import { sendEmail, Templates } from '../lib/mailer.js';
+import { sendEmail, Templates, mailerConfigured } from '../lib/mailer.js';
 
 const router = Router();
 
@@ -59,7 +59,7 @@ router.post('/register', authDbLimiter, authStrictLimiter, csrfProtection, valid
     // Supabase's built-in mailer + its per-hour email rate limit, which was
     // silently dropping signup codes (signUp() returns 201 even when the email
     // never sends). verify-otp is unchanged — verifyOtp validates this same OTP.
-    if (process.env.MAILEROO_API_KEY) {
+    if (mailerConfigured()) {
       const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink({
         type: 'signup',
         email,
@@ -130,7 +130,7 @@ router.post('/resend-otp', authDbLimiter, authStrictLimiter, csrfProtection, val
     // Prefer self-send via Maileroo (same path as register); fall back to
     // Supabase's own resend if it isn't available. Always 200 — never leak
     // whether the email exists.
-    if (process.env.MAILEROO_API_KEY) {
+    if (mailerConfigured()) {
       try {
         const { data, error } = await supabaseAdmin.auth.admin.generateLink({ type: 'signup', email });
         const code = data?.properties?.email_otp;

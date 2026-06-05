@@ -208,6 +208,24 @@ const STATUS_LABELS = {
 // -------------------------------------------------------------------------
 
 export const Templates = {
+  // 6-digit signup OTP — generated server-side (admin.generateLink) and emailed
+  // by us via Maileroo, so delivery never depends on Supabase's email rate limit.
+  signupOtp({ code, lang = 'en' }) {
+    const cfg = lang === 'ka'
+      ? { subject: 'BookBridge — დადასტურების კოდი', heading: 'დაადასტურე ელფოსტა',
+          intro: 'შენი ერთჯერადი დადასტურების კოდია:',
+          secondary: 'კოდი მალე იწურება. თუ ეს შენ არ მოგითხოვია, უგულებელყავი ეს წერილი.' }
+      : { subject: 'Your BookBridge verification code', heading: 'Confirm your email',
+          intro: 'Your one-time verification code is:',
+          secondary: "This code expires shortly. If you didn't request it, you can safely ignore this email." };
+    const codeBlock = `<div style="font-size:34px;font-weight:700;letter-spacing:10px;color:${BRAND.tealDark};background:${BRAND.tealSoft};border-radius:10px;padding:18px 12px;text-align:center;margin:4px 0 8px;font-family:ui-monospace,'SF Mono',Menlo,monospace;">${escape(code)}</div>`;
+    return {
+      subject: cfg.subject,
+      html: shell({ lang, preheader: `${cfg.intro} ${code}`, heading: cfg.heading, intro: cfg.intro, body: codeBlock, secondary: cfg.secondary }),
+      text: textShell({ lang, heading: cfg.heading, intro: cfg.intro, body: String(code), secondary: cfg.secondary }),
+    };
+  },
+
   registration({ fullName, lang = 'en' }) {
     const name = fullName ? ', ' + fullName : '';
     const cfg = lang === 'ka'

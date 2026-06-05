@@ -11,6 +11,7 @@ import {
 } from '../schemas.js';
 import { supabaseAuth, supabaseAdmin } from '../lib/supabase.js';
 import { dbRateLimit } from '../lib/ratelimit.js';
+import { sendEmail, Templates } from '../lib/mailer.js';
 
 const router = Router();
 
@@ -52,22 +53,54 @@ router.post('/register', authDbLimiter, authStrictLimiter, csrfProtection, valid
       .from('profiles').select('id').ilike('username', username).maybeSingle();
     if (existing) return res.status(409).json({ error: 'username_taken' });
 
-    // signUp triggers Supabase to email the confirmation OTP using the configured SMTP (Maileroo).
-    // The "Confirm signup" email template must use {{ .Token }} so the user gets a 6-digit code.
+    // Preferred path: mint the OTP ourselves (admin.generateLink creates the user
+    // and returns the 6-digit email_otp WITHOUT Supabase sending any email), then
+    // deliver it via Maileroo's HTTPS API. This removes the dependency on
+    // Supabase's built-in mailer + its per-hour email rate limit, which was
+    // silently dropping signup codes (signUp() returns 201 even when the email
+    // never sends). verify-otp is unchanged — verifyOtp validates this same OTP.
+    if (process.env.MAILEROO_API_KEY) {
+      const { data: linkData, error } = await supabaseAdmin.auth.admin.generateLink({
+        type: 'signup',
+        email,
+        password,
+        options: { data: { username, language } },
+      });
+      if (error) {
+        if (/already.*regist|already.*exist|has already been registered/i.test(error.message)) {
+          return res.status(409).json({ error: 'email_taken' });
+        }
+        return res.status(400).json({ error: error.message });
+      }
+      const code = linkData?.properties?.email_otp;
+      if (!code) return res.status(502).json({ error: 'otp_generation_failed' });
+
+      const tpl = Templates.signupOtp({ code, lang: language });
+      try {
+        const result = await sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text });
+        if (result?.skipped) throw new Error('mailer_skipped');
+      } catch (mailErr) {
+        console.error('[register] OTP email send failed:', mailErr.message);
+        return res.status(502).json({ error: 'email_send_failed' });
+      }
+      return res.status(201).json({ ok: true, needs_verification: true, email, via: 'direct' });
+    }
+
+    // Fallback (no Maileroo API key configured): let Supabase email the OTP via
+    // its configured SMTP. The "Confirm signup" template must use {{ .Token }}.
     const { error } = await supabaseAuth.auth.signUp({
       email,
       password,
       options: { data: { username, language } },
     });
     if (error) {
-      // Map duplicate-email to a clean error code for the UI.
       if (/already registered/i.test(error.message)) {
         return res.status(409).json({ error: 'email_taken' });
       }
       return res.status(400).json({ error: error.message });
     }
 
-    res.status(201).json({ ok: true, needs_verification: true, email });
+    res.status(201).json({ ok: true, needs_verification: true, email, via: 'supabase' });
   } catch (err) { next(err); }
 });
 
@@ -94,6 +127,23 @@ router.post('/verify-otp', authDbLimiter, authStrictLimiter, csrfProtection, val
 router.post('/resend-otp', authDbLimiter, authStrictLimiter, csrfProtection, validate(ResendOtpSchema), async (req, res, next) => {
   try {
     const { email } = req.body;
+    // Prefer self-send via Maileroo (same path as register); fall back to
+    // Supabase's own resend if it isn't available. Always 200 — never leak
+    // whether the email exists.
+    if (process.env.MAILEROO_API_KEY) {
+      try {
+        const { data, error } = await supabaseAdmin.auth.admin.generateLink({ type: 'signup', email });
+        const code = data?.properties?.email_otp;
+        if (!error && code) {
+          const tpl = Templates.signupOtp({ code });
+          await sendEmail({ to: email, subject: tpl.subject, html: tpl.html, text: tpl.text });
+          return res.json({ ok: true });
+        }
+        console.warn('[resend-otp] generateLink unavailable, falling back:', error?.message || 'no_otp');
+      } catch (e) {
+        console.error('[resend-otp] self-send failed, falling back:', e.message);
+      }
+    }
     const { error } = await supabaseAuth.auth.resend({ type: 'signup', email });
     if (error) console.warn('[resend-otp]', error.message);
     res.json({ ok: true });

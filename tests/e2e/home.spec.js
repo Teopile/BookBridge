@@ -2,13 +2,23 @@ import { test, expect } from 'playwright/test';
 import { EN, COPY, waitForApp } from './helpers.js';
 
 test.describe('Home page', () => {
-  test('root redirects to /en and renders the hero', async ({ page }) => {
+  test('root redirects to /ka by default (Georgian-first) and renders the hero', async ({ page }) => {
     await page.goto('/');
-    // App.jsx: "/" -> <Navigate to="/en" replace />
-    await expect(page).toHaveURL(/\/en$/);
+    // App.jsx: "/" -> RootRedirect -> stored language or "ka" for new visitors.
+    await expect(page).toHaveURL(/\/ka$/);
     await waitForApp(page);
 
-    // Hero headline (real copy from en.js).
+    // Georgian hero headline (real copy from ka.js).
+    await expect(
+      page.getByRole('heading', { level: 1, name: 'შესწირე წიგნი მთის სკოლას.' }),
+    ).toBeVisible();
+  });
+
+  test('a stored language preference wins over the default', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('bb_lang', 'en'));
+    await page.goto('/');
+    await expect(page).toHaveURL(/\/en$/);
+    await waitForApp(page);
     await expect(
       page.getByRole('heading', { level: 1, name: COPY.heroTitle }),
     ).toBeVisible();

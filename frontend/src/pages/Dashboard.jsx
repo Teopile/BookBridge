@@ -43,7 +43,7 @@ export default function Dashboard() {
             {regions.length === 0 && (
               <div className="card" style={{ gridColumn: '1/-1', maxWidth: 'none' }}>
                 <p style={{ color: 'var(--text-subtle)', textAlign: 'center', margin: 0 }}>
-                  No regions yet — once schools are approved they'll appear here.
+                  {t('dashboard.noRegions')}
                 </p>
               </div>
             )}

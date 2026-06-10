@@ -55,6 +55,21 @@ function ScrollToTop() {
   return null;
 }
 
+// Georgian-first: new visitors land on /ka; a previously chosen language
+// (localStorage bb_lang) is respected.
+function preferredLang() {
+  try {
+    const stored = localStorage.getItem('bb_lang');
+    if (stored === 'en' || stored === 'ka') return stored;
+  } catch {}
+  return 'ka';
+}
+
+function RootRedirect() {
+  const location = useLocation();
+  return <Navigate to={'/' + preferredLang() + location.search} replace />;
+}
+
 function LangGuard({ children }) {
   const location = useLocation();
   const seg = location.pathname.split('/').filter(Boolean)[0];
@@ -63,7 +78,7 @@ function LangGuard({ children }) {
     if (seg === 'en' || seg === 'ka') document.documentElement.lang = seg;
   }, [seg]);
   if (seg !== 'en' && seg !== 'ka') {
-    return <Navigate to={'/en' + location.pathname + location.search} replace />;
+    return <Navigate to={'/' + preferredLang() + location.pathname + location.search} replace />;
   }
   return children;
 }
@@ -77,7 +92,7 @@ export default function App() {
         <ErrorBoundary>
           <Suspense fallback={<RouteFallback />}>
             <Routes>
-              <Route path="/" element={<Navigate to="/en" replace />} />
+              <Route path="/" element={<RootRedirect />} />
               <Route path="/:lang/*" element={<LangGuard><LocalizedRoutes /></LangGuard>} />
               <Route path="*" element={<NotFound />} />
             </Routes>

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import { apiPost } from '../api.js';
+import { useT } from '../i18n/I18nContext.jsx';
 
-export default function PhotoUpload({ bucket = 'school-photos', onUploaded, label = 'Upload photo', initialUrl }) {
+export default function PhotoUpload({ bucket = 'school-photos', onUploaded, label, initialUrl }) {
+  const { t } = useT();
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
   const [preview, setPreview] = useState(initialUrl || null);
@@ -9,7 +11,7 @@ export default function PhotoUpload({ bucket = 'school-photos', onUploaded, labe
   async function handle(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (file.size > 5 * 1024 * 1024) { setErr('Max 5 MB'); return; }
+    if (file.size > 5 * 1024 * 1024) { setErr(t('upload.maxSize')); return; }
     setBusy(true); setErr(null);
     try {
       // Server regex rejects spaces, parens, non-ASCII — strip anything outside [a-zA-Z0-9._\-\/].
@@ -33,7 +35,7 @@ export default function PhotoUpload({ bucket = 'school-photos', onUploaded, labe
         <img src={preview} alt="" className="photo-upload-preview" width={64} height={64} loading="lazy" decoding="async" />
       )}
       <label className="btn btn-secondary btn-sm photo-upload-label">
-        {busy ? '…' : label}
+        {busy ? '…' : (label || t('upload.button'))}
         <input type="file" accept="image/*" onChange={handle} style={{ display: 'none' }} />
       </label>
       {err && <span className="error">{err}</span>}

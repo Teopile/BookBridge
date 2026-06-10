@@ -20,7 +20,7 @@ export function I18nProvider({ children }) {
     return (
       detectLangFromPath(location.pathname) ||
       localStorage.getItem('bb_lang') ||
-      'en'
+      'ka' // Georgian-first: ka is the default locale for new visitors
     );
   });
 

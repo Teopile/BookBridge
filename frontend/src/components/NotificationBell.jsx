@@ -93,7 +93,7 @@ export default function NotificationBell() {
               }}>
                 <div style={{ fontSize: 13, fontWeight: 600, color: '#1C2B27' }}>{n.subject}</div>
                 {n.body && <div style={{ fontSize: 13, color: 'var(--gray-600, #4a5a55)', marginTop: 2 }}>{n.body}</div>}
-                <div style={{ fontSize: 11, color: 'var(--gray-400, #9aa6a2)', marginTop: 4 }}>{timeAgo(n.sent_at, lang)}</div>
+                <div style={{ fontSize: 11, color: 'var(--gray-400, #9aa6a2)', marginTop: 4 }}>{timeAgo(n.sent_at, lang, t)}</div>
               </div>
             ))}
           </div>
@@ -110,11 +110,11 @@ export default function NotificationBell() {
   );
 }
 
-function timeAgo(iso, lang) {
+function timeAgo(iso, lang, t) {
   const s = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 1000));
   const m = Math.round(s / 60), h = Math.round(m / 60), d = Math.round(h / 24);
-  if (s < 60) return lang === 'ka' ? 'ახლახანს' : 'just now';
-  if (m < 60) return m + (lang === 'ka' ? ' წთ' : 'm');
-  if (h < 24) return h + (lang === 'ka' ? ' სთ' : 'h');
-  return d + (lang === 'ka' ? ' დღე' : 'd');
+  if (s < 60) return t('notif.justNow');
+  if (m < 60) return m + ' ' + t('common.min');
+  if (h < 24) return h + ' ' + t('common.hr');
+  return d + ' ' + t('common.day');
 }

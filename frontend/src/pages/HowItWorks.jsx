@@ -41,6 +41,23 @@ export default function HowItWorks() {
         </div>
       </div>
       </section>
+
+      {/* FAQ — hand-written Georgian (stakeholder-provided questions), no MT. */}
+      <section className="section alt">
+        <div className="container container-narrow">
+          <div className="section-header">
+            <h2 className="section-title">{t('faq.title')}</h2>
+          </div>
+          <div className="faq-list">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <details className="faq-item" key={n}>
+                <summary>{t(`faq.q${n}`)}</summary>
+                <p>{t(`faq.a${n}`)}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
     </>
   );
 }

@@ -191,6 +191,24 @@ export default {
     regionsTag: 'Regions',
     geographicReach: 'Geographic reach',
     schoolsCount: '{count} schools',
+    noRegions: "No regions yet — once schools are approved they'll appear here.",
+  },
+  upload: {
+    button: 'Upload photo',
+    maxSize: 'Maximum file size is 5 MB.',
+  },
+  faq: {
+    title: 'Frequently asked',
+    q1: 'What kinds of books do you accept?',
+    a1: "Children's and young-adult books in good, readable condition — fiction, non-fiction, encyclopedias, textbooks. The surest way to help is to pick from a school's own wishlist on its page.",
+    q2: 'Can I donate books in languages other than Georgian?',
+    a2: 'Yes. Georgian books are needed most, but schools also welcome books in English and other languages — especially picture books and simple readers that help with language learning.',
+    q3: 'How many books can I donate?',
+    a3: 'From a single book to whole boxes — every one counts. For larger donations the free courier pickup is usually the easiest way.',
+    q4: 'Do you accept monetary donations?',
+    a4: 'No. BookBridge moves only books — we take no money and charge nothing. If you would like to help more, donate another book or tell a friend about a school that is waiting.',
+    q5: 'When do deliveries happen?',
+    a5: 'Donations are collected at volunteer schools in Tbilisi and travel to the mountains in batches, usually within a few weeks. Every donation has a tracking page, and you get notified at each step.',
   },
   donate: {
     removeBook: 'Remove book',
@@ -407,6 +425,7 @@ export default {
     title: 'Notifications',
     empty: "You're all caught up.",
     viewAccount: 'Go to your account',
+    justNow: 'just now',
   },
   cookieBanner: {
     title: 'Cookie notice',

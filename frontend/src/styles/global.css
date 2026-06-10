@@ -2147,3 +2147,43 @@ footer {
   font-size: var(--fs-sm);
 }
 .testimonial-date { color: var(--text-subtle); }
+
+/* =============== FAQ (accordion) =============== */
+.faq-list { display: flex; flex-direction: column; gap: var(--space-3); }
+.faq-item {
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-radius: var(--r-md);
+  padding: 0;
+  overflow: hidden;
+}
+.faq-item summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  font-weight: var(--fw-semibold);
+  min-height: var(--tap-min);
+}
+.faq-item summary::-webkit-details-marker { display: none; }
+.faq-item summary::after {
+  content: '';
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  border-right: 2px solid var(--forest-600);
+  border-bottom: 2px solid var(--forest-600);
+  transform: rotate(45deg);
+  transition: transform var(--t-base);
+  margin-right: 4px;
+}
+.faq-item[open] summary::after { transform: rotate(-135deg); }
+.faq-item p {
+  margin: 0;
+  padding: 0 var(--space-5) var(--space-5);
+  color: var(--text-muted);
+  line-height: var(--lh-relaxed);
+}

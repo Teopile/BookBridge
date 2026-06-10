@@ -18,3 +18,4 @@ tests/mobile-screenshots/
 tests/fixtures/
 tests/email-previews/
 .vercel
+tests/test-results/

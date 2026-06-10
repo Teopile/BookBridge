@@ -8,6 +8,34 @@
 
 ---
 
+## ⚡ 2026-06-11 — stakeholder feedback implemented; 3 things now need YOU
+
+The full stakeholder feedback (P0–P4: privacy fix, auth gate, full-width layout, stories page,
+About sections, Georgian-first i18n) is implemented and deployed. Director phone numbers were
+already **scrubbed from the live DB** (preserved in a local backup on this PC). What's left:
+
+**a) Apply two SQL migrations — 2 min, CLOSES A REAL HOLE (supersedes §1a below)**
+- Supabase Dashboard → SQL Editor → paste & Run, in order:
+  1. `supabase/migrations/0007_rls.sql` — still pending! Anyone with the public anon key can
+     read the DB directly until this runs (verified 2026-06-11).
+  2. `supabase/migrations/0011_school_private_contact.sql` — adds the non-public column for
+     the school directors' contact info.
+- Then tell me — I'll run `scrub-school-pii.mjs --restore` to move the preserved director
+  contacts into the new private column.
+
+**b) Real content to replace clearly-marked placeholders**
+- `/stories` page: 5 sample stories (badge-marked) in `frontend/src/content/stories.js` —
+  send real stories + photos (with guardian consent).
+- About "როგორ დაიწყო": placeholder origin story — send the real ~3 paragraphs.
+- Optional: team bios/photos (`content/team.js`) and community quotes
+  (`content/testimonials.js`) — both sections are live but hidden until records exist.
+
+**c) Georgian copy sign-off (REVIEW-flagged, listed in the session summary)**
+- Auth-gate bullet „მიიღე შეტყობინება, როცა სკოლა წიგნს დაიჯავშნის" (your draft, kept verbatim),
+  the four value-card titles, and the FAQ answers — have a native speaker confirm the wording.
+
+---
+
 ## 0. Log in & look around (2 min)
 - Go to **https://bookbridge.ge** → Sign in → `teopile.bibiluri@gmail.com` / `Teoteo_0511`.
 - You're an **admin**, so you can reach the admin dashboard.

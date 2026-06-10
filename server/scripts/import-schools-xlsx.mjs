@@ -44,11 +44,16 @@ for (const path of FILES) {
     const email    = r['მეილი']?.trim() || null;
     const count    = r['მოსწავლეთა რაოდენობა']?.trim() || null;
 
-    const parts = [];
-    if (count)    parts.push(`${count} მოსწავლე`);
-    if (director) parts.push(`დირექტორი: ${director}`);
-    if (phone)    parts.push(`ტელ.: ${phone}`);
-    const description = parts.join(' · ') || null;
+    // Privacy: director names and phone numbers are PERSONAL data. They go in
+    // private_contact (admin/owner-only, see migration 0011) — NEVER in
+    // description, which renders publicly. Description keeps only the student
+    // count, which is not personal.
+    const description = count ? `${count} მოსწავლე` : null;
+
+    const privateParts = [];
+    if (director) privateParts.push(`დირექტორი: ${director}`);
+    if (phone)    privateParts.push(`ტელ.: ${phone}`);
+    const private_contact = privateParts.join(' · ') || null;
 
     rows.push({
       type: 'beneficiary',
@@ -57,6 +62,7 @@ for (const path of FILES) {
       region,
       city,
       description,
+      private_contact,
       contact_email: email,
       owner_user_id: admin.id,
     });

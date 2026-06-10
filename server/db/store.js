@@ -8,10 +8,26 @@ export { buildIlikeOr };
 
 // ---------- schools ----------
 
+// Columns of a school row that are safe for anonymous visitors. Everything
+// else — contact_email, private_contact, approval_note, owner_user_id,
+// opening_hours — is operational/contact data and must never leave the server
+// on a public (unauthenticated) endpoint.
+export const PUBLIC_SCHOOL_FIELDS = [
+  'id', 'type', 'name', 'description', 'region', 'city', 'address',
+  'lat', 'lng', 'photo_url', 'status', 'created_at',
+];
+
+// Reduce a full school row (from internal helpers that need owner_user_id etc.)
+// to the public projection before sending it to an anonymous client.
+export function toPublicSchool(row) {
+  if (!row) return row;
+  return Object.fromEntries(PUBLIC_SCHOOL_FIELDS.filter((f) => f in row).map((f) => [f, row[f]]));
+}
+
 export async function listApprovedSchools({ type, region, limit = 50 } = {}) {
   let q = supabaseAdmin
     .from('schools')
-    .select('*')
+    .select(PUBLIC_SCHOOL_FIELDS.join(', '))
     .eq('status', 'approved')
     .order('created_at', { ascending: false })
     .limit(limit);

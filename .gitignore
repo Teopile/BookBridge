@@ -3,6 +3,8 @@ dist/
 .env
 .env.local
 .env.*.local
+.env.audit
+server/scripts/school-pii-backup.json
 *.log
 .DS_Store
 .vscode/

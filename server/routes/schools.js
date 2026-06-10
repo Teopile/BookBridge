@@ -8,7 +8,7 @@ import {
   listApprovedSchools, getSchoolById, createSchool, updateSchool, listPendingSchools,
   listBookRequests, createBookRequest, deleteBookRequest, listSchoolsByOwner,
   listDonationsForBeneficiary, transferSchoolOwnership, findUserByEmail,
-  getSchoolOwnerContact, getAdminEmails, listAllSchools,
+  getSchoolOwnerContact, getAdminEmails, listAllSchools, toPublicSchool,
 } from '../db/store.js';
 import { SchoolCreateSchema, SchoolApproveSchema, BookRequestSchema } from '../schemas.js';
 import { sendEmail, Templates } from '../lib/mailer.js';
@@ -40,7 +40,8 @@ router.get('/:id', async (req, res, next) => {
     const school = await getSchoolById(req.params.id);
     if (!school || school.status !== 'approved') return res.status(404).json({ error: 'not_found' });
     const requests = await listBookRequests(school.id);
-    res.json({ ...school, book_requests: requests });
+    // Public endpoint — strip contact/operational fields before responding.
+    res.json({ ...toPublicSchool(school), book_requests: requests });
   } catch (err) { next(err); }
 });
 

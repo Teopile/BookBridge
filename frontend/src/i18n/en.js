@@ -1,7 +1,7 @@
 export default {
   nav: {
     home: 'Home', how: 'How it works', schools: 'Schools', donate: 'Donate',
-    search: 'Search', about: 'About', join: 'Join us',
+    search: 'Search', about: 'About', join: 'Join us', stories: 'Stories',
     login: 'Sign in', register: 'Register', account: 'My account', logout: 'Sign out',
     menu: 'Menu', switchToKa: 'Switch to Georgian', switchToEn: 'Switch to English',
     beneficiaryCta: 'Are you a beneficiary?',
@@ -110,6 +110,47 @@ export default {
     p1: "BookBridge moves donated books from city homes to highland schools in Georgia. Many mountain schools have libraries with half-empty shelves — and a long drive to the nearest bookstore.",
     p2: "We make it simple: pick a school, choose books they need, drop them off in Tbilisi or book a free courier. Volunteer schools collect donations. We deliver. Donors can track every shipment.",
     p3: "Run by a small team. Books are the only thing we move — no fees, no overhead skim.",
+  },
+  // TODO(content): placeholder origin story patterned on the mockup — the real
+  // one will be supplied by the owner. Flagged in the implementation summary.
+  aboutBegin: {
+    title: 'How it began',
+    p1: '[PLACEHOLDER] In 2018, a hiker visited a small school in upper Svaneti. The teacher there asked if she happened to have any books with her. The school library had twelve.',
+    p2: '[PLACEHOLDER] She came back the next month with thirty donated books from her Tbilisi neighborhood. The children sat on the school steps and flipped through them for two hours straight.',
+    p3: '[PLACEHOLDER] That was the beginning. Today donated books make the same journey — carried by volunteers over mountain passes and handed directly to children who hold them like treasures.',
+    cta: 'Join the movement',
+  },
+  // REVIEW: Georgian value titles are stakeholder drafts pending native review.
+  aboutValues: {
+    eyebrow: 'What we believe',
+    title: 'Our values',
+    v1t: 'Human, not corporate',
+    v1b: 'No big donors, no board of directors. Every person involved does this because they believe a book is a gift worth giving.',
+    v2t: 'Community-driven',
+    v2b: 'Donors, volunteers, drivers, and recipients all play equal parts. This movement belongs to everyone who touches it.',
+    v3t: 'Locally rooted',
+    v3b: 'We partner with teachers and families in each village to understand what books are needed and how to deliver them with dignity.',
+    v4t: 'Story-centered',
+    v4b: 'We believe stories — fictional, historical, scientific — expand the world available to any child, regardless of where they live.',
+  },
+  aboutTeam: {
+    eyebrow: 'The people',
+    title: 'Who we are',
+  },
+  aboutVoices: {
+    title: 'What our community says',
+  },
+  stories: {
+    eyebrow: 'True stories',
+    title: 'Voices from the mountains',
+    sub: 'These are real children. Real books. Real moments when a story crossed a mountain and found its reader.',
+    filterLabel: 'Filter by region:',
+    all: 'All',
+    readMore: 'Read more',
+    readLess: 'Show less',
+    placeholderBadge: 'Sample',
+    placeholderNote: 'The stories below are clearly marked samples — real stories (with guardian consent) will replace them before launch.',
+    empty: 'No stories in this region yet.',
   },
   how: {
     step1Detail: 'Browse schools and what they need. Each school has a profile with a wishlist.',

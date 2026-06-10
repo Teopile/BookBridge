@@ -13,6 +13,7 @@ const TITLE_KEYS = {
   'how-it-works':        'nav.how',
   'donate':              'home.ctaPrimary',
   'about':               'nav.about',
+  'stories':             'stories.title',
   'privacy':             'legal.privacyTitle',
   'terms':               'legal.termsTitle',
   'cookies':             'legal.cookiesTitle',

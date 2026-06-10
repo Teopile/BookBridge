@@ -92,6 +92,24 @@
     <priority>0.5</priority>
   </url>
 
+  <!-- Stories (ხმები მთებიდან) -->
+  <url>
+    <loc>https://bookbridge.ge/ka/stories</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/stories" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/stories" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bookbridge.ge/en/stories" />
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/stories</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/stories" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/stories" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bookbridge.ge/en/stories" />
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>
+
   <!-- Search -->
   <url>
     <loc>https://bookbridge.ge/en/search</loc>
@@ -110,17 +128,50 @@
     <priority>0.4</priority>
   </url>
 
-  <!--
-    NOTE: /privacy, /terms, and /cookies are intentionally NOT listed.
-    Those pages do not exist in the app yet (no routes in App.jsx, no page
-    components, no Footer links). Add the <url> entries below — with their
-    /ka equivalents — only AFTER the pages ship, otherwise the sitemap
-    points crawlers at soft-404s:
-      https://bookbridge.ge/en/privacy   + https://bookbridge.ge/ka/privacy
-      https://bookbridge.ge/en/terms     + https://bookbridge.ge/ka/terms
-      https://bookbridge.ge/en/cookies   + https://bookbridge.ge/ka/cookies
+  <!-- Legal -->
+  <url>
+    <loc>https://bookbridge.ge/en/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/ka/privacy</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/privacy" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/privacy" />
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/terms" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/terms" />
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/ka/terms</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/terms" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/terms" />
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/en/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/cookies" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/cookies" />
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
+    <loc>https://bookbridge.ge/ka/cookies</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bookbridge.ge/en/cookies" />
+    <xhtml:link rel="alternate" hreflang="ka" href="https://bookbridge.ge/ka/cookies" />
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
 
-    /auth was removed: it is a login surface, not indexable content, and it
-    is Disallowed in robots.txt — listing it here contradicts that.
-  -->
+  <!-- /auth is intentionally not listed: it is a login surface, not
+       indexable content, and it is Disallowed in robots.txt. -->
 </urlset>

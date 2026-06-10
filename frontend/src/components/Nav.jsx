@@ -88,6 +88,7 @@ export default function Nav() {
         <div className="nav-links">
           <NavLink to={prefix + '/schools'}>{t('nav.schools')}</NavLink>
           <NavLink to={prefix + '/how-it-works'}>{t('nav.how')}</NavLink>
+          <NavLink to={prefix + '/stories'}>{t('nav.stories')}</NavLink>
           <NavLink to={prefix + '/about'}>{t('nav.about')}</NavLink>
           <NavLink to={prefix + '/search'}>{t('nav.search')}</NavLink>
         </div>
@@ -142,6 +143,7 @@ export default function Nav() {
         <NavLink to={prefix + '/school/manage'}>{t('nav.beneficiaryCta')}</NavLink>
         <NavLink to={prefix + '/schools'}>{t('nav.schools')}</NavLink>
         <NavLink to={prefix + '/how-it-works'}>{t('nav.how')}</NavLink>
+        <NavLink to={prefix + '/stories'}>{t('nav.stories')}</NavLink>
         <NavLink to={prefix + '/about'}>{t('nav.about')}</NavLink>
         <NavLink to={prefix + '/search'}>{t('nav.search')}</NavLink>
         <div className="nav-drawer-divider" />

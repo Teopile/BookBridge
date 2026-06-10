@@ -16,6 +16,7 @@ const HowItWorks    = lazy(() => import('./pages/HowItWorks.jsx'));
 const SchoolDetail  = lazy(() => import('./pages/SchoolDetail.jsx'));
 const Dashboard     = lazy(() => import('./pages/Dashboard.jsx'));
 const About         = lazy(() => import('./pages/About.jsx'));
+const Stories       = lazy(() => import('./pages/Stories.jsx'));
 const Search        = lazy(() => import('./pages/Search.jsx'));
 const Track         = lazy(() => import('./pages/Track.jsx'));
 
@@ -101,6 +102,7 @@ function LocalizedRoutes() {
         <Route path="donate/*" element={<Donate />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="about" element={<About />} />
+        <Route path="stories" element={<Stories />} />
         <Route path="privacy" element={<Privacy />} />
         <Route path="terms" element={<Terms />} />
         <Route path="cookies" element={<Cookies />} />

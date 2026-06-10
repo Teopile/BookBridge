@@ -17,6 +17,7 @@ function shouldShowFooterCta(pathname) {
     'how-it-works',
     'schools',
     'search',
+    'stories',
   ].some((p) => seg === p || seg.startsWith(p + '/'));
 }
 
@@ -63,6 +64,7 @@ export default function Footer() {
           <div className="footer-col">
             <h5>{t('footer.company')}</h5>
             <Link to={prefix + '/about'}>{t('footer.about')}</Link>
+            <Link to={prefix + '/stories'}>{t('nav.stories')}</Link>
             <a href="mailto:info@bookbridge.ge">{t('footer.contact')}</a>
             <a href="mailto:info@bookbridge.ge">info@bookbridge.ge</a>
             {instagram && (

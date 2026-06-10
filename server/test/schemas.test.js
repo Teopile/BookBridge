@@ -15,6 +15,7 @@ import {
   SearchSchema,
   MonetaryDonationSchema,
   RegisterSchema,
+  LoginSchema,
 } from '../schemas.js';
 
 const VALID_UUID = '11111111-1111-1111-1111-111111111111';
@@ -142,6 +143,24 @@ test('RegisterSchema rejects a short password', () => {
     password: 'short',
   });
   assert.equal(result.success, false);
+});
+
+test('RegisterSchema accepts a fully Georgian username', () => {
+  const result = RegisterSchema.safeParse({
+    email: 'donor@example.com',
+    username: 'თეო_ბიბილური',
+    password: 'supersecret',
+  });
+  assert.equal(result.success, true);
+});
+
+test('LoginSchema defaults remember to true and accepts remember=false', () => {
+  const on = LoginSchema.safeParse({ email: 'a@b.ge', password: 'x' });
+  assert.equal(on.success, true);
+  assert.equal(on.data.remember, true);
+  const off = LoginSchema.safeParse({ email: 'a@b.ge', password: 'x', remember: false });
+  assert.equal(off.success, true);
+  assert.equal(off.data.remember, false);
 });
 
 test('RegisterSchema rejects a username with illegal characters', () => {

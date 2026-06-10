@@ -1,8 +1,13 @@
 import { z } from 'zod';
 
+// Usernames are Unicode-aware: any letter (incl. Georgian Mkhedruli) or digit,
+// plus _ and -. ASCII-only patterns rejected Georgian names, which real users
+// type first. Case-insensitive uniqueness is enforced at the DB (lower(username)).
+export const USERNAME_RE = /^[\p{L}\p{N}_-]+$/u;
+
 export const RegisterSchema = z.object({
   email: z.string().email(),
-  username: z.string().min(3).max(30).regex(/^[A-Za-z0-9_-]+$/),
+  username: z.string().trim().min(3).max(30).regex(USERNAME_RE),
   password: z.string().min(8).max(200),
   language: z.enum(['en', 'ka']).default('en'),
 });
@@ -10,6 +15,8 @@ export const RegisterSchema = z.object({
 export const LoginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(1).max(200),
+  // false → session-only cookie (browser close logs out); true/absent → 30 days.
+  remember: z.boolean().optional().default(true),
 });
 
 export const SchoolCreateSchema = z.object({

@@ -240,6 +240,25 @@ export default {
     errUsernameTaken: 'That username is already taken.',
     errEmailTaken: 'That email is already registered. Try signing in.',
     errPasswordMismatch: 'Passwords do not match.',
+    rememberMe: 'Remember me',
+    usernameRules: '3–30 characters: letters (Georgian works too), numbers, _ or -. No spaces.',
+    passwordRules: 'At least 8 characters.',
+    errUsernameLength: 'Username must be 3–30 characters long.',
+    errUsernameChars: 'Username can only contain letters, numbers, _ and - (no spaces).',
+    errPasswordShort: 'Password must be at least 8 characters.',
+    errBadCredentials: 'Wrong email or password. Check them and try again.',
+  },
+  // Auth gate shown before the donation flow (stakeholder-drafted copy).
+  authGate: {
+    title: 'Sign in to donate a book',
+    b1: 'Keep an eye on the books you have donated',
+    // REVIEW: mirrors the stakeholder's Georgian draft („…წიგნს დაიჯავშნის").
+    b2: 'Get notified when a school reserves your book',
+    b3: 'Pick up right where you left off',
+    signin: 'Sign in',
+    noAccount: "Don't have an account?",
+    create: 'Create one',
+    close: 'Close',
   },
   account: {
     title: 'My account',

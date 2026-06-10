@@ -31,16 +31,19 @@ const authStrictLimiter = rateLimit({
 // per-instance). Layered: the DB limiter is the real global cap.
 const authDbLimiter = dbRateLimit({ limit: 12, windowSec: 60, name: 'auth' });
 
-const cookieOpts = () => {
+// persistent=true → 30-day cookie ("remember me", the default).
+// persistent=false → session cookie: no maxAge, so closing the browser ends it.
+const cookieOpts = (persistent = true) => {
   const isProd = process.env.NODE_ENV === 'production';
-  return {
+  const opts = {
     httpOnly: true,
     // Cross-origin SPA in prod (different Render hosts) → SameSite=None+Secure.
     sameSite: isProd ? 'none' : 'lax',
     secure: isProd,
     path: '/',
-    maxAge: 60 * 60 * 24 * 30 * 1000,
   };
+  if (persistent) opts.maxAge = 60 * 60 * 24 * 30 * 1000;
+  return opts;
 };
 
 // ---------- Signup (email + username + password, sends 6-digit OTP) ----------
@@ -153,7 +156,7 @@ router.post('/resend-otp', authDbLimiter, authStrictLimiter, csrfProtection, val
 // ---------- Login (email + password) ----------
 router.post('/login', authDbLimiter, authStrictLimiter, csrfProtection, validate(LoginSchema), async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const { email, password, remember } = req.body;
     const { data, error } = await supabaseAuth.auth.signInWithPassword({ email, password });
     if (error) {
       // Map "Email not confirmed" so the UI can offer the OTP step.
@@ -162,7 +165,7 @@ router.post('/login', authDbLimiter, authStrictLimiter, csrfProtection, validate
       }
       return res.status(401).json({ error: error.message });
     }
-    res.cookie(SESSION_COOKIE_NAME, data.session.access_token, cookieOpts());
+    res.cookie(SESSION_COOKIE_NAME, data.session.access_token, cookieOpts(remember));
     res.json({
       access_token: data.session.access_token,
       refresh_token: data.session.refresh_token,
@@ -201,7 +204,7 @@ router.get('/me', async (req, res, next) => {
 
 const ProfileUpdateSchema = z.object({
   full_name: z.string().min(1).max(120).optional(),
-  username: z.string().min(3).max(30).regex(/^[A-Za-z0-9_-]+$/).optional(),
+  username: z.string().trim().min(3).max(30).regex(/^[\p{L}\p{N}_-]+$/u).optional(),
   city: z.string().max(120).optional(),
   language: z.enum(['en', 'ka']).optional(),
   avatar_url: z.string().url().optional(),

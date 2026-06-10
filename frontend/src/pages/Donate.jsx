@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { useAuth } from '../hooks/useAuth.jsx';
 import { apiGet, apiPost } from '../api.js';
+import AuthGateModal from '../components/AuthGateModal.jsx';
 
 const SAMPLE_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/900/225',
@@ -17,8 +18,9 @@ const photoFor = (id) => {
 
 export default function Donate() {
   const { t, lang } = useT();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [params] = useSearchParams();
   const prefix = '/' + lang;
 
@@ -65,7 +67,7 @@ export default function Donate() {
   function removeItem(idx) { setItems((curr) => curr.filter((_, i) => i !== idx)); }
 
   async function submit() {
-    if (!user) { navigate('/' + lang + '/auth?next=/donate'); return; }
+    if (!user) { navigate('/' + lang + '/auth?next=' + encodeURIComponent(location.pathname + location.search)); return; }
     setSubmitting(true); setError(null);
     try {
       const cleanItems = items
@@ -109,6 +111,26 @@ export default function Donate() {
     t('donate.step3'),
     t('donate.step4'),
   ];
+
+  // Auth gate BEFORE the flow (MyHome pattern): a logged-out visitor sees the
+  // sign-in prompt immediately — no form fields until they authenticate. After
+  // auth they land right back here (?next= carries this URL, incl. ?school=).
+  if (!authLoading && !user) {
+    return (
+      <section className="section">
+        <div className="container container-narrow" aria-hidden="true">
+          <div className="wizard-banner">
+            <img src={photoFor(chosenSchool)} alt="" width={900} height={225} loading="lazy" decoding="async" />
+            <div className="wizard-banner-overlay" />
+            <div className="wizard-banner-content">
+              <div className="wizard-step-heading">{t('donate.step1')}</div>
+            </div>
+          </div>
+        </div>
+        <AuthGateModal />
+      </section>
+    );
+  }
 
   return (
     <section className="section">

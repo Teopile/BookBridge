@@ -238,16 +238,18 @@ function ProfileEditor({ profile, onSaved, onCancel, t, currentLang, setLang }) 
     <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
       <h3 style={{ marginBottom: 'var(--space-4)' }}>{t('account.editProfile')}</h3>
       <form className="form" onSubmit={submit}>
-        <label>{t('auth.username')}</label>
+        <label htmlFor="profile-username">{t('auth.username')}</label>
         <input
+          id="profile-username" name="username" autoComplete="username"
           required minLength={3} maxLength={30}
-          pattern="[A-Za-z0-9_\-]{3,30}"
           value={form.username}
           onChange={(e) => set('username', e.target.value)}
+          aria-describedby="profile-username-rules"
         />
+        <p className="field-hint" id="profile-username-rules">{t('auth.usernameRules')}</p>
 
-        <label>{t('account.fullName')}</label>
-        <input value={form.full_name} onChange={(e) => set('full_name', e.target.value)} />
+        <label htmlFor="profile-fullname">{t('account.fullName')}</label>
+        <input id="profile-fullname" name="name" autoComplete="name" value={form.full_name} onChange={(e) => set('full_name', e.target.value)} />
 
         <label>{t('account.city')}</label>
         <input value={form.city} onChange={(e) => set('city', e.target.value)} />

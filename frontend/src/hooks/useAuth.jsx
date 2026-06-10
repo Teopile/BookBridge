@@ -20,8 +20,9 @@ export function AuthProvider({ children }) {
 
   useEffect(() => { refresh(); }, [refresh]);
 
-  async function login(email, password) {
-    await apiPost('/api/auth/login', { email, password });
+  async function login(email, password, remember = true) {
+    // remember=false → session-only cookie on the server (ends on browser close).
+    await apiPost('/api/auth/login', { email, password, remember });
     await refresh();
   }
 

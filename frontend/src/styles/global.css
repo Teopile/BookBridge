@@ -1708,3 +1708,113 @@ footer {
   .region-tags { gap: var(--space-2); padding-bottom: clamp(100px, 38vw, 180px); }
   .region-chip { font-size: var(--fs-xs); padding: 9px 13px; }
 }
+
+/* =============== MODAL (auth gate) =============== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(28, 38, 32, 0.55);
+  backdrop-filter: blur(3px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+}
+.modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface, #fff);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-3, 0 24px 64px rgba(0,0,0,.28));
+  padding: var(--space-8) var(--space-7) var(--space-7);
+  text-align: center;
+}
+.modal-close {
+  position: absolute;
+  top: var(--space-3);
+  right: var(--space-3);
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: var(--cream-warm-F, #FAF5E8);
+  color: var(--text-muted);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.modal-close:hover { background: var(--cream-card); color: var(--text-default); }
+.modal-illustration {
+  width: 84px;
+  height: 84px;
+  margin: 0 auto var(--space-5);
+  border-radius: 50%;
+  background: var(--forest-50, #EAF3EE);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.modal-title {
+  font-size: var(--fs-h3, 22px);
+  line-height: var(--lh-tight, 1.25);
+  margin-bottom: var(--space-5);
+}
+.modal-benefits {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  text-align: left;
+}
+.modal-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+}
+.modal-benefits svg { flex: 0 0 auto; margin-top: 2px; }
+.modal-cta { width: 100%; }
+.modal-alt {
+  margin-top: var(--space-4);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+}
+.modal-alt a {
+  color: var(--forest-600);
+  font-weight: var(--fw-bold);
+  text-decoration: underline;
+}
+
+/* =============== FORM HINTS & FIELD ERRORS (validation UX) =============== */
+.form .field-hint {
+  font-size: var(--fs-xs);
+  color: var(--text-subtle);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-2);
+  line-height: var(--lh-normal, 1.5);
+}
+.form .field-error {
+  font-size: var(--fs-xs);
+  color: var(--clay, #C0594A);
+  font-weight: var(--fw-semibold);
+  margin: calc(-1 * var(--space-2)) 0 var(--space-2);
+}
+.form .checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--fs-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  user-select: none;
+}
+.form .checkbox-row input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--forest-600);
+  cursor: pointer;
+}

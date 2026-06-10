@@ -99,7 +99,7 @@ export default function Auth() {
     e.preventDefault();
     setErr(null); setBusy(true);
     try {
-      await apiPost('/api/auth/verify-otp', { email: pendingEmail, token: form.otp });
+      await apiPost('/api/auth/verify-otp', { email: pendingEmail, token: form.otp, remember });
       rememberEmail(pendingEmail);
       await refresh();
       navigate(afterAuthPath());

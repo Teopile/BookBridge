@@ -125,9 +125,10 @@
   --nav-h:    72px;
   --nav-h-mobile: 60px;
   /* Full-horizontal layout (stakeholder feedback): modern wide container.
-     Swap here to retune the whole site's width. */
+     Swap here to retune the whole site's width. narrow is for forms and
+     long-read pages — widened too so nothing reads as a thin strip at 1920px. */
   --container: 1320px;
-  --container-narrow: 760px;
+  --container-narrow: 920px;
   --tap-min: 48px;
 
   /* Back-compat aliases — keep stray legacy refs from breaking */

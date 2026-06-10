@@ -110,12 +110,12 @@ router.post('/register', authDbLimiter, authStrictLimiter, csrfProtection, valid
 // ---------- Verify signup OTP — completes the account and signs the user in ----------
 router.post('/verify-otp', authDbLimiter, authStrictLimiter, csrfProtection, validate(VerifyOtpSchema), async (req, res, next) => {
   try {
-    const { email, token } = req.body;
+    const { email, token, remember } = req.body;
     const { data, error } = await supabaseAuth.auth.verifyOtp({ email, token, type: 'signup' });
     if (error || !data?.user) return res.status(400).json({ error: error?.message || 'invalid_token' });
 
     if (data.session?.access_token) {
-      res.cookie(SESSION_COOKIE_NAME, data.session.access_token, cookieOpts());
+      res.cookie(SESSION_COOKIE_NAME, data.session.access_token, cookieOpts(remember));
     }
     res.json({
       ok: true,
@@ -179,12 +179,15 @@ router.post('/logout', csrfProtection, (_req, res) => {
   res.json({ ok: true });
 });
 
-const RefreshSchema = z.object({ refresh_token: z.string().min(8) });
+const RefreshSchema = z.object({
+  refresh_token: z.string().min(8),
+  remember: z.boolean().optional().default(true),
+});
 router.post('/refresh', csrfProtection, validate(RefreshSchema), async (req, res, next) => {
   try {
     const { data, error } = await supabaseAuth.auth.refreshSession({ refresh_token: req.body.refresh_token });
     if (error) return res.status(401).json({ error: error.message });
-    res.cookie(SESSION_COOKIE_NAME, data.session.access_token, cookieOpts());
+    res.cookie(SESSION_COOKIE_NAME, data.session.access_token, cookieOpts(req.body.remember));
     res.json({ access_token: data.session.access_token, refresh_token: data.session.refresh_token });
   } catch (err) { next(err); }
 });

@@ -1,62 +1,44 @@
 import { test, expect } from 'playwright/test';
 import { EN, COPY, waitForApp } from './helpers.js';
 
-// NOTE: these tests deliberately STOP before submitting a donation.
-// Submitting would require auth and would create real DB rows. We only verify
-// the wizard opens, renders its steps, and gates "Next" correctly.
+// The donate flow is auth-gated at the START (stakeholder Task 2, MyHome
+// pattern): a logged-out visitor sees the sign-in modal immediately — no form
+// fields before auth. These tests verify the gate, intent preservation via
+// ?next=, and the logged-in wizard internals are covered by unit/manual tests
+// (submitting would require auth and would create real DB rows).
 
-test.describe('Donate wizard', () => {
-  test('opens on step 1 with the school picker', async ({ page }) => {
+test.describe('Donate auth gate (logged out)', () => {
+  test('opening /donate shows the auth modal immediately, no form fields', async ({ page }) => {
     await page.goto(EN + '/donate');
     await waitForApp(page);
 
-    // Wizard banner shows "Step 1 of 4" and the step-1 heading.
-    await expect(page.getByText(/Step 1 of 4/i)).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: COPY.donateStep1 }),
-    ).toBeVisible();
-    await expect(page.getByText('Pick which school you want to support.')).toBeVisible();
+    // The modal is up: dialog role, title, sign-in CTA, create-account link.
+    // (Named lookup — the cookie-consent banner is also role="dialog".)
+    const dialog = page.getByRole('dialog', { name: 'Sign in to donate a book' });
+    await expect(dialog).toBeVisible();
+    await expect(dialog.getByRole('link', { name: 'Sign in' })).toBeVisible();
+    await expect(dialog.getByRole('link', { name: 'Create one' })).toBeVisible();
 
-    // The 4-pill progress bar exists.
-    await expect(page.locator('.wizard-step-pill')).toHaveCount(4);
-
-    // School <select> is populated from /api/schools?type=beneficiary.
-    const select = page.locator('select.wizard-select');
-    await expect(select).toBeVisible();
-    await expect
-      .poll(async () => select.locator('option').count())
-      .toBeGreaterThan(1);
+    // No wizard form fields are rendered behind the gate.
+    await expect(page.locator('select.wizard-select')).toHaveCount(0);
+    await expect(page.locator('.wizard-step-pill')).toHaveCount(0);
   });
 
-  test('"Next" is disabled until a school is chosen, then advances to step 2', async ({ page }) => {
+  test('the sign-in CTA carries a return-to (?next=) back into the flow', async ({ page }) => {
     await page.goto(EN + '/donate');
     await waitForApp(page);
 
-    const next = page.getByRole('button', { name: /Next/ });
-    await expect(next).toBeVisible();
-    await expect(next).toBeDisabled();
+    const signin = page.getByRole('dialog', { name: 'Sign in to donate a book' }).getByRole('link', { name: 'Sign in' });
+    await expect(signin).toHaveAttribute('href', /\/en\/auth\?next=/);
 
-    // Pick the first real school option (index 0 is the "— Choose a school —" placeholder).
-    const select = page.locator('select.wizard-select');
-    await expect
-      .poll(async () => select.locator('option').count())
-      .toBeGreaterThan(1);
-    await select.selectOption({ index: 1 });
-
-    await expect(next).toBeEnabled();
-    await next.click();
-
-    // Step 2: "Pick books".
-    await expect(page.getByText(/Step 2 of 4/i)).toBeVisible();
-    await expect(
-      page.getByRole('heading', { name: COPY.donateStep2 }),
-    ).toBeVisible();
-    // Step 2 offers an "Add a book" custom-entry button.
-    await expect(page.getByRole('button', { name: /Add a book/i })).toBeVisible();
+    await signin.click();
+    await expect(page).toHaveURL(/\/en\/auth\?next=%2Fen%2Fdonate/);
+    // Auth page renders the sign-in form.
+    await expect(page.getByLabel('Email')).toBeVisible();
+    await expect(page.getByLabel('Password')).toBeVisible();
   });
 
-  test('deep link with ?school= preselects and the wizard still renders', async ({ page, request }) => {
-    // Grab a real beneficiary school id from the live API.
+  test('deep link with ?school= is preserved in the return-to', async ({ page, request }) => {
     const res = await request.get(
       'https://book-bridge-api.vercel.app/api/schools?type=beneficiary',
     );
@@ -68,8 +50,23 @@ test.describe('Donate wizard', () => {
     await page.goto(EN + '/donate?school=' + id);
     await waitForApp(page);
 
-    // Still on step 1, but a school is preselected so "Next" is enabled.
-    await expect(page.getByText(/Step 1 of 4/i)).toBeVisible();
-    await expect(page.getByRole('button', { name: /Next/ })).toBeEnabled();
+    const signin = page.getByRole('dialog', { name: 'Sign in to donate a book' }).getByRole('link', { name: 'Sign in' });
+    const href = await signin.getAttribute('href');
+    expect(decodeURIComponent(href)).toContain('/en/donate?school=' + id);
+  });
+
+  test('closing the modal returns the user to where they came from', async ({ page }) => {
+    await page.goto(EN);
+    await waitForApp(page);
+
+    // Navigate to /donate via the nav CTA, then close the gate.
+    await page.locator('.nav-donate-cta').click();
+    const dialog = page.getByRole('dialog', { name: 'Sign in to donate a book' });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole('button', { name: 'Close' }).click();
+
+    // Back on the home page, app state intact.
+    await expect(page).toHaveURL(/\/en$/);
+    await expect(page.getByRole('heading', { level: 1, name: COPY.heroTitle })).toBeVisible();
   });
 });

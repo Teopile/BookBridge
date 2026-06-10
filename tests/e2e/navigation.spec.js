@@ -6,15 +6,19 @@ test.describe('Top navigation', () => {
     await page.goto(EN);
     await waitForApp(page);
 
-    // Desktop nav-links: Schools / How it works / About / Search.
+    // Desktop nav-links: Schools / How it works / Stories / About / Search.
     await page.getByRole('link', { name: 'Schools' }).first().click();
     await expect(page).toHaveURL(/\/en\/schools$/);
+    // Page title now lives in the SectionHero as the page h1.
     await expect(
-      page.getByRole('heading', { level: 2, name: COPY.schoolsPageTitle, exact: true }),
+      page.getByRole('heading', { level: 1, name: COPY.schoolsPageTitle, exact: true }),
     ).toBeVisible();
 
     await page.getByRole('link', { name: 'How it works' }).first().click();
     await expect(page).toHaveURL(/\/en\/how-it-works$/);
+
+    await page.getByRole('link', { name: 'Stories' }).first().click();
+    await expect(page).toHaveURL(/\/en\/stories$/);
 
     await page.getByRole('link', { name: 'About' }).first().click();
     await expect(page).toHaveURL(/\/en\/about$/);
@@ -45,7 +49,7 @@ test.describe('Schools list + detail', () => {
     await waitForApp(page);
 
     await expect(
-      page.getByRole('heading', { level: 2, name: COPY.schoolsPageTitle, exact: true }),
+      page.getByRole('heading', { level: 1, name: COPY.schoolsPageTitle, exact: true }),
     ).toBeVisible();
 
     // Search/filter bar is present.

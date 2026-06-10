@@ -94,10 +94,12 @@ export const ResetPasswordSchema = z.object({
   new_password: z.string().min(8).max(200),
 });
 
-// Signup email verification (6–10 digit OTP)
+// Signup email verification (6–10 digit OTP). remember mirrors LoginSchema so
+// a sign-in that detoured through OTP confirmation keeps the user's choice.
 export const VerifyOtpSchema = z.object({
   email: z.string().email(),
   token: z.string().regex(/^[0-9]{6,10}$/),
+  remember: z.boolean().optional().default(true),
 });
 
 // Resend signup OTP (same payload as forgot-password)

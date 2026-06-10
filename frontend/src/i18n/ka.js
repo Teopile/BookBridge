@@ -103,6 +103,7 @@ export default {
     viewDetails: 'სკოლის ნახვა',
     mapEmpty: 'რუკაზე ჯერ სკოლა არ არის',
     mapEmptyHint: 'რუკაზე გამოსაჩენად სკოლას სჭირდება კოორდინატები.',
+    requestsCount: '{count} წიგნის მოთხოვნა',
   },
   about: {
     title: 'BookBridge-ის შესახებ',

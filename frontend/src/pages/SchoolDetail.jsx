@@ -6,16 +6,10 @@ import Icon from '../components/Icon.jsx';
 import StampLabel from '../components/StampLabel.jsx';
 import { Loading } from '../components/States.jsx';
 
-const FALLBACK_PHOTOS = [
-  'https://picsum.photos/seed/bb-school-1/1200/450',
-  'https://picsum.photos/seed/bb-school-2/1200/450',
-  'https://picsum.photos/seed/bb-school-3/1200/450',
-];
+// Local placeholder (frontend/public/heroes/) until schools have real photos.
+const FALLBACK_COVER = '/heroes/school-cover.jpg';
 function photoFor(school) {
-  if (school?.photo_url) return school.photo_url;
-  if (!school?.id) return FALLBACK_PHOTOS[0];
-  let h = 0; for (let i = 0; i < school.id.length; i++) h = (h * 31 + school.id.charCodeAt(i)) >>> 0;
-  return FALLBACK_PHOTOS[h % FALLBACK_PHOTOS.length];
+  return school?.photo_url || FALLBACK_COVER;
 }
 
 // Book-icon progress row: filled (honey) vs outlined (border) so kids see "books found / books needed".
@@ -76,59 +70,57 @@ export default function SchoolDetail() {
   const totalFulfilled = (school.book_requests || []).reduce((a, r) => a + r.quantity_fulfilled, 0);
   const pct = totalNeeded > 0 ? Math.min(100, Math.round((totalFulfilled / totalNeeded) * 100)) : 0;
 
+  const requestCount = (school.book_requests || []).length;
+
   return (
     <section className="section">
-      <div className="container" style={{ maxWidth: 820 }}>
-        {/* Photo + soft cream gradient (no dark overlay) */}
-        <div style={{
-          aspectRatio: '5 / 2',
-          borderRadius: 'var(--r-lg)',
-          overflow: 'hidden',
-          marginBottom: 'var(--space-4)',
-          position: 'relative',
-          background: 'var(--cream-card)',
-          boxShadow: 'var(--sh-1)',
-        }}>
-          <img src={photoFor(school)} alt={school.name}
-            width={1000} height={400} decoding="async"
-            style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-          <div style={{
-            position: 'absolute', inset: 0,
-            background: 'linear-gradient(to top, rgba(245, 240, 228, 0.95), rgba(245, 240, 228, 0) 60%)',
-            pointerEvents: 'none',
-          }} />
-        </div>
-
-        {/* School name card below photo */}
-        <div className="card" style={{
-          maxWidth: 'none',
-          margin: '0 0 var(--space-6)',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 'var(--space-2)',
-        }}>
-          <span
-            className="badge"
-            style={{
-              alignSelf: 'flex-start',
-              background: 'var(--forest-50)',
-              color: 'var(--forest-700)',
-            }}
-          >
-            {t('schools.' + school.type)}
-          </span>
-          <h1 style={{ marginBottom: 'var(--space-1)' }}>{school.name}</h1>
-          <div style={{ color: 'var(--text-muted)', fontSize: 'var(--fs-base)', display: 'inline-flex', alignItems: 'center', gap: 'var(--space-1)' }}>
-            <Icon name="pin" size={16} color="var(--forest-600)" />
-            {school.region}{school.city ? ' · ' + school.city : ''}
+      <div className="container">
+        {/* Full-width cover header (MyHome broker-page pattern): edge-to-edge
+            cover, avatar overlapping bottom-left, info row, CTA on the right. */}
+        <div className="cover-header">
+          <div className="cover-photo">
+            <img src={photoFor(school)} alt={school.name}
+              width={1600} height={400} decoding="async" fetchpriority="high" />
+          </div>
+          <div className="cover-info">
+            <div className="cover-avatar">
+              <img src={photoFor(school)} alt="" width={96} height={96} decoding="async" />
+            </div>
+            <div className="cover-meta">
+              <span
+                className="badge"
+                style={{ background: 'var(--forest-50)', color: 'var(--forest-700)' }}
+              >
+                {t('schools.' + school.type)}
+              </span>
+              <h1>{school.name}</h1>
+              <div className="cover-facts">
+                <span>
+                  <Icon name="pin" size={16} color="var(--forest-600)" />
+                  {school.region}{school.city ? ' · ' + school.city : ''}
+                </span>
+                <span>
+                  <Icon name="books" size={16} color="var(--forest-600)" />
+                  {t('schools.requestsCount', { count: requestCount })}
+                </span>
+                {totalNeeded > 0 && (
+                  <span>
+                    <Icon name="check" size={16} color="var(--forest-600)" />
+                    {pct}% {t('home.fulfilledLabel').toLowerCase()}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="cover-cta">
+              <Link to={prefix + '/donate?school=' + school.id} className="btn btn-primary btn-lg">
+                {t('home.donateToSchool')}
+              </Link>
+            </div>
           </div>
         </div>
 
-        <div style={{ display: 'flex', gap: 'var(--space-3)', marginBottom: 'var(--space-6)', flexWrap: 'wrap' }}>
-          <Link to={prefix + '/donate?school=' + school.id} className="btn btn-primary btn-lg">
-            {t('home.donateToSchool')}
-          </Link>
-          <Link to={prefix + '/schools'} className="btn btn-ghost">
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <Link to={prefix + '/schools'} className="btn btn-ghost btn-sm">
             ← {t('schools.backToAll')}
           </Link>
         </div>

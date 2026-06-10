@@ -124,7 +124,9 @@
   /* ============ LAYOUT ============ */
   --nav-h:    72px;
   --nav-h-mobile: 60px;
-  --container: 1120px;
+  /* Full-horizontal layout (stakeholder feedback): modern wide container.
+     Swap here to retune the whole site's width. */
+  --container: 1320px;
   --container-narrow: 760px;
   --tap-min: 48px;
 
@@ -1817,4 +1819,118 @@ footer {
   height: 18px;
   accent-color: var(--forest-600);
   cursor: pointer;
+}
+
+/* =============== SECTION HERO (full-width photo headers) =============== */
+.section-hero {
+  position: relative;
+  overflow: hidden;
+  min-height: clamp(240px, 32vw, 400px);
+  display: flex;
+  align-items: flex-end;
+  background: var(--forest-700);
+}
+.section-hero--compact { min-height: clamp(190px, 24vw, 280px); }
+.section-hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.section-hero-scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top,
+    rgba(22, 30, 25, 0.78),
+    rgba(22, 30, 25, 0.35) 55%,
+    rgba(22, 30, 25, 0.18));
+}
+.section-hero-content {
+  position: relative;
+  width: 100%;
+  padding-top: var(--space-9);
+  padding-bottom: var(--space-7);
+  color: #fff;
+}
+.section-hero-eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-bold);
+  color: var(--honey-400, #E5A33D);
+  margin-bottom: var(--space-2);
+}
+.section-hero-title {
+  color: #fff;
+  margin-bottom: var(--space-2);
+}
+.section-hero-sub {
+  color: rgba(255, 255, 255, 0.88);
+  max-width: 620px;
+  font-size: var(--fs-md);
+  line-height: var(--lh-relaxed);
+}
+.section-hero-cta { margin-top: var(--space-4); }
+
+/* =============== COVER HEADER (school / hub detail, MyHome pattern) =============== */
+.cover-header {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-1);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+}
+.cover-photo {
+  aspect-ratio: 4 / 1;
+  min-height: 170px;
+  position: relative;
+  background: var(--cream-card);
+}
+.cover-photo img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.cover-info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-6) var(--space-5);
+  flex-wrap: wrap;
+}
+.cover-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  border: 4px solid var(--surface);
+  box-shadow: var(--sh-2);
+  margin-top: -58px;
+  background: var(--cream-card);
+  flex: 0 0 auto;
+}
+.cover-avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cover-meta { flex: 1 1 300px; min-width: 0; }
+.cover-meta h1 { font-size: var(--fs-h2); margin: var(--space-1) 0 var(--space-2); }
+.cover-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  align-items: center;
+}
+.cover-facts span { display: inline-flex; align-items: center; gap: 6px; }
+.cover-cta { flex: 0 0 auto; margin-left: auto; }
+
+@media (max-width: 600px) {
+  .cover-photo { aspect-ratio: 5 / 2; }
+  .cover-info { padding: var(--space-4) var(--space-4) var(--space-5); gap: var(--space-4); }
+  .cover-avatar { width: 76px; height: 76px; margin-top: -46px; }
+  .cover-cta { margin-left: 0; width: 100%; }
+  .cover-cta .btn { width: 100%; }
 }

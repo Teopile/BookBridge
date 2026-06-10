@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import SectionHero from '../components/SectionHero.jsx';
 
 const FALLBACK_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -55,13 +56,15 @@ export default function Search() {
   const noHits = isSearching && hits.length === 0 && books.length === 0;
 
   return (
-    <section className="section">
+    <>
+      <SectionHero
+        image="/heroes/search.jpg"
+        title={t('nav.search')}
+        subtitle={t('schools.sub')}
+        compact
+      />
+      <section className="section">
       <div className="container">
-        <div className="section-header">
-          <h2 className="section-title">{t('nav.search')}</h2>
-          <p className="section-lede">{t('schools.sub')}</p>
-        </div>
-
         <div className="search-bar" style={{ marginBottom: 24 }}>
           <input
             type="text"
@@ -133,7 +136,8 @@ export default function Search() {
           </div>
         )}
       </div>
-    </section>
+      </section>
+    </>
   );
 }
 

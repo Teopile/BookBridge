@@ -103,6 +103,7 @@ export default {
     viewDetails: 'View school',
     mapEmpty: 'No schools on the map yet',
     mapEmptyHint: 'Schools need a latitude and longitude to appear here.',
+    requestsCount: '{count} book requests',
   },
   about: {
     title: 'About BookBridge',

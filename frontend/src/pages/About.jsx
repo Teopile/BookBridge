@@ -1,21 +1,21 @@
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import Icon from '../components/Icon.jsx';
-
-const HERO_PHOTO = 'https://picsum.photos/seed/bb-about/900/300';
+import SectionHero from '../components/SectionHero.jsx';
 
 export default function About() {
   const { t, lang } = useT();
   const prefix = '/' + lang;
 
   return (
-    <section className="section">
+    <>
+      <SectionHero
+        image="/heroes/about.jpg"
+        title={t('about.title')}
+        subtitle={t('hero.slogan')}
+      />
+      <section className="section">
       <div className="container container-narrow">
-        <div className="page-banner">
-          <img src={HERO_PHOTO} alt="" width={900} height={300} loading="lazy" decoding="async" />
-        </div>
-
-        <h1 style={{ marginBottom: 'var(--space-4)' }}>{t('about.title')}</h1>
 
         <div style={{ display: 'flex', alignItems: 'flex-start', gap: 'var(--space-4)', marginBottom: 'var(--space-6)' }}>
           <div style={{
@@ -80,6 +80,7 @@ export default function About() {
           </Link>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

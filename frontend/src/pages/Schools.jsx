@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Icon from '../components/Icon.jsx';
+import SectionHero from '../components/SectionHero.jsx';
 import { Loading, ErrorState } from '../components/States.jsx';
 
 // Map (Leaflet + tiles) only loads when the user clicks the Map toggle.
@@ -56,13 +57,14 @@ export default function Schools({ type }) {
   );
 
   return (
-    <section className="section">
+    <>
+      <SectionHero
+        image="/heroes/schools.jpg"
+        title={t('schools.title')}
+        subtitle={t('schools.sub')}
+      />
+      <section className="section">
       <div className="container">
-        <div className="section-header">
-          <h2 className="section-title">{t('schools.title')}</h2>
-          <p className="section-lede">{t('schools.sub')}</p>
-        </div>
-
         <div className="search-bar">
           <input
             type="text"
@@ -161,6 +163,7 @@ export default function Schools({ type }) {
         </div>
         )}
       </div>
-    </section>
+      </section>
+    </>
   );
 }

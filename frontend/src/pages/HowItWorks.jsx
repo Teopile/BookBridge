@@ -1,17 +1,21 @@
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
+import SectionHero from '../components/SectionHero.jsx';
 
 export default function HowItWorks() {
   const { t, lang } = useT();
   const prefix = '/' + lang;
 
   return (
-    <section className="section">
+    <>
+      <SectionHero
+        image="/heroes/how.jpg"
+        eyebrow={t('home.howStamp')}
+        title={t('home.howTitle')}
+        subtitle={t('home.heroSub')}
+      />
+      <section className="section">
       <div className="container">
-        <div className="section-header">
-          <h1 className="section-title">{t('home.howTitle')}</h1>
-        </div>
-
         <div className="steps">
           <div className="step">
             <div className="step-num">1</div>
@@ -36,6 +40,7 @@ export default function HowItWorks() {
           </Link>
         </div>
       </div>
-    </section>
+      </section>
+    </>
   );
 }

@@ -10,8 +10,8 @@
   --forest-700: #2A5A3E;   /* deep green — accents, footer-cta ground */
   --forest-600: #3E7A54;   /* brand green — icons, success accents on ink */
   --forest-500: #5B996F;   /* brighter green — hover accents, icon tints */
-  --forest-100: rgba(217, 184, 114, 0.14); /* warm wash — hover surfaces */
-  --forest-50:  rgba(217, 184, 114, 0.09); /* warm wash (badge bg, step circle) */
+  --forest-100: rgba(91, 153, 111, 0.2);  /* moss wash — hover surfaces */
+  --forest-50:  rgba(91, 153, 111, 0.13); /* moss wash (badge bg, step circle) */
 
   --honey-500: #C9A567;    /* honey deep — borders, hover of the action color */
   --honey-400: #D9B872;    /* THE action color — buttons, links, active nav */
@@ -19,11 +19,11 @@
   --honey-50:  rgba(217, 184, 114, 0.10);  /* honey wash — hover bg on ink */
 
   /* ============ SURFACES — forest ink ============ */
-  --cream-page:    #161412;  /* page ground — warm espresso near-black */
-  --cream-card:    #1E1B17;  /* recessed surface (filter rows, summary blocks) */
-  --cream-warm:    #1B1916;  /* raised band (alt sections, banners) */
-  --surface:       #211E19;  /* card surface */
-  --surface-elev:  #2A2620;  /* elevated overlay (drawer, modal, popover) */
+  --cream-page:    #151413;  /* page ground — warm stone near-black */
+  --cream-card:    #1D1C19;  /* recessed surface (filter rows, summary blocks) */
+  --cream-warm:    #1A1917;  /* raised band (alt sections, banners) */
+  --surface:       #21201C;  /* card surface */
+  --surface-elev:  #2A2823;  /* elevated overlay (drawer, modal, popover) */
 
   /* ============ TEXT — parchment scale ============ */
   --text-default:  #F2ECDC;  /* primary text + headings — parchment */
@@ -59,8 +59,8 @@
   --sky-50:  #181C20;  /* faintest sky tint — section wash */
 
   /* ============ SAGE — meadow tints on ink ============ */
-  --sage-600: #A8A28D; /* warm-gray text/icons */
-  --sage-100: #262219; /* warm wash */
+  --sage-600: #A3B098; /* sage text/icons */
+  --sage-100: #232620; /* sage wash */
 
   /* ============ SPACING — 4px ladder, tokenized ============ */
   --space-0:  0;
@@ -165,13 +165,13 @@
   /* ============ DIRECTION F — "Trail Journal" tokens ============
      Warm field-notebook palette + motion. forest-600/700, honey-400/500,
      and cream-page already map 1:1 to F's --forest / --honey / --cream. */
-  --cream-warm-F: #1B1916;   /* raised espresso bands (how / mission) */
-  --sand:         #211E19;   /* card surface */
-  --kraft:        #2F2A23;   /* progress-bar track, parcel chip */
+  --cream-warm-F: #191B17;   /* raised band with a whisper of moss (how / mission) */
+  --sand:         #21201C;   /* card surface */
+  --kraft:        #2E2C26;   /* progress-bar track, parcel chip */
   --kraft-edge:   rgba(242, 236, 220, 0.20); /* dashed/solid card borders */
   --clay:         #C98F60;   /* hand-stamp underline + pins (graphical, brightened) */
-  --sage:         #9C9784;   /* warm-gray accent, "where" line */
-  --forest-dark:  #110F0D;   /* footer ground — deeper than page */
+  --sage:         #97A38B;   /* sage accent, "where" line */
+  --forest-dark:  #100F0E;   /* footer ground — deeper than page */
   --line:         var(--border-default);
 
   /* motion */
@@ -594,7 +594,7 @@ main {
 }
 .container-narrow { max-width: var(--container-narrow); }
 .section { padding: var(--space-section) 0; }
-.section.alt { background: var(--cream-warm-F); }
+.section.alt { background: #181A16; }
 .section.dark {
   background: var(--forest-700);
   color: var(--text-on-dark);
@@ -730,7 +730,7 @@ h1.hero-title em { font-style: italic; color: var(--honey-400); font-weight: var
   background-color: #1B1916;
   background-image:
     linear-gradient(180deg, rgba(46,85,112,0.34) 0%, rgba(46,85,112,0) 42%),
-    linear-gradient(105deg, rgba(22,20,18,0.92) 0%, rgba(176,122,79,0.42) 55%, rgba(217,184,114,0.32) 100%),
+    linear-gradient(105deg, rgba(21,20,19,0.94) 0%, rgba(46,85,112,0.36) 50%, rgba(217,184,114,0.3) 100%),
     var(--hero-bg, none);
   background-size: cover;
   background-position: center 38%;

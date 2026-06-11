@@ -639,7 +639,7 @@ main {
   font-size: var(--fs-xs);
   letter-spacing: 0.2em;
   text-transform: uppercase;
-  color: var(--clay);
+  color: var(--forest-600); /* clay stays graphical-only — AA for text */
   background: var(--cream-warm-F);
   border: 1px solid var(--line);
   padding: var(--space-2) var(--space-4);
@@ -692,7 +692,7 @@ h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: va
   width: 20px; height: 20px;
   border-radius: 50%;
   border: 1.4px solid var(--clay);
-  color: var(--clay);
+  color: var(--forest-600); /* clay stays graphical-only — AA for text */
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
   font-size: 12px;
@@ -827,7 +827,7 @@ h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: va
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
   font-size: 20px;
-  color: var(--clay);
+  color: var(--forest-600); /* clay stays graphical-only — AA for text */
   margin-bottom: 16px;
   box-shadow: 0 2px 0 rgba(176, 122, 79, 0.18);
 }
@@ -1887,7 +1887,7 @@ footer {
 }
 .form .field-error {
   font-size: var(--fs-xs);
-  color: var(--clay, #C0594A);
+  color: var(--danger-text); /* semantic error color, AA on light surfaces */
   font-weight: var(--fw-semibold);
   margin: calc(-1 * var(--space-2)) 0 var(--space-2);
 }
@@ -2495,7 +2495,7 @@ footer {
 }
 .notif-item.unread { background: var(--honey-50); }
 .notif-subject { font-size: var(--fs-xs); font-weight: var(--fw-semibold); color: var(--text-default); }
-.notif-body { font-size: var(--fs-xs); color: var(--text-muted); margin-top: 2px; }
+.notif-body { font-size: var(--fs-xs); color: var(--text-muted); margin-top: var(--space-1); }
 .notif-time { font-size: 11px; color: var(--text-subtle); margin-top: var(--space-1); }
 .notif-pop-foot {
   display: block;
@@ -2509,6 +2509,7 @@ footer {
   transition: background var(--t-fast), color var(--t-fast);
 }
 .notif-pop-foot:hover { background: var(--honey-50); color: var(--forest-700); }
+.notif-pop-foot:active { background: var(--honey-200); color: var(--forest-700); }
 
 /* =============== ROW CARD — list rows (book requests, line items) =============== */
 .row-card {
@@ -2535,3 +2536,9 @@ footer {
 }
 .wizard-select:hover:not(:focus):not(:disabled) { border-color: var(--honey-500); }
 .wizard-select:focus { outline: none; border-color: var(--forest-600); box-shadow: var(--sh-focus); }
+.wizard-select:disabled {
+  background: var(--cream-card);
+  color: var(--text-subtle);
+  cursor: not-allowed;
+  border-color: var(--border-default);
+}

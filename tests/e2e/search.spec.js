@@ -10,7 +10,7 @@ test.describe('Search', () => {
     await expect(page.getByLabel('Search by name or region…')).toBeVisible();
 
     // With no query, Search.jsx browses /api/schools (50 live rows).
-    const cards = page.locator('a.school');
+    const cards = page.locator('article.school');
     await expect(cards.first()).toBeVisible();
     expect(await cards.count()).toBeGreaterThan(0);
   });
@@ -25,7 +25,7 @@ test.describe('Search', () => {
     await box.fill('ი');
 
     // Debounced 250ms fetch -> results header "Schools · N" + school cards.
-    const cards = page.locator('a.school');
+    const cards = page.locator('article.school');
     await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     expect(await cards.count()).toBeGreaterThan(0);
   });

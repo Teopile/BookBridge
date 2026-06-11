@@ -57,26 +57,33 @@ test.describe('Schools list + detail', () => {
     await expect(page.getByLabel('Search by name or region…')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Beneficiary' })).toBeVisible();
 
-    // Live DB has 50 beneficiary schools; cards render as <a class="school">
-    // once /api/schools resolves (the page shows a brief loading/empty state first).
-    const cards = page.locator('a.school');
+    // Live DB has 50 beneficiary schools; cards render as <article class="school">
+    // (stretched-link pattern: the detail href lives on the title link) once
+    // /api/schools resolves (the page shows a brief loading/empty state first).
+    const cards = page.locator('article.school');
     await expect(cards.first()).toBeVisible({ timeout: 20_000 });
     expect(await cards.count()).toBeGreaterThan(0);
 
     // Each card has a school-name heading and links to a detail route.
     await expect(cards.first().locator('h3')).not.toBeEmpty();
-    await expect(cards.first()).toHaveAttribute('href', /\/en\/schools\//);
+    await expect(cards.first().locator('h3 a')).toHaveAttribute('href', /\/en\/schools\//);
   });
 
   test('clicking a school opens its detail page', async ({ page }) => {
     await page.goto(EN + '/schools');
     await waitForApp(page);
 
-    const firstCard = page.locator('a.school').first();
+    const firstCard = page.locator('article.school').first();
     await expect(firstCard).toBeVisible();
     const name = (await firstCard.locator('h3').innerText()).trim();
 
-    await firstCard.click();
+    // Click the card body — the stretched-link overlay makes the whole card
+    // navigate, so the raw click target is the overlay itself. Scroll the card
+    // into view first: mouse coordinates are viewport-relative.
+    await firstCard.scrollIntoViewIfNeeded();
+    await page.waitForTimeout(400); // let the hover lift/reveal settle
+    const body = await firstCard.locator('.school-region').boundingBox();
+    await page.mouse.click(body.x + body.width / 2, body.y + body.height / 2);
     await expect(page).toHaveURL(/\/en\/schools\/[0-9a-f-]+$/);
 
     // Detail page renders the school name as the <h1> and a "Donate" CTA.

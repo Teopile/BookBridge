@@ -2226,3 +2226,124 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   .tw-cursor { display: none; }
 }
+
+/* =============== SCHOOL CARD HOVER REVEAL (myhome.ge pattern) =============== */
+/* The photo shrinks by --reveal-delta while the details section expands by
+   --details-h (kept <= delta so the card NEVER grows: the grid cannot
+   reflow, neighbors never move). Only height/opacity/transform animate. */
+.school--reveal {
+  --photo-h: 220px;
+  --photo-h-hover: 72px;   /* frees 148px */
+  --details-h: 144px;      /* must stay <= the freed space */
+  position: relative;
+}
+
+/* Stretched link: the title link's ::after makes the whole card clickable
+   without nesting anchors. Details sit above it on their own layer so the
+   CTA link works independently. */
+.school--reveal .school-link {
+  color: inherit;
+  text-decoration: none;
+}
+.school--reveal .school-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.school--reveal .school-photo {
+  aspect-ratio: auto;
+  height: var(--photo-h);
+  transition: height 0.25s ease-in-out;
+}
+/* object-fit: cover is inherited from .school-photo img — crops, never squashes. */
+
+.school-photo-chip {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  background: rgba(22, 30, 25, 0.66);
+  color: #fff;
+  font-size: var(--fs-xs);
+  font-weight: var(--fw-semibold);
+  padding: 3px 10px;
+  border-radius: var(--r-pill);
+  max-width: calc(100% - 20px);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.school-details {
+  position: relative;
+  z-index: 2;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0 var(--space-4);
+  transition: height 0.25s ease-in-out, opacity 0.2s ease-in-out;
+}
+.school-details-rows {
+  margin: 0 0 var(--space-2);
+}
+.school-details-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: 3px 0;
+  border-bottom: 1px dashed var(--border-default);
+  font-size: var(--fs-sm);
+}
+.school-details-row:last-child { border-bottom: none; }
+.school-details-row dt { color: var(--text-muted); }
+.school-details-row dd {
+  margin: 0;
+  font-weight: var(--fw-semibold);
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+/* Constant bottom margin (clipped while collapsed) so nothing needs to
+   animate besides height/opacity. */
+.school-details-cta { min-height: 40px; margin-bottom: var(--space-3); }
+
+/* Reveal on hover AND keyboard focus anywhere inside the card. */
+.school--reveal:hover .school-photo,
+.school--reveal:focus-within .school-photo {
+  height: var(--photo-h-hover);
+}
+.school--reveal:hover .school-details,
+.school--reveal:focus-within .school-details {
+  height: var(--details-h);
+  opacity: 1;
+}
+.school--reveal:focus-within {
+  border-color: var(--honey-500);
+  transform: translateY(-3px);
+  box-shadow: var(--sh-2);
+}
+
+/* Touch devices (no hover): details are simply always visible, no animation.
+   Detected by capability, not screen width. */
+@media (hover: none) {
+  .school--reveal .school-photo {
+    height: 150px;
+    transition: none;
+  }
+  .school--reveal .school-details {
+    height: auto;
+    opacity: 1;
+    transition: none;
+  }
+}
+
+/* Reduced motion: reveal instantly. */
+@media (prefers-reduced-motion: reduce) {
+  .school--reveal .school-photo,
+  .school--reveal .school-details {
+    transition: none;
+  }
+}

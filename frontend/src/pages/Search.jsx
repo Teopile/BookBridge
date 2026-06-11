@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
+import SchoolCard from '../components/SchoolCard.jsx';
 import SectionHero from '../components/SectionHero.jsx';
 import TypewriterPlaceholder from '../components/TypewriterPlaceholder.jsx';
 
@@ -105,7 +106,7 @@ export default function Search() {
         {!isSearching && browseList && browseList.length > 0 && (
           <>
             <ResultsHeader count={browseList.length} label={t('nav.schools')} />
-            <SchoolGrid items={browseList} prefix={'/' + lang} t={t} />
+            <SchoolGrid items={browseList} />
           </>
         )}
 
@@ -116,7 +117,7 @@ export default function Search() {
         {isSearching && hits.length > 0 && (
           <>
             <ResultsHeader count={hits.length} label={t('nav.schools')} />
-            <SchoolGrid items={hits} prefix={'/' + lang} t={t} />
+            <SchoolGrid items={hits} />
           </>
         )}
 
@@ -163,28 +164,11 @@ function ResultsHeader({ count, label }) {
   );
 }
 
-function SchoolGrid({ items, prefix, t }) {
+function SchoolGrid({ items }) {
   return (
     <div className="school-grid">
       {items.map((s, i) => (
-        <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
-          <div className="school-photo">
-            <img src={photoFor(s, i)} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
-            <span className="school-badge">{t('schools.' + s.type)}</span>
-          </div>
-          <div className="school-body">
-            <h3>{s.name}</h3>
-            <div className="school-region">{s.region}{s.city ? ' · ' + s.city : ''}</div>
-            {s.description && (
-              <p className="school-blurb">
-                {s.description.slice(0, 110)}{s.description.length > 110 ? '…' : ''}
-              </p>
-            )}
-          </div>
-          <div className="school-cta">
-            <span className="btn btn-primary btn-block">{t('home.donateToSchool')}</span>
-          </div>
-        </Link>
+        <SchoolCard key={s.id} school={s} photo={photoFor(s, i)} />
       ))}
     </div>
   );

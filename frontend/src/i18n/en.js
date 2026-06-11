@@ -105,6 +105,12 @@ export default {
     mapEmptyHint: 'Schools need a latitude and longitude to appear here.',
     requestsCount: '{count} book requests',
   },
+  // Hover-reveal rows on school cards (myhome.ge pattern).
+  schoolCard: {
+    students: 'Students',
+    district: 'District',
+    address: 'Address',
+  },
   // Animated search placeholder. Terms are REAL searchable values from the
   // live data (region / city / school villages) so the demo always works —
   // kept in Georgian for both locales because the school data is Georgian.

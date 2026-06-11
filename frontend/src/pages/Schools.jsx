@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Icon from '../components/Icon.jsx';
+import SchoolCard from '../components/SchoolCard.jsx';
 import SectionHero from '../components/SectionHero.jsx';
 import TypewriterPlaceholder from '../components/TypewriterPlaceholder.jsx';
 import { Loading, ErrorState } from '../components/States.jsx';
@@ -144,24 +145,7 @@ export default function Schools({ type }) {
 
         <div className="school-grid">
           {filtered.map((s, i) => (
-            <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
-              <div className="school-photo">
-                <img src={photoFor(s, i)} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
-                <span className="school-badge">{t('schools.' + s.type)}</span>
-              </div>
-              <div className="school-body">
-                <h3>{s.name}</h3>
-                <div className="school-region">{s.region}{s.city ? ' · ' + s.city : ''}</div>
-                {s.description && (
-                  <p className="school-blurb">
-                    {s.description.slice(0, 110)}{s.description.length > 110 ? '…' : ''}
-                  </p>
-                )}
-              </div>
-              <div className="school-cta">
-                <span className="btn btn-primary btn-block">{t('home.donateToSchool')}</span>
-              </div>
-            </Link>
+            <SchoolCard key={s.id} school={s} photo={photoFor(s, i)} />
           ))}
 
           {filtered.length === 0 && (

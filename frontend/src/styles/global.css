@@ -1,62 +1,66 @@
-/* BookBridge — storybook earth-tone design system. Kid-readable, warm, friendly. */
+/* BookBridge — "Night Library" dark editorial system. A mountain reading room
+   after dark: forest-ink grounds, parchment serif type, honey as the single
+   bright action voice. Token names are kept from the light system so every
+   component re-themes through the variables. */
 
 :root {
-  /* ============ BRAND — storybook earth tones ============ */
-  --forest-700: #1F4530;   /* deepest green, headings on cream, dark sections */
-  --forest-600: #2D5C3E;   /* primary brand, primary button, active nav, logo tile */
-  --forest-500: #3A6B4A;   /* hover lift / soft green accents */
-  --forest-100: #D9E3DC;   /* tint of forest-50 family — hover wash on light surfaces */
-  --forest-50:  #E8EEE9;   /* subtle green wash (badge bg, step circle) */
+  color-scheme: dark;
 
-  --honey-500: #C9A567;    /* honey gold deep — secondary button, link underlines */
-  --honey-400: #D9B872;    /* honey gold primary accent — pills, highlights, progress */
-  --honey-200: #E8D5A5;    /* pale honey — focus halo, badge bg */
-  --honey-50:  #FAF5E8;    /* warm cream — banner wash, hover bg */
+  /* ============ BRAND — forest greens (brightened for dark ground) ============ */
+  --forest-700: #2A5A3E;   /* deep green — accents, footer-cta ground */
+  --forest-600: #3E7A54;   /* brand green — icons, success accents on ink */
+  --forest-500: #5B996F;   /* brighter green — hover accents, icon tints */
+  --forest-100: #2A4233;   /* green wash on ink — hover surfaces */
+  --forest-50:  #24382B;   /* subtle green wash (badge bg, step circle) */
 
-  /* ============ SURFACES — parchment/cream ============ */
-  --cream-page:    #F5F0E4;  /* page background */
-  --cream-card:    #F1ECDD;  /* recessed surface (filter rows, summary blocks) */
-  --cream-warm:    #FAF5E8;  /* warm cream wash for hero/banner */
-  --surface:       #FFFEFA;  /* card surface — true-white-but-warm */
-  --surface-elev:  #FFFFFF;  /* elevated overlay (drawer, modal, popover) */
+  --honey-500: #C9A567;    /* honey deep — borders, hover of the action color */
+  --honey-400: #D9B872;    /* THE action color — buttons, links, active nav */
+  --honey-200: #E8D5A5;    /* pale honey — focus halo, highlights on ink */
+  --honey-50:  rgba(217, 184, 114, 0.10);  /* honey wash — hover bg on ink */
 
-  /* ============ TEXT — espresso scale ============ */
-  --text-default:  #2A2620;  /* primary text + headings */
-  --text-muted:    #5A5248;  /* body secondary, meta, captions */
-  --text-subtle:   #6F685C;  /* placeholders, timestamps, hints — darkened shade of the old #8A8275 for AA on cream */
+  /* ============ SURFACES — forest ink ============ */
+  --cream-page:    #131B16;  /* page ground — deep forest ink */
+  --cream-card:    #1A2620;  /* recessed surface (filter rows, summary blocks) */
+  --cream-warm:    #18231C;  /* raised band (alt sections, banners) */
+  --surface:       #1D2A22;  /* card surface */
+  --surface-elev:  #243329;  /* elevated overlay (drawer, modal, popover) */
+
+  /* ============ TEXT — parchment scale ============ */
+  --text-default:  #F2ECDC;  /* primary text + headings — parchment */
+  --text-muted:    #C7BFA9;  /* body secondary, meta, captions */
+  --text-subtle:   #9B937F;  /* placeholders, timestamps, hints (AA on ink) */
   --text-on-dark:  #FAF5E8;  /* text on forest-600/700 surfaces */
-  --text-on-honey: #2A2620;  /* text on honey-400 */
+  --text-on-honey: #221E16;  /* espresso on honey-400 buttons */
 
-  /* ============ BORDERS / DIVIDERS ============ */
-  --border-default: #E0D9C5; /* hairline on cream */
-  --border-strong:  #C9BFA5; /* form input + button border (1.5px) */
-  --border-subtle:  #ECE5D2; /* skeleton base, divider on cream */
+  /* ============ BORDERS / DIVIDERS — parchment hairlines ============ */
+  --border-default: rgba(242, 236, 220, 0.14);
+  --border-strong:  rgba(242, 236, 220, 0.28);
+  --border-subtle:  rgba(242, 236, 220, 0.08);
 
-  /* ============ SEMANTIC STATUS ============ */
-  --success:        #4A7C3F; /* moss green — delivered, completed */
-  --success-bg:     #E4EDDC;
-  --success-text:   #2D4F23;
-  --warning:        #B07A1C; /* burnt honey — pending */
-  --warning-bg:     #F5E4C4;
-  --warning-text:   #6B4818;
-  --danger:         #A14B2F; /* rust — error, rejected */
-  --danger-bg:      #F4DDD2;
-  --danger-text:    #6B2F1C;
-  --info:           #3B6A8C; /* muted blue — in-transit */
-  --info-bg:        #DDE7F0;
-  --info-text:      #1F3F5A;
+  /* ============ SEMANTIC STATUS (dark-ground pairs) ============ */
+  --success:        #7FB873; /* moss — delivered, completed */
+  --success-bg:     #20331F;
+  --success-text:   #B5D9AC;
+  --warning:        #D9A84E; /* burnt honey — pending */
+  --warning-bg:     #382C12;
+  --warning-text:   #EBCD90;
+  --danger:         #D07B5C; /* rust — error, rejected */
+  --danger-bg:      #3A211A;
+  --danger-text:    #ECAF98;
+  --info:           #7FA8C7; /* muted blue — in-transit */
+  --info-bg:        #1C2C38;
+  --info-text:      #B3CDE2;
 
-  /* ============ SKY BLUE — calm secondary accent (quiet third voice) ============
-     Highland-sky blue. Use SUBTLY: trust/transparency, info links, tracking. */
-  --sky-700: #2E5570;  /* deep lake blue — text/icon on light */
-  --sky-600: #3B6A8C;  /* primary blue accent (= --info) */
-  --sky-400: #6E9BB8;  /* soft sky */
-  --sky-100: #DDE7F0;  /* pale sky wash — info badge bg */
-  --sky-50:  #EDF3F7;  /* faintest sky tint — section wash */
+  /* ============ SKY BLUE — calm secondary accent (quiet third voice) ============ */
+  --sky-700: #9FC2DC;  /* lake blue text/icon on ink */
+  --sky-600: #7FA8C7;  /* primary blue accent (= --info) */
+  --sky-400: #5D86A6;  /* soft sky */
+  --sky-100: #1C2C38;  /* sky wash — info badge bg */
+  --sky-50:  #16242C;  /* faintest sky tint — section wash */
 
-  /* ============ LIGHT GREEN — fresh meadow tints ============ */
-  --sage-600: #5E6E54; /* darker sage — readable on cream */
-  --sage-100: #E4E9DF; /* pale meadow wash */
+  /* ============ SAGE — meadow tints on ink ============ */
+  --sage-600: #93A788; /* sage text/icons on ink */
+  --sage-100: #243029; /* sage wash */
 
   /* ============ SPACING — 4px ladder, tokenized ============ */
   --space-0:  0;
@@ -75,19 +79,19 @@
 
   /* ============ RADIUS — storybook-rounded ============ */
   --r-xs:   6px;
-  --r-sm:   10px;
-  --r-md:   14px;
-  --r-lg:   18px;
-  --r-xl:   24px;
+  --r-sm:   8px;
+  --r-md:   12px;
+  --r-lg:   16px;
+  --r-xl:   20px;
   --r-pill: 9999px;
   --r-circle: 50%;
 
   /* ============ SHADOWS — soft paper-on-paper, always tinted to the
      espresso/forest ground (never pure black) ============ */
-  --sh-1: 0 1px 2px rgba(42, 38, 32, 0.05), 0 1px 3px rgba(31, 69, 48, 0.04);
-  --sh-2: 0 2px 4px rgba(31, 69, 48, 0.05), 0 8px 20px rgba(42, 38, 32, 0.07);
-  --sh-3: 0 4px 8px rgba(31, 69, 48, 0.06), 0 16px 40px rgba(42, 38, 32, 0.12);
-  --sh-pop: 0 6px 16px rgba(31, 69, 48, 0.08), 0 20px 48px rgba(42, 38, 32, 0.16);
+  --sh-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --sh-2: 0 2px 6px rgba(0, 0, 0, 0.32), 0 8px 20px rgba(0, 0, 0, 0.28);
+  --sh-3: 0 4px 10px rgba(0, 0, 0, 0.4), 0 16px 40px rgba(0, 0, 0, 0.45);
+  --sh-pop: 0 6px 16px rgba(0, 0, 0, 0.4), 0 20px 48px rgba(0, 0, 0, 0.5);
   --sh-honey: 0 1px 0 rgba(42, 38, 32, 0.04), 0 6px 16px rgba(201, 165, 103, 0.32);
   --sh-honey-hover: 0 2px 0 rgba(42, 38, 32, 0.05), 0 10px 22px rgba(201, 165, 103, 0.4);
   --sh-focus: 0 0 0 3px var(--honey-200);
@@ -114,7 +118,7 @@
   --fs-h2:   clamp(25px, 1.8vw + 18px, 32px);
   --fs-h1:   clamp(31px, 2.6vw + 21px, 42px);
   --fs-h1-fluid: var(--fs-h1);
-  --fs-display: clamp(38px, 5.5vw, 62px);
+  --fs-display: clamp(42px, 6.5vw, 76px); /* editorial scale-up on dark */
 
   --lh-tight:   1.18;
   --lh-snug:    1.4;
@@ -161,13 +165,13 @@
   /* ============ DIRECTION F — "Trail Journal" tokens ============
      Warm field-notebook palette + motion. forest-600/700, honey-400/500,
      and cream-page already map 1:1 to F's --forest / --honey / --cream. */
-  --cream-warm-F: #FAF5E8;   /* warm cream bands (how / mission) */
-  --sand:         #EFE7D6;   /* kraft/sand card surface */
-  --kraft:        #E6DAC0;   /* progress-bar track, parcel chip */
-  --kraft-edge:   #D8C9A8;   /* dashed/solid card borders */
-  --clay:         #B07A4F;   /* hand-stamp underline + pins (graphical) */
-  --sage:         #7A8B6F;   /* ghost-button border, "where" line */
-  --forest-dark:  #1F4530;   /* footer ground */
+  --cream-warm-F: #18231C;   /* raised ink bands (how / mission) */
+  --sand:         #1D2A22;   /* card surface on ink */
+  --kraft:        #2A3A2F;   /* progress-bar track, parcel chip */
+  --kraft-edge:   rgba(242, 236, 220, 0.20); /* dashed/solid card borders */
+  --clay:         #C98F60;   /* hand-stamp underline + pins (graphical, brightened) */
+  --sage:         #8FA383;   /* ghost-button border, "where" line */
+  --forest-dark:  #0E1611;   /* footer ground — deeper than page */
   --line:         var(--border-default);
 
   /* motion */
@@ -184,7 +188,7 @@
 }
 
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-html { scroll-behavior: smooth; color-scheme: light; overflow-x: hidden; }
+html { scroll-behavior: smooth; color-scheme: dark; background: var(--cream-page, #131B16); overflow-x: hidden; }
 /* In-page anchors must clear the fixed nav. */
 :target { scroll-margin-top: calc(var(--nav-h) + var(--space-3)); }
 /* iOS Safari auto-zooms any form control whose computed font-size is < 16px on
@@ -221,7 +225,7 @@ body::after {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(124, 110, 86, 0.05) 31px, rgba(124, 110, 86, 0.05) 32px);
+  background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(242, 236, 220, 0.03) 31px, rgba(242, 236, 220, 0.03) 32px);
 }
 a {
   color: var(--forest-600);
@@ -229,7 +233,7 @@ a {
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
 }
-a:hover { color: var(--forest-700); }
+a:hover { color: var(--honey-200); }
 /* Undecorated link variants used inside components */
 .nav a, .nav-logo, .nav-drawer a,
 .btn, .school, .row-item.link, .footer-col a,
@@ -241,7 +245,7 @@ a:hover { color: var(--forest-700); }
 button, input, select, textarea { font: inherit; color: inherit; }
 button { cursor: pointer; border: none; background: none; }
 img, svg { display: block; max-width: 100%; }
-::selection { background: var(--honey-200); color: var(--text-default); }
+::selection { background: var(--honey-400); color: #221E16; }
 
 /* Global focus halo — forest outline (WCAG SC 1.4.11 ≥3:1 on cream + dark)
    plus honey shadow ring for warmth. The dark outline carries contrast;
@@ -305,7 +309,7 @@ p  { color: var(--text-muted); text-wrap: pretty; }
    never brand-tinted. */
 .school-photo img, .cover-photo img, .story-photo img, .photo-frame img,
 .about-began-photo img, .team-photo img, .cover-avatar img, .wizard-banner img {
-  outline: 1px solid rgba(42, 38, 32, 0.08);
+  outline: 1px solid rgba(242, 236, 220, 0.10);
   outline-offset: -1px;
 }
 
@@ -334,7 +338,7 @@ p  { color: var(--text-muted); text-wrap: pretty; }
   height: var(--nav-h);
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--space-3) max(var(--space-5), env(safe-area-inset-right)) var(--space-3) max(var(--space-5), env(safe-area-inset-left));
-  background: rgba(245, 240, 228, 0.88);
+  background: rgba(19, 27, 22, 0.86);
   backdrop-filter: blur(12px) saturate(1.2);
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
   border-bottom: 1px solid var(--border-default);
@@ -498,54 +502,67 @@ main {
   box-shadow: none;
 }
 
-/* forest = F's .btn-forest */
+/* Night Library: honey is THE action color. Primary = honey solid,
+   secondary = parchment hairline outline, ghost = quiet text. */
 .btn-primary {
-  background: var(--forest-600);
-  color: var(--text-on-dark);
-  border-color: var(--forest-600);
-}
-.btn-primary:hover {
-  background: var(--forest-700);
-  border-color: var(--forest-700);
-  color: var(--text-on-dark);
-  transform: translateY(-1px);
-  box-shadow: var(--sh-2);
-}
-
-/* honey CTA = F's .btn-donate — the primary "Donate Books" action */
-.btn-secondary {
   background: var(--honey-400);
   color: var(--text-on-honey);
   border-color: var(--honey-500);
   box-shadow: var(--sh-honey);
 }
-.btn-secondary:hover {
-  background: var(--honey-500);
-  border-color: var(--honey-500);
+.btn-primary:hover {
+  background: var(--honey-200);
+  border-color: var(--honey-200);
   color: var(--text-on-honey);
   transform: translateY(-1px);
   box-shadow: var(--sh-honey-hover);
 }
 
-/* bordered ghost (F's sage-outlined ghost) */
-.btn-ghost {
-  color: var(--forest-600);
+.btn-secondary {
   background: transparent;
-  padding: var(--space-3) var(--space-6);
-  border-color: var(--sage);
+  color: var(--text-default);
+  border-color: var(--border-strong);
 }
-.btn-ghost:hover {
-  background: rgba(122, 139, 111, 0.12);
-  color: var(--forest-700);
-}
-
-.btn-white {
-  background: var(--surface-elev);
-  color: var(--forest-700);
-  border-color: var(--surface-elev);
+.btn-secondary:hover {
+  background: var(--honey-50);
+  border-color: var(--honey-500);
+  color: var(--honey-200);
+  transform: translateY(-1px);
   box-shadow: var(--sh-2);
 }
-.btn-white:hover { color: var(--forest-600); }
+/* The nav Donate CTA stays the brightest element regardless of variant class. */
+.nav-donate-cta {
+  background: var(--honey-400);
+  color: var(--text-on-honey);
+  border-color: var(--honey-500);
+}
+.nav-donate-cta:hover {
+  background: var(--honey-200);
+  border-color: var(--honey-200);
+  color: var(--text-on-honey);
+}
+
+/* quiet hairline ghost */
+.btn-ghost {
+  color: var(--text-muted);
+  background: transparent;
+  padding: var(--space-3) var(--space-6);
+  border-color: var(--border-default);
+}
+.btn-ghost:hover {
+  background: var(--honey-50);
+  color: var(--text-default);
+  border-color: var(--border-strong);
+}
+
+/* "white" = parchment: stays light on the forest accent bands. */
+.btn-white {
+  background: var(--text-default);
+  color: #1A2620;
+  border-color: var(--text-default);
+  box-shadow: var(--sh-2);
+}
+.btn-white:hover { color: #0E1611; background: #FAF5E8; border-color: #FAF5E8; }
 
 .btn-outline-white {
   background: transparent;
@@ -656,7 +673,7 @@ h1.hero-title {
   letter-spacing: -0.012em;
   margin-bottom: var(--space-4);
 }
-h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: var(--fw-medium); }
+h1.hero-title em { font-style: italic; color: var(--honey-400); font-weight: var(--fw-medium); }
 .hero-poetic {
   font-family: var(--font-display);
   font-style: italic;
@@ -2542,3 +2559,14 @@ footer {
   cursor: not-allowed;
   border-color: var(--border-default);
 }
+
+/* =============== LEAFLET (map) — dark popover surfaces =============== */
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--surface-elev);
+  color: var(--text-default);
+  box-shadow: var(--sh-pop);
+}
+.leaflet-popup-content-wrapper { border-radius: var(--r-md); }
+.leaflet-container a.leaflet-popup-close-button { color: var(--text-subtle); }
+/* Soften bright OSM tiles into the night theme. */
+.leaflet-tile { filter: brightness(0.82) saturate(0.85) contrast(0.95); }

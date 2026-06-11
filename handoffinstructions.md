@@ -14,14 +14,13 @@ The full stakeholder feedback (P0–P4: privacy fix, auth gate, full-width layou
 About sections, Georgian-first i18n) is implemented and deployed. Director phone numbers were
 already **scrubbed from the live DB** (preserved in a local backup on this PC). What's left:
 
-**a) Apply two SQL migrations — 2 min, CLOSES A REAL HOLE (supersedes §1a below)**
-- Supabase Dashboard → SQL Editor → paste & Run, in order:
-  1. `supabase/migrations/0007_rls.sql` — still pending! Anyone with the public anon key can
-     read the DB directly until this runs (verified 2026-06-11).
-  2. `supabase/migrations/0011_school_private_contact.sql` — adds the non-public column for
-     the school directors' contact info.
-- Then tell me — I'll run `scrub-school-pii.mjs --restore` to move the preserved director
-  contacts into the new private column.
+**a) ✅ DONE 2026-06-11 — migrations applied (0007 RLS + 0011), contacts restored**
+- You applied both migrations; verified: an anonymous direct DB read now returns **0 rows**
+  (default-deny RLS active), the public API serves all 50 schools with only safe fields, and
+  the 49 preserved director contacts were restored into the non-public `private_contact`
+  column via `scrub-school-pii.mjs --restore`. This supersedes §1a below.
+- The local backup file (`server/scripts/school-pii-backup.json`, gitignored) can be deleted
+  whenever you're comfortable — the data now lives in the private column.
 
 **b) Real content to replace clearly-marked placeholders**
 - `/stories` page: 5 sample stories (badge-marked) in `frontend/src/content/stories.js` —

@@ -8,8 +8,9 @@ import StampLabel from '../components/StampLabel.jsx';
 import en from '../i18n/en.js';
 import ka from '../i18n/ka.js';
 
-// Hero background — warm documentary photo of highland kids reading.
-// Drop a 1600x1000 image at frontend/public/hero.jpg; a gradient shows if missing.
+// Hero background: "Ushguli, Tamar's Tower" — Svaneti, Georgia. Wikimedia
+// Commons, CC BY 2.0 (Adam Jones). Real-photo placeholder until the owner's
+// own school photos arrive; swap = replace frontend/public/hero.jpg.
 const HERO_BG = '/hero.jpg';
 
 const SAMPLE_PHOTOS = [

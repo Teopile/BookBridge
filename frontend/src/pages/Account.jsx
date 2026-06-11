@@ -85,7 +85,7 @@ export default function Account() {
         }}>
           <div className="account-avatar">{initial}</div>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <h1 style={{ fontSize: 'var(--fs-h2)', marginBottom: 2 }}>{username}</h1>
+            <h1 style={{ fontSize: 'var(--fs-h2)', marginBottom: 'var(--space-1)' }}>{username}</h1>
             <div style={{ color: 'var(--text-subtle)', fontSize: 'var(--fs-sm)' }}>{user.email}</div>
           </div>
           <button

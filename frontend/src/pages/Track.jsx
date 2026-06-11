@@ -69,22 +69,22 @@ export default function Track() {
           </div>
         </div>
 
-        <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px', textAlign: 'center' }}>
-          <div style={{ fontSize: 13, color: 'var(--gray-700)', marginBottom: 8 }}>
+        <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)', textAlign: 'center' }}>
+          <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-muted)', marginBottom: 'var(--space-2)' }}>
             {t('track.currentStatus')}
           </div>
-          <div style={{ fontSize: 24, fontWeight: 700, color: 'var(--teal-dark)', marginBottom: 4 }}>
+          <div style={{ fontSize: 'var(--fs-h3)', fontWeight: 'var(--fw-bold)', color: 'var(--forest-700)', marginBottom: 'var(--space-1)' }}>
             {t(STATUS_KEY[d.status])}
           </div>
           {d.courier_tracking_id && (
-            <div style={{ fontSize: 13, color: 'var(--gray-700)' }}>
+            <div style={{ fontSize: 'var(--fs-xs)', color: 'var(--text-muted)' }}>
               📦 {d.courier_provider}: <strong>{d.courier_tracking_id}</strong>
             </div>
           )}
         </div>
 
-        <h2 style={{ fontSize: 20, marginBottom: 12 }}>{t('track.timeline')}</h2>
-        <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+        <h2 style={{ fontSize: 'var(--fs-lg)', marginBottom: 'var(--space-3)' }}>{t('track.timeline')}</h2>
+        <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
           <div className="timeline">
             {STATUS_ORDER.map((s, i) => {
               const stateClass =
@@ -117,7 +117,7 @@ export default function Track() {
           </div>
         </div>
 
-        <h2 style={{ fontSize: 20, marginBottom: 12 }}>📚 {t('track.books')}</h2>
+        <h2 style={{ fontSize: 'var(--fs-lg)', marginBottom: 'var(--space-3)' }}>📚 {t('track.books')}</h2>
         {itemCount === 0 ? (
           <EmptyState icon="📚" title={t('track.noBooks')} />
         ) : (

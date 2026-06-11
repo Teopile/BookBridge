@@ -68,7 +68,7 @@ export default function Search() {
       />
       <section className="section">
       <div className="container">
-        <div className="search-bar" style={{ marginBottom: 24 }}>
+        <div className="search-bar" style={{ marginBottom: 'var(--space-6)' }}>
           {/* No native placeholder — the animated overlay replaces it; the
               aria-label keeps the field named for screen readers. */}
           <div className="tw-input-wrap">
@@ -123,8 +123,8 @@ export default function Search() {
 
         {isSearching && books.length > 0 && (
           <>
-            <h3 style={{ marginTop: 32, marginBottom: 12 }}>📖 {t('schools.book')}</h3>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <h3 style={{ marginTop: 'var(--space-7)', marginBottom: 'var(--space-3)' }}>📖 {t('schools.book')}</h3>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
               {books.map((b) => (
                 <Link
                   key={b.id}
@@ -157,9 +157,9 @@ export default function Search() {
 
 function ResultsHeader({ count, label }) {
   return (
-    <h3 style={{ marginBottom: 16, fontSize: 18 }}>
+    <h3 style={{ marginBottom: 'var(--space-4)', fontSize: 'var(--fs-md)' }}>
       {label}
-      <span style={{ color: 'var(--gray-500)', fontWeight: 500, marginLeft: 8 }}>· {count}</span>
+      <span className="tabular" style={{ color: 'var(--text-subtle)', fontWeight: 'var(--fw-medium)', marginLeft: 'var(--space-2)' }}>· {count}</span>
     </h3>
   );
 }

@@ -160,12 +160,7 @@ export default function SchoolDetail() {
               const cap = Math.min(r.quantity_needed, 12);
               const filled = Math.min(r.quantity_fulfilled, cap);
               return (
-                <div key={r.id} style={{
-                  background: 'var(--surface)',
-                  padding: 'var(--space-3) var(--space-4)',
-                  borderRadius: 'var(--r-sm)',
-                  border: '1px solid var(--border-default)',
-                }}>
+                <div key={r.id} className="row-card">
                   <div style={{
                     display: 'flex',
                     justifyContent: 'space-between',

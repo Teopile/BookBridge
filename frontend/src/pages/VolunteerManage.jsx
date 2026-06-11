@@ -103,12 +103,12 @@ export default function VolunteerManage() {
 
         {schools && schools.length > 0 && (
           <>
-            <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
-              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>
+            <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
+              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 'var(--space-2)' }}>
                 {t('volunteerManage.pickSchool')}
               </label>
               <select
-                style={{ width: '100%', padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                className="wizard-select"
                 value={selected || ''}
                 onChange={(e) => setSelected(e.target.value)}
               >
@@ -116,7 +116,7 @@ export default function VolunteerManage() {
               </select>
             </div>
 
-            <h2 style={{ fontSize: 20, marginBottom: 12 }}>{t('volunteerManage.incoming')}</h2>
+            <h2 style={{ fontSize: 20, marginBottom: 'var(--space-3)' }}>{t('volunteerManage.incoming')}</h2>
 
             {donations === null && <Loading kind="list" />}
 
@@ -128,7 +128,7 @@ export default function VolunteerManage() {
               <div className="row-list">
                 {donations.map((d) => (
                   <div className="row-item" key={d.id} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
                       <div className="row-item-title">
                         #{d.id.slice(0, 8)} →{' '}
                         <span style={{ color: 'var(--gray-700)', fontWeight: 500 }}>
@@ -137,7 +137,7 @@ export default function VolunteerManage() {
                       </div>
                       <span className={'badge ' + d.status}>{t(STATUS_KEY[d.status] || 'common.errorTitle')}</span>
                     </div>
-                    <div className="row-item-sub" style={{ marginBottom: 12 }}>
+                    <div className="row-item-sub" style={{ marginBottom: 'var(--space-3)' }}>
                       {(d.donation_items || []).length} {t('account.lineItems')} · {d.delivery_method}
                       {d.courier_tracking_id ? ' · 📦 ' + d.courier_tracking_id : ''}
                     </div>
@@ -148,10 +148,11 @@ export default function VolunteerManage() {
                         onChange={(e) => setTracking((m) => ({ ...m, [d.id]: e.target.value }))}
                         placeholder={t('volunteerManage.trackingPlaceholder')}
                         aria-label={t('volunteerManage.trackingLabel')}
-                        style={{ width: '100%', padding: '9px 12px', borderRadius: 8, border: '1.5px solid var(--gray-200)', fontSize: 16, marginBottom: 10 }}
+                        className="wizard-select"
+                        style={{ marginBottom: 10 }}
                       />
                     )}
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                    <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                       {d.status === 'pending' && (
                         <button className="btn btn-primary btn-sm" disabled={busyId === d.id} onClick={() => setStatus(d.id, 'at_volunteer')}>
                           ✓ {t('volunteerManage.markReceived')}

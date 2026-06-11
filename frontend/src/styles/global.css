@@ -2509,3 +2509,29 @@ footer {
   transition: background var(--t-fast), color var(--t-fast);
 }
 .notif-pop-foot:hover { background: var(--honey-50); color: var(--forest-700); }
+
+/* =============== ROW CARD — list rows (book requests, line items) =============== */
+.row-card {
+  background: var(--surface);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border-default);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.row-card:hover { border-color: var(--border-strong); box-shadow: var(--sh-1); }
+
+/* Wizard inputs (Donate flow) share the form-control look. */
+.wizard-select {
+  display: block;
+  width: 100%;
+  min-height: var(--tap-min);
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--r-sm);
+  border: 1.5px solid var(--border-strong);
+  font-size: var(--fs-base);
+  background: var(--surface);
+  color: var(--text-default);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+}
+.wizard-select:hover:not(:focus):not(:disabled) { border-color: var(--honey-500); }
+.wizard-select:focus { outline: none; border-color: var(--forest-600); box-shadow: var(--sh-focus); }

@@ -76,13 +76,14 @@ export default function SchoolManage() {
 
         {schools && schools.length > 0 && (
           <>
-            <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
-              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 8 }}>
+            <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
+              <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 'var(--space-2)' }}>
                 {t('schoolManage.pickSchool')}
               </label>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+              <div style={{ display: 'flex', gap: 'var(--space-2)', alignItems: 'stretch' }}>
                 <select
-                  style={{ flex: 1, padding: '12px 14px', borderRadius: 10, border: '1.5px solid var(--gray-200)', fontSize: 15, background: 'white' }}
+                  className="wizard-select"
+                  style={{ flex: 1 }}
                   value={selected || ''}
                   onChange={(e) => setSelected(e.target.value)}
                 >
@@ -177,8 +178,8 @@ function CreateSchoolCard({ onCreated, t }) {
   }
 
   return (
-    <div className="card" style={{ maxWidth: 'none', margin: '24px 0 0' }}>
-      <h3 style={{ marginBottom: 16 }}>➕ {t('schoolManage.registerNew')}</h3>
+    <div className="card" style={{ maxWidth: 'none', margin: 'var(--space-6) 0 0' }}>
+      <h3 style={{ marginBottom: 'var(--space-4)' }}>➕ {t('schoolManage.registerNew')}</h3>
       <SchoolFormBody
         type={type}
         setType={setType}
@@ -188,11 +189,11 @@ function CreateSchoolCard({ onCreated, t }) {
         setPhotoUrl={setPhotoUrl}
         t={t}
       />
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 'var(--space-4)' }}>
         {err && <div className="error">{err}</div>}
         {ok && <div style={{ background: 'var(--teal-soft)', color: 'var(--teal-dark)', padding: '10px 14px', borderRadius: 8, fontSize: 14 }}>✓ {ok}</div>}
       </div>
-      <div style={{ marginTop: 16 }}>
+      <div style={{ marginTop: 'var(--space-4)' }}>
         <button className="btn btn-primary" disabled={busy} onClick={submit}>
           {busy ? '…' : t('schoolManage.submitButton')}
         </button>
@@ -243,8 +244,8 @@ function EditSchoolCard({ school, onSaved, onCancel, t }) {
   }
 
   return (
-    <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
-      <h3 style={{ marginBottom: 16 }}>✏️ {t('schoolManage.editSchoolTitle')}</h3>
+    <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
+      <h3 style={{ marginBottom: 'var(--space-4)' }}>✏️ {t('schoolManage.editSchoolTitle')}</h3>
       <SchoolFormBody
         type={school.type}
         form={form}
@@ -254,8 +255,8 @@ function EditSchoolCard({ school, onSaved, onCancel, t }) {
         t={t}
         hideTypeField
       />
-      {err && <div className="error" style={{ marginTop: 12 }}>{err}</div>}
-      <div style={{ display: 'flex', gap: 12, marginTop: 16 }}>
+      {err && <div className="error" style={{ marginTop: 'var(--space-3)' }}>{err}</div>}
+      <div style={{ display: 'flex', gap: 'var(--space-3)', marginTop: 'var(--space-4)' }}>
         <button type="button" className="btn btn-secondary" onClick={onCancel}>{t('common.cancel')}</button>
         <button type="button" className="btn btn-primary" disabled={busy} onClick={submit}>
           {busy ? '…' : t('common.save')}
@@ -290,7 +291,7 @@ function SchoolFormBody({ type, setType, form, set, photoUrl, setPhotoUrl, t, hi
       <label>{t('schoolManage.fieldAddress')}</label>
       <input value={form.address || ''} onChange={(e) => set('address', e.target.value)} />
 
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--space-3)' }}>
         <div>
           <label style={{ fontSize: 13, fontWeight: 600, display: 'block', marginBottom: 4 }}>{t('schoolManage.fieldLat')}</label>
           <input
@@ -298,7 +299,7 @@ function SchoolFormBody({ type, setType, form, set, photoUrl, setPhotoUrl, t, hi
             value={form.lat}
             onChange={(e) => set('lat', e.target.value)}
             placeholder="41.7"
-            style={{ width: '100%', padding: 12, borderRadius: 10, border: '1.5px solid var(--gray-200)' }}
+            className="wizard-select"
           />
         </div>
         <div>
@@ -308,7 +309,7 @@ function SchoolFormBody({ type, setType, form, set, photoUrl, setPhotoUrl, t, hi
             value={form.lng}
             onChange={(e) => set('lng', e.target.value)}
             placeholder="44.8"
-            style={{ width: '100%', padding: 12, borderRadius: 10, border: '1.5px solid var(--gray-200)' }}
+            className="wizard-select"
           />
         </div>
       </div>
@@ -357,12 +358,12 @@ function BookRequestsManager({ schoolId, requests, reload, t }) {
 
   return (
     <div className="card" style={{ maxWidth: 'none', margin: 0 }}>
-      <h3 style={{ marginBottom: 16 }}>📚 {t('schoolManage.bookRequests')}</h3>
+      <h3 style={{ marginBottom: 'var(--space-4)' }}>📚 {t('schoolManage.bookRequests')}</h3>
 
       {requests.length === 0 ? (
-        <p style={{ color: 'var(--gray-500)', marginBottom: 24 }}>{t('schoolManage.noRequests')}</p>
+        <p style={{ color: 'var(--gray-500)', marginBottom: 'var(--space-6)' }}>{t('schoolManage.noRequests')}</p>
       ) : (
-        <div className="row-list" style={{ marginBottom: 24 }}>
+        <div className="row-list" style={{ marginBottom: 'var(--space-6)' }}>
           {requests.map((r) => (
             <div className="row-item" key={r.id}>
               <div className="row-item-main">
@@ -377,7 +378,7 @@ function BookRequestsManager({ schoolId, requests, reload, t }) {
         </div>
       )}
 
-      <h4 style={{ marginBottom: 12 }}>{t('schoolManage.addRequest')}</h4>
+      <h4 style={{ marginBottom: 'var(--space-3)' }}>{t('schoolManage.addRequest')}</h4>
       <form className="form" onSubmit={submit}>
         <label>{t('schoolManage.requestType')}</label>
         <select value={form.request_type} onChange={(e) => setForm({ ...form, request_type: e.target.value })}>
@@ -445,9 +446,9 @@ function IncomingDonations({ schoolId, prefix, t }) {
   }
 
   return (
-    <div className="card" style={{ maxWidth: 'none', margin: '0 0 24px' }}>
+    <div className="card" style={{ maxWidth: 'none', margin: '0 0 var(--space-6)' }}>
       <h3 style={{ marginBottom: 6 }}>📦 {t('schoolManage.incomingTitle')}</h3>
-      <p style={{ color: 'var(--gray-500)', fontSize: 13, marginBottom: 16 }}>{t('schoolManage.incomingHint')}</p>
+      <p style={{ color: 'var(--gray-500)', fontSize: 13, marginBottom: 'var(--space-4)' }}>{t('schoolManage.incomingHint')}</p>
 
       {error && <ErrorState message={error} onRetry={reload} />}
       {donations === null && !error && <Loading kind="list" />}
@@ -459,7 +460,7 @@ function IncomingDonations({ schoolId, prefix, t }) {
         <div className="row-list">
           {donations.map((d) => (
             <div className="row-item" key={d.id} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-2)' }}>
                 <div className="row-item-title">
                   #{d.id?.slice(0, 8)}
                   {d.volunteer_school?.name && (
@@ -468,12 +469,12 @@ function IncomingDonations({ schoolId, prefix, t }) {
                 </div>
                 <span className={'badge ' + d.status}>{t(INC_STATUS_KEY[d.status] || 'common.errorTitle')}</span>
               </div>
-              <div className="row-item-sub" style={{ marginBottom: d.status === 'delivered' ? 0 : 12 }}>
+              <div className="row-item-sub" style={{ marginBottom: d.status === 'delivered' ? 0 : 'var(--space-3)' }}>
                 {(d.donation_items || []).length} {t('account.lineItems')}
                 {d.courier_tracking_id ? ' · 📦 ' + d.courier_tracking_id : ''}
               </div>
               {d.status !== 'delivered' && (
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
                   <button className="btn btn-primary btn-sm" disabled={busyId === d.id} onClick={() => confirmReceipt(d.id)}>
                     ✓ {t('schoolManage.confirmReceipt')}
                   </button>

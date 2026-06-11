@@ -184,16 +184,6 @@ export default function Donate() {
                 <>
                   <select
                     className="wizard-select"
-                    style={{
-                      width: '100%',
-                      minHeight: 'var(--tap-min)',
-                      padding: 'var(--space-3) var(--space-4)',
-                      borderRadius: 'var(--r-sm)',
-                      border: '1.5px solid var(--border-strong)',
-                      fontSize: 'var(--fs-base)',
-                      background: 'var(--surface)',
-                      color: 'var(--text-default)',
-                    }}
                     value={chosenSchool || ''} onChange={(e) => setChosenSchool(e.target.value || null)}
                   >
                     <option value="">— {t('donate.pickSchool')} —</option>
@@ -301,19 +291,10 @@ export default function Donate() {
                 <div style={{ marginTop: 'var(--space-4)' }}>
                   <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>{t('donate.pickVolunteer')}</label>
                   <select
+                    className="wizard-select"
                     value={chosenVolunteer || ''}
                     onChange={(e) => setChosenVolunteer(e.target.value || null)}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      minHeight: 'var(--tap-min)',
-                      padding: 'var(--space-3) var(--space-4)',
-                      borderRadius: 'var(--r-sm)',
-                      border: '1.5px solid var(--border-strong)',
-                      marginTop: 'var(--space-2)',
-                      background: 'var(--surface)',
-                      color: 'var(--text-default)',
-                    }}
+                    style={{ marginTop: 'var(--space-2)' }}
                   >
                     <option value="">— {t('donate.pickOne')} —</option>
                     {volunteers.map((v) => <option key={v.id} value={v.id}>{v.name} {v.address ? '· ' + v.address : ''}</option>)}
@@ -325,19 +306,10 @@ export default function Donate() {
                 <div style={{ marginTop: 'var(--space-4)' }}>
                   <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>{t('donate.pickupAddress')}</label>
                   <input
+                    className="wizard-select"
                     value={donorAddress}
                     onChange={(e) => setDonorAddress(e.target.value)}
-                    style={{
-                      display: 'block',
-                      width: '100%',
-                      minHeight: 'var(--tap-min)',
-                      padding: 'var(--space-3) var(--space-4)',
-                      borderRadius: 'var(--r-sm)',
-                      border: '1.5px solid var(--border-strong)',
-                      marginTop: 'var(--space-2)',
-                      background: 'var(--surface)',
-                      color: 'var(--text-default)',
-                    }}
+                    style={{ marginTop: 'var(--space-2)' }}
                   />
                 </div>
               )}

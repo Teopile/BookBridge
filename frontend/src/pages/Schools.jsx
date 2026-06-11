@@ -4,6 +4,7 @@ import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import Icon from '../components/Icon.jsx';
 import SectionHero from '../components/SectionHero.jsx';
+import TypewriterPlaceholder from '../components/TypewriterPlaceholder.jsx';
 import { Loading, ErrorState } from '../components/States.jsx';
 
 // Map (Leaflet + tiles) only loads when the user clicks the Map toggle.
@@ -34,6 +35,7 @@ export default function Schools({ type }) {
   const [regions, setRegions] = useState([]);
   const [q, setQ] = useState('');
   const [view, setView] = useState('list');
+  const [searchFocused, setSearchFocused] = useState(false);
 
   useEffect(() => {
     apiGet('/api/regions').then(setRegions).catch(() => setRegions([]));
@@ -66,13 +68,24 @@ export default function Schools({ type }) {
       <section className="section">
       <div className="container">
         <div className="search-bar">
-          <input
-            type="text"
-            placeholder={t('schools.placeholder')}
-            aria-label={t('schools.placeholder')}
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-          />
+          {/* No native placeholder — the animated overlay replaces it; the
+              aria-label keeps the field named for screen readers. */}
+          <div className="tw-input-wrap">
+            <input
+              type="text"
+              aria-label={t('schools.placeholder')}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+            />
+            {!searchFocused && !q && (
+              <TypewriterPlaceholder
+                prefix={t('searchHints.prefix')}
+                terms={t('searchHints.terms')}
+              />
+            )}
+          </div>
           <select
             value={region}
             onChange={(e) => setRegion(e.target.value)}

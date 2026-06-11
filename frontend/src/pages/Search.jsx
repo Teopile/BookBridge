@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { useT } from '../i18n/I18nContext.jsx';
 import { apiGet } from '../api.js';
 import SectionHero from '../components/SectionHero.jsx';
+import TypewriterPlaceholder from '../components/TypewriterPlaceholder.jsx';
 
 const FALLBACK_PHOTOS = [
   'https://picsum.photos/seed/bb-school-1/600/350',
@@ -23,6 +24,7 @@ export default function Search() {
   const { t, lang } = useT();
   const [q, setQ] = useState('');
   const [type, setType] = useState('all');
+  const [searchFocused, setSearchFocused] = useState(false);
   const [allSchools, setAllSchools] = useState(null);
   const [searchResults, setSearchResults] = useState(null);
 
@@ -66,14 +68,25 @@ export default function Search() {
       <section className="section">
       <div className="container">
         <div className="search-bar" style={{ marginBottom: 24 }}>
-          <input
-            type="text"
-            placeholder={t('schools.placeholder')}
-            aria-label={t('schools.placeholder')}
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            autoFocus
-          />
+          {/* No native placeholder — the animated overlay replaces it; the
+              aria-label keeps the field named for screen readers. */}
+          <div className="tw-input-wrap">
+            <input
+              type="text"
+              aria-label={t('schools.placeholder')}
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              onFocus={() => setSearchFocused(true)}
+              onBlur={() => setSearchFocused(false)}
+              autoFocus
+            />
+            {!searchFocused && !q && (
+              <TypewriterPlaceholder
+                prefix={t('searchHints.prefix')}
+                terms={t('searchHints.terms')}
+              />
+            )}
+          </div>
           <div className="filter-pills">
             {['all', 'beneficiary', 'volunteer', 'book'].map((k) => (
               <button

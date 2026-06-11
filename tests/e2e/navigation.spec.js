@@ -52,8 +52,9 @@ test.describe('Schools list + detail', () => {
       page.getByRole('heading', { level: 1, name: COPY.schoolsPageTitle, exact: true }),
     ).toBeVisible();
 
-    // Search/filter bar is present.
-    await expect(page.getByPlaceholder('Search by name or region…')).toBeVisible();
+    // Search/filter bar is present (named via aria-label — the native
+    // placeholder was replaced by the animated typewriter overlay).
+    await expect(page.getByLabel('Search by name or region…')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Beneficiary' })).toBeVisible();
 
     // Live DB has 50 beneficiary schools; cards render as <a class="school">

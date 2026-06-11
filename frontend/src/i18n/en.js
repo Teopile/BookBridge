@@ -105,6 +105,13 @@ export default {
     mapEmptyHint: 'Schools need a latitude and longitude to appear here.',
     requestsCount: '{count} book requests',
   },
+  // Animated search placeholder. Terms are REAL searchable values from the
+  // live data (region / city / school villages) so the demo always works —
+  // kept in Georgian for both locales because the school data is Georgian.
+  searchHints: {
+    prefix: 'e.g.',
+    terms: ['შიდა ქართლი', 'გორი', 'ზემო ნიქოზი', 'კასპი'],
+  },
   about: {
     title: 'About BookBridge',
     p1: "BookBridge moves donated books from city homes to highland schools in Georgia. Many mountain schools have libraries with half-empty shelves — and a long drive to the nearest bookstore.",

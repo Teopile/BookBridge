@@ -7,7 +7,7 @@ test.describe('Search', () => {
     await waitForApp(page);
 
     await expect(page.getByRole('heading', { name: 'Search' })).toBeVisible();
-    await expect(page.getByPlaceholder('Search by name or region…')).toBeVisible();
+    await expect(page.getByLabel('Search by name or region…')).toBeVisible();
 
     // With no query, Search.jsx browses /api/schools (50 live rows).
     const cards = page.locator('a.school');
@@ -21,7 +21,7 @@ test.describe('Search', () => {
 
     // "ი" is an extremely common Georgian vowel; the /api/search endpoint
     // returns school hits for it (verified against the live API).
-    const box = page.getByPlaceholder('Search by name or region…');
+    const box = page.getByLabel('Search by name or region…');
     await box.fill('ი');
 
     // Debounced 250ms fetch -> results header "Schools · N" + school cards.
@@ -35,7 +35,7 @@ test.describe('Search', () => {
     await waitForApp(page);
 
     await page
-      .getByPlaceholder('Search by name or region…')
+      .getByLabel('Search by name or region…')
       .fill('zzzqqqxx-no-such-school-12345');
 
     // Search.jsx renders the "No schools found" empty state on zero hits.

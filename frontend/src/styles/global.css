@@ -2188,3 +2188,41 @@ footer {
   color: var(--text-muted);
   line-height: var(--lh-relaxed);
 }
+
+/* =============== TYPEWRITER PLACEHOLDER (search inputs) =============== */
+/* Wrapper inherits the input slot in .search-bar; the input fills it. */
+.search-bar .tw-input-wrap { flex: 1; min-width: 220px; }
+.tw-input-wrap { position: relative; }
+.tw-input-wrap input { width: 100%; }
+.tw-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  /* Align with where typed text starts: input border (1.5px) + padding. */
+  padding: 0 var(--space-4);
+  margin-left: 2px;
+  pointer-events: none;
+  overflow: hidden;
+  white-space: nowrap;
+  color: var(--text-subtle);
+  font-size: var(--fs-base);
+  max-width: 100%;
+}
+.tw-prefix { flex: 0 0 auto; }
+.tw-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.tw-cursor {
+  flex: 0 0 auto;
+  margin-left: -2px;
+  animation: twBlink 1s step-end infinite;
+}
+@keyframes twBlink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) {
+  .tw-cursor { display: none; }
+}

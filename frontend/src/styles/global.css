@@ -10,8 +10,8 @@
   --forest-700: #2A5A3E;   /* deep green — accents, footer-cta ground */
   --forest-600: #3E7A54;   /* brand green — icons, success accents on ink */
   --forest-500: #5B996F;   /* brighter green — hover accents, icon tints */
-  --forest-100: #2A4233;   /* green wash on ink — hover surfaces */
-  --forest-50:  #24382B;   /* subtle green wash (badge bg, step circle) */
+  --forest-100: rgba(217, 184, 114, 0.14); /* warm wash — hover surfaces */
+  --forest-50:  rgba(217, 184, 114, 0.09); /* warm wash (badge bg, step circle) */
 
   --honey-500: #C9A567;    /* honey deep — borders, hover of the action color */
   --honey-400: #D9B872;    /* THE action color — buttons, links, active nav */
@@ -19,11 +19,11 @@
   --honey-50:  rgba(217, 184, 114, 0.10);  /* honey wash — hover bg on ink */
 
   /* ============ SURFACES — forest ink ============ */
-  --cream-page:    #131B16;  /* page ground — deep forest ink */
-  --cream-card:    #1A2620;  /* recessed surface (filter rows, summary blocks) */
-  --cream-warm:    #18231C;  /* raised band (alt sections, banners) */
-  --surface:       #1D2A22;  /* card surface */
-  --surface-elev:  #243329;  /* elevated overlay (drawer, modal, popover) */
+  --cream-page:    #161412;  /* page ground — warm espresso near-black */
+  --cream-card:    #1E1B17;  /* recessed surface (filter rows, summary blocks) */
+  --cream-warm:    #1B1916;  /* raised band (alt sections, banners) */
+  --surface:       #211E19;  /* card surface */
+  --surface-elev:  #2A2620;  /* elevated overlay (drawer, modal, popover) */
 
   /* ============ TEXT — parchment scale ============ */
   --text-default:  #F2ECDC;  /* primary text + headings — parchment */
@@ -56,11 +56,11 @@
   --sky-600: #7FA8C7;  /* primary blue accent (= --info) */
   --sky-400: #5D86A6;  /* soft sky */
   --sky-100: #1C2C38;  /* sky wash — info badge bg */
-  --sky-50:  #16242C;  /* faintest sky tint — section wash */
+  --sky-50:  #181C20;  /* faintest sky tint — section wash */
 
   /* ============ SAGE — meadow tints on ink ============ */
-  --sage-600: #93A788; /* sage text/icons on ink */
-  --sage-100: #243029; /* sage wash */
+  --sage-600: #A8A28D; /* warm-gray text/icons */
+  --sage-100: #262219; /* warm wash */
 
   /* ============ SPACING — 4px ladder, tokenized ============ */
   --space-0:  0;
@@ -165,13 +165,13 @@
   /* ============ DIRECTION F — "Trail Journal" tokens ============
      Warm field-notebook palette + motion. forest-600/700, honey-400/500,
      and cream-page already map 1:1 to F's --forest / --honey / --cream. */
-  --cream-warm-F: #18231C;   /* raised ink bands (how / mission) */
-  --sand:         #1D2A22;   /* card surface on ink */
-  --kraft:        #2A3A2F;   /* progress-bar track, parcel chip */
+  --cream-warm-F: #1B1916;   /* raised espresso bands (how / mission) */
+  --sand:         #211E19;   /* card surface */
+  --kraft:        #2F2A23;   /* progress-bar track, parcel chip */
   --kraft-edge:   rgba(242, 236, 220, 0.20); /* dashed/solid card borders */
   --clay:         #C98F60;   /* hand-stamp underline + pins (graphical, brightened) */
-  --sage:         #8FA383;   /* ghost-button border, "where" line */
-  --forest-dark:  #0E1611;   /* footer ground — deeper than page */
+  --sage:         #9C9784;   /* warm-gray accent, "where" line */
+  --forest-dark:  #110F0D;   /* footer ground — deeper than page */
   --line:         var(--border-default);
 
   /* motion */
@@ -338,7 +338,7 @@ p  { color: var(--text-muted); text-wrap: pretty; }
   height: var(--nav-h);
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--space-3) max(var(--space-5), env(safe-area-inset-right)) var(--space-3) max(var(--space-5), env(safe-area-inset-left));
-  background: rgba(19, 27, 22, 0.86);
+  background: rgba(22, 20, 18, 0.86);
   backdrop-filter: blur(12px) saturate(1.2);
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
   border-bottom: 1px solid var(--border-default);
@@ -727,10 +727,10 @@ h1.hero-title em { font-style: italic; color: var(--honey-400); font-weight: var
   isolation: isolate;
   overflow: hidden;
   /* Fallback if /hero.jpg is missing: warm forest→honey dusk gradient. */
-  background-color: var(--forest-700);
+  background-color: #1B1916;
   background-image:
     linear-gradient(180deg, rgba(46,85,112,0.34) 0%, rgba(46,85,112,0) 42%),
-    linear-gradient(105deg, rgba(31,69,48,0.92) 0%, rgba(176,122,79,0.45) 55%, rgba(217,184,114,0.35) 100%),
+    linear-gradient(105deg, rgba(22,20,18,0.92) 0%, rgba(176,122,79,0.42) 55%, rgba(217,184,114,0.32) 100%),
     var(--hero-bg, none);
   background-size: cover;
   background-position: center 38%;
@@ -743,32 +743,32 @@ h1.hero-title em { font-style: italic; color: var(--honey-400); font-weight: var
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(20,32,24,0.82) 0%, rgba(20,32,24,0.58) 38%, rgba(20,32,24,0.18) 70%, rgba(20,32,24,0.05) 100%),
-    linear-gradient(0deg, rgba(20,32,24,0.45) 0%, rgba(20,32,24,0) 45%);
+    linear-gradient(90deg, rgba(18,16,13,0.82) 0%, rgba(18,16,13,0.58) 38%, rgba(18,16,13,0.18) 70%, rgba(18,16,13,0.05) 100%),
+    linear-gradient(0deg, rgba(18,16,13,0.45) 0%, rgba(18,16,13,0) 45%);
 }
 .hero--bg .hero-grid { grid-template-columns: 1fr; gap: 0; }
 .hero--bg .hero-copy { max-width: 640px; }
-.hero--bg .hero-title { color: var(--text-on-dark); text-shadow: 0 2px 18px rgba(20,32,24,0.45); }
+.hero--bg .hero-title { color: var(--text-on-dark); text-shadow: 0 2px 18px rgba(18,16,13,0.45); }
 .hero--bg .hero-title em { color: var(--honey-200); }
 .hero--bg .hero-lede { color: rgba(250,245,232,0.92); }
 .hero--bg .hero-poetic { color: var(--honey-200); }
 .hero--bg .hero-poetic .ka { color: rgba(250,245,232,0.82); }
 .hero--bg .hero-kicker {
   color: var(--honey-200);
-  background: rgba(31,69,48,0.55);
+  background: rgba(22,20,18,0.55);
   border-color: rgba(250,245,232,0.28);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 6px 18px rgba(20,32,24,0.35);
+  box-shadow: 0 6px 18px rgba(18,16,13,0.35);
 }
 .hero--bg .hero-kicker svg { color: var(--honey-200); }
 .hero--bg .hero-steps {
   color: var(--text-on-dark);
-  background: rgba(31,69,48,0.5);
+  background: rgba(22,20,18,0.5);
   border: 1px dashed rgba(250,245,232,0.35);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 8px 22px rgba(20,32,24,0.35);
+  box-shadow: 0 8px 22px rgba(18,16,13,0.35);
 }
 .hero--bg .hero-steps .n { border-color: var(--honey-200); color: var(--honey-200); }
 .hero--bg .hero-steps .arr { color: var(--honey-200); }
@@ -776,8 +776,8 @@ h1.hero-title em { font-style: italic; color: var(--honey-400); font-weight: var
 @media (max-width: 640px) {
   .hero-bg-scrim {
     background:
-      linear-gradient(90deg, rgba(20,32,24,0.86) 0%, rgba(20,32,24,0.66) 55%, rgba(20,32,24,0.3) 100%),
-      linear-gradient(0deg, rgba(20,32,24,0.5) 0%, rgba(20,32,24,0) 50%);
+      linear-gradient(90deg, rgba(18,16,13,0.86) 0%, rgba(18,16,13,0.66) 55%, rgba(18,16,13,0.3) 100%),
+      linear-gradient(0deg, rgba(18,16,13,0.5) 0%, rgba(18,16,13,0) 50%);
   }
   .hero--bg .hero-copy { max-width: 100%; }
 }
@@ -1016,7 +1016,7 @@ h1.hero-title em { font-style: italic; color: var(--honey-400); font-weight: var
   background: var(--forest-700); color: var(--text-on-dark);
   padding: var(--space-11) var(--space-5); text-align: center;
 }
-.footer-cta h2 { color: var(--text-on-dark); margin-bottom: var(--space-3); }
+.footer-cta h2 { color: var(--honey-200); margin-bottom: var(--space-3); }
 .footer-cta p { color: rgba(250, 245, 232, 0.88); margin-bottom: var(--space-7); }
 .footer-cta-actions {
   display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;
@@ -1819,7 +1819,7 @@ footer {
   position: fixed;
   inset: 0;
   z-index: 200;
-  background: rgba(28, 38, 32, 0.55);
+  background: rgba(20, 18, 15, 0.6);
   backdrop-filter: blur(3px);
   display: flex;
   align-items: center;
@@ -1945,9 +1945,9 @@ footer {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top,
-    rgba(22, 30, 25, 0.78),
-    rgba(22, 30, 25, 0.35) 55%,
-    rgba(22, 30, 25, 0.18));
+    rgba(20, 18, 15, 0.78),
+    rgba(20, 18, 15, 0.35) 55%,
+    rgba(20, 18, 15, 0.18));
 }
 .section-hero-content {
   position: relative;
@@ -2088,7 +2088,7 @@ footer {
   position: absolute;
   top: var(--space-3);
   left: var(--space-3);
-  background: rgba(22, 30, 25, 0.72);
+  background: rgba(20, 18, 15, 0.72);
   color: #fff;
   font-size: var(--fs-xs);
   font-weight: var(--fw-semibold);

@@ -47,6 +47,18 @@ function RouteFallback() {
   );
 }
 
+// First tab stop: lets keyboard users jump past the nav (visible on focus only).
+// Rendered outside LangGuard, so it reads the language directly.
+function SkipLink() {
+  const { pathname } = useLocation();
+  const ka = pathname.split('/').filter(Boolean)[0] !== 'en';
+  return (
+    <a className="skip-link" href="#main">
+      {ka ? 'შინაარსზე გადასვლა' : 'Skip to content'}
+    </a>
+  );
+}
+
 // Reset scroll to the top on every route change, so a new page never opens
 // mid-scroll (e.g. clicking "About"/"Terms" used to keep the previous offset).
 function ScrollToTop() {
@@ -86,9 +98,10 @@ function LangGuard({ children }) {
 export default function App() {
   return (
     <>
+      <SkipLink />
       <ScrollToTop />
       <Nav />
-      <main>
+      <main id="main">
         <ErrorBoundary>
           <Suspense fallback={<RouteFallback />}>
             <Routes>

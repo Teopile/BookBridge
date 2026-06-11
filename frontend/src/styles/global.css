@@ -5,6 +5,7 @@
   --forest-700: #1F4530;   /* deepest green, headings on cream, dark sections */
   --forest-600: #2D5C3E;   /* primary brand, primary button, active nav, logo tile */
   --forest-500: #3A6B4A;   /* hover lift / soft green accents */
+  --forest-100: #D9E3DC;   /* tint of forest-50 family — hover wash on light surfaces */
   --forest-50:  #E8EEE9;   /* subtle green wash (badge bg, step circle) */
 
   --honey-500: #C9A567;    /* honey gold deep — secondary button, link underlines */
@@ -22,7 +23,7 @@
   /* ============ TEXT — espresso scale ============ */
   --text-default:  #2A2620;  /* primary text + headings */
   --text-muted:    #5A5248;  /* body secondary, meta, captions */
-  --text-subtle:   #8A8275;  /* placeholders, timestamps, hints */
+  --text-subtle:   #6F685C;  /* placeholders, timestamps, hints — darkened shade of the old #8A8275 for AA on cream */
   --text-on-dark:  #FAF5E8;  /* text on forest-600/700 surfaces */
   --text-on-honey: #2A2620;  /* text on honey-400 */
 
@@ -81,34 +82,44 @@
   --r-pill: 9999px;
   --r-circle: 50%;
 
-  /* ============ SHADOWS — soft paper-on-paper ============ */
-  --sh-1: 0 1px 2px rgba(42, 38, 32, 0.05), 0 1px 3px rgba(42, 38, 32, 0.04);
-  --sh-2: 0 2px 6px rgba(42, 38, 32, 0.06), 0 6px 16px rgba(42, 38, 32, 0.06);
-  --sh-3: 0 8px 24px rgba(42, 38, 32, 0.10), 0 2px 6px rgba(42, 38, 32, 0.06);
+  /* ============ SHADOWS — soft paper-on-paper, always tinted to the
+     espresso/forest ground (never pure black) ============ */
+  --sh-1: 0 1px 2px rgba(42, 38, 32, 0.05), 0 1px 3px rgba(31, 69, 48, 0.04);
+  --sh-2: 0 2px 4px rgba(31, 69, 48, 0.05), 0 8px 20px rgba(42, 38, 32, 0.07);
+  --sh-3: 0 4px 8px rgba(31, 69, 48, 0.06), 0 16px 40px rgba(42, 38, 32, 0.12);
+  --sh-pop: 0 6px 16px rgba(31, 69, 48, 0.08), 0 20px 48px rgba(42, 38, 32, 0.16);
+  --sh-honey: 0 1px 0 rgba(42, 38, 32, 0.04), 0 6px 16px rgba(201, 165, 103, 0.32);
+  --sh-honey-hover: 0 2px 0 rgba(42, 38, 32, 0.05), 0 10px 22px rgba(201, 165, 103, 0.4);
   --sh-focus: 0 0 0 3px var(--honey-200);
   --sh-focus-dark: 0 0 0 3px rgba(217, 184, 114, 0.55);
 
-  /* ============ TYPOGRAPHY ============ */
-  --font-sans:     'Nunito', system-ui, -apple-system, 'Segoe UI', 'Noto Sans Georgian', Roboto, Arial, sans-serif;
-  --font-display:  'Fredoka', 'Nunito', system-ui, 'Noto Sans Georgian', sans-serif;
-  --font-georgian: 'Noto Sans Georgian', 'Nunito', sans-serif;
+  /* ============ TYPOGRAPHY — Georgian-native two-font system ============
+     Both families carry Georgian (Mkhedruli + Mtavruli) AND Latin natively,
+     so the default ka locale never falls back to a mismatched font.
+     Serif = literary display voice (a book charity on parchment);
+     Sans  = body/UI. Weights used & verified in Georgian: serif 500/600/700,
+     sans 400/500/600/700. */
+  --font-sans:     'Noto Sans Georgian', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display:  'Noto Serif Georgian', Georgia, 'Noto Sans Georgian', serif;
+  --font-georgian: 'Noto Sans Georgian', sans-serif;
 
+  /* Fluid modular scale */
   --fs-xs:   13px;
   --fs-sm:   14px;
-  --fs-base: 17px;
+  --fs-base: 16px;
   --fs-md:   18px;
   --fs-lg:   20px;
-  --fs-h4:   20px;
-  --fs-h3:   24px;
-  --fs-h2:   30px;
-  --fs-h1:   40px;
-  --fs-h1-fluid: clamp(32px, 5vw, 48px);
-  --fs-display: clamp(44px, 7vw, 72px);
+  --fs-h4:   19px;
+  --fs-h3:   clamp(21px, 1.2vw + 16px, 24px);
+  --fs-h2:   clamp(25px, 1.8vw + 18px, 32px);
+  --fs-h1:   clamp(31px, 2.6vw + 21px, 42px);
+  --fs-h1-fluid: var(--fs-h1);
+  --fs-display: clamp(38px, 5.5vw, 62px);
 
-  --lh-tight:   1.25;
+  --lh-tight:   1.18;
   --lh-snug:    1.4;
   --lh-normal:  1.6;
-  --lh-relaxed: 1.7;
+  --lh-relaxed: 1.65;
 
   --fw-regular: 400;
   --fw-medium:  500;
@@ -122,6 +133,10 @@
   --t-bounce: 320ms cubic-bezier(0.34, 1.45, 0.5, 1);
 
   /* ============ LAYOUT ============ */
+  /* Section vertical rhythm — fluid breathing room (56px mobile → 96px desktop) */
+  --space-section: clamp(56px, 4vw + 40px, 96px);
+  /* Breakpoints (CSS vars can't drive @media — documented set, use these
+     values verbatim): 640px (stack), 880px (nav collapse), 1024px (wide). */
   --nav-h:    72px;
   --nav-h-mobile: 60px;
   /* Full-horizontal layout (stakeholder feedback): modern wide container.
@@ -245,16 +260,16 @@ img, svg { display: block; max-width: 100%; }
 .stamp {
   display: inline-flex;
   align-items: center;
-  gap: 9px;
+  gap: var(--space-2);
   font-family: var(--font-sans);
   font-weight: var(--fw-semibold);
-  font-size: 12.5px;
-  letter-spacing: 0.22em;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.2em;
   text-transform: uppercase;
   color: var(--forest-600);
   position: relative;
-  padding-bottom: 7px;
-  margin-bottom: 18px;
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-4);
 }
 .stamp svg { flex: 0 0 auto; }
 .stamp .underline {
@@ -266,18 +281,52 @@ img, svg { display: block; max-width: 100%; }
 .stamp.on-dark { color: var(--honey-400); }
 
 h1, h2, h3, h4 {
-  font-weight: var(--fw-bold);
+  font-weight: var(--fw-semibold); /* serif at 600 carries plenty of weight */
   color: var(--text-default);
   line-height: var(--lh-tight);
-  letter-spacing: -0.005em;
+  letter-spacing: -0.012em;
   margin: 0 0 var(--space-4);
   font-family: var(--font-display);
+  text-wrap: balance;
 }
-h1 { font-size: var(--fs-h1-fluid); }
+h1 { font-size: var(--fs-h1-fluid); font-weight: var(--fw-bold); }
 h2 { font-size: var(--fs-h2); }
 h3 { font-size: var(--fs-h3); }
-h4 { font-size: var(--fs-h4); }
-p  { color: var(--text-muted); }
+h4 { font-size: var(--fs-h4); letter-spacing: 0; }
+p  { color: var(--text-muted); text-wrap: pretty; }
+
+/* Stats, counters, prices — digits keep their column as values change. */
+.tabular, .stat-number, .progress-meta strong, .leader-count {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Content photography gets a neutral inset outline so soft image edges don't
+   blur into the parchment (make-interfaces-feel-better). Neutral alpha only —
+   never brand-tinted. */
+.school-photo img, .cover-photo img, .story-photo img, .photo-frame img,
+.about-began-photo img, .team-photo img, .cover-avatar img, .wizard-banner img {
+  outline: 1px solid rgba(42, 38, 32, 0.08);
+  outline-offset: -1px;
+}
+
+/* Skip link — first tab stop, visible only on focus. */
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 200;
+  background: var(--forest-700);
+  color: var(--text-on-dark);
+  padding: var(--space-3) var(--space-5);
+  border-radius: var(--r-sm);
+  font-weight: var(--fw-semibold);
+  text-decoration: none;
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+  color: var(--text-on-dark);
+}
 
 /* =============== NAV =============== */
 .nav {
@@ -322,7 +371,7 @@ p  { color: var(--text-muted); }
 .logo-text {
   font-family: var(--font-display);
   font-weight: var(--fw-bold);
-  font-size: 21px;
+  font-size: var(--fs-lg);
   color: var(--text-default);
   letter-spacing: -0.01em;
 }
@@ -515,7 +564,7 @@ main {
   padding: 0 var(--space-5);
 }
 .container-narrow { max-width: var(--container-narrow); }
-.section { padding: var(--space-9) 0; }
+.section { padding: var(--space-section) 0; }
 .section.alt { background: var(--cream-warm-F); }
 .section.dark {
   background: var(--forest-700);

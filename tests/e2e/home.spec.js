@@ -68,10 +68,11 @@ test.describe('Home page', () => {
     await waitForApp(page);
 
     // Home seeds 3 sample cards, then swaps to real schools when the API
-    // returns rows. Either way there are school cards linking to /en/schools/:id.
-    const cards = page.locator('a.school');
+    // returns rows. Cards are <article class="school--home"> using the
+    // stretched-link pattern — the detail href lives on the title link.
+    const cards = page.locator('article.school--home');
     await expect(cards.first()).toBeVisible();
     expect(await cards.count()).toBeGreaterThan(0);
-    await expect(cards.first()).toHaveAttribute('href', /\/en\/schools\//);
+    await expect(cards.first().locator('h3 a')).toHaveAttribute('href', /\/en\/schools\//);
   });
 });

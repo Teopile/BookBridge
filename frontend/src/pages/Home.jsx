@@ -166,7 +166,7 @@ export default function Home() {
           </div>
           <div className="school-grid">
             {schools.map((s) => (
-              <Link key={s.id} to={prefix + '/schools/' + s.id} className="school">
+              <article key={s.id} className="school school--reveal school--home">
                 <div className="school-photo">
                   <img src={s.photo} alt={s.name} width={600} height={450} loading="lazy" decoding="async" />
                   {s.region && <span className="region-tag">{s.region.split(' · ')[0]}</span>}
@@ -176,8 +176,14 @@ export default function Home() {
                   </span>
                 </div>
                 <div className="school-body">
-                  <h3>{s.name}</h3>
+                  <h3>
+                    <Link to={prefix + '/schools/' + s.id} className="school-link">{s.name}</Link>
+                  </h3>
                   <div className="school-region">{s.region}</div>
+                </div>
+                {/* Revealed on hover/focus; always visible on touch. Kept in the
+                    DOM at all times so SEO/screen readers see it collapsed. */}
+                <div className="school-details">
                   <div className="progress">
                     <div className="progress-books">
                       <BookProgress pct={s.need_pct} />
@@ -186,11 +192,15 @@ export default function Home() {
                       {t('home.fulfilledLabel')} · {s.need_pct}%
                     </div>
                   </div>
+                  <Link
+                    to={prefix + '/donate?school=' + s.id}
+                    className="btn btn-secondary btn-block school-details-cta"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {t('home.donateToSchool')}
+                  </Link>
                 </div>
-                <div className="school-cta">
-                  <span className="btn btn-secondary btn-block">{t('home.donateToSchool')}</span>
-                </div>
-              </Link>
+              </article>
             ))}
           </div>
           <div style={{ textAlign: 'center', marginTop: 'var(--space-7)' }}>

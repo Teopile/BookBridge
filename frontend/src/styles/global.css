@@ -2347,3 +2347,20 @@ footer {
     transition: none;
   }
 }
+
+/* Home variant: keeps the home card identity (green region tag, "Fulfilled"
+   books tag, book-progress stars, gold donate button). The freed photo space
+   (220 - 102 = 118) equals --details-h, so the card footprint is unchanged on
+   hover — zero net height change, neighbors never move. */
+.school--home {
+  --photo-h: 220px;
+  --photo-h-hover: 102px;
+  --details-h: 118px;
+}
+/* Top spacing via margin (not padding) so the collapsed details stay exactly
+   0px — overflow:hidden makes .school-details a BFC, so this margin is clipped
+   while collapsed and never collapses through to shift the card. */
+.school--home .school-details .progress { margin: var(--space-3) 0; }
+@media (hover: none) {
+  .school--home .school-photo { height: 180px; }
+}

@@ -12,10 +12,7 @@ import {
 } from '../db/store.js';
 import { SchoolCreateSchema, SchoolApproveSchema, BookRequestSchema } from '../schemas.js';
 import { sendEmail, Templates } from '../lib/mailer.js';
-
-function frontendOrigin() {
-  return process.env.PUBLIC_FRONTEND_ORIGIN || 'http://localhost:5173';
-}
+import { frontendOrigin } from '../lib/origins.js';
 
 const router = Router();
 

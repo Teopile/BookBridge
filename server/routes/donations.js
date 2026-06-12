@@ -12,12 +12,8 @@ import { DonationCreateSchema, DonationStatusUpdateSchema, AdminDonationsListSch
 import { createShipment } from '../lib/courier.js';
 import { sendEmail, Templates } from '../lib/mailer.js';
 import { notifyDonorOfStatus } from '../lib/notify.js';
+import { trackUrl as makeTrackUrl } from '../lib/origins.js';
 const router = Router();
-
-function trackUrlFor(token) {
-  const origin = process.env.PUBLIC_FRONTEND_ORIGIN || 'http://localhost:5173';
-  return `${origin}/en/track/${token}`;
-}
 
 router.post('/', csrfProtection, requireAuth, validate(DonationCreateSchema), async (req, res, next) => {
   try {
@@ -42,7 +38,7 @@ router.post('/', csrfProtection, requireAuth, validate(DonationCreateSchema), as
       }
     }
 
-    const url = trackUrlFor(created.track_token);
+    const url = makeTrackUrl(created.track_token, req.user.language);
     const tpl = Templates.donationConfirmed({ donationId: created.id, trackUrl: url, lang: req.user.language });
     try {
       await sendEmail({ to: req.user.email, subject: tpl.subject, html: tpl.html, text: tpl.text });

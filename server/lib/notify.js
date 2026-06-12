@@ -10,14 +10,10 @@
 // No other change is needed — both channels fan out from here.
 
 import { sendEmail, Templates } from './mailer.js';
+import { trackUrl as makeTrackUrl } from './origins.js';
 import {
   getDonorContact, getSchoolById, recordNotification, createInAppNotification,
 } from '../db/store.js';
-
-function trackUrlFor(token) {
-  const origin = process.env.PUBLIC_FRONTEND_ORIGIN || 'http://localhost:5173';
-  return `${origin}/en/track/${token}`;
-}
 
 // Short, friendly in-app message per status (the email carries the full copy).
 const IN_APP_BODY = {
@@ -52,7 +48,7 @@ export async function notifyDonorOfStatus(donation) {
   const contact = await getDonorContact(donation.id);
   if (!contact) return;
   const lang = contact.language || 'en';
-  const trackUrl = trackUrlFor(donation.track_token);
+  const trackUrl = makeTrackUrl(donation.track_token, lang);
   const school = donation.beneficiary_school_id ? await getSchoolById(donation.beneficiary_school_id) : null;
   const schoolName = school?.name || '';
 

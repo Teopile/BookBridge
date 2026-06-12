@@ -33,6 +33,7 @@ export default function Donate() {
   const [delivery, setDelivery] = useState('self');
   const [chosenVolunteer, setChosenVolunteer] = useState(null);
   const [donorAddress, setDonorAddress] = useState('');
+  const [courierNote, setCourierNote] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(null);
 
@@ -48,6 +49,16 @@ export default function Donate() {
   }, [chosenSchool]);
 
   const chosenSchoolObj = schools.find((s) => s.id === chosenSchool) || null;
+  const chosenVolunteerObj = volunteers.find((v) => v.id === chosenVolunteer) || null;
+
+  // Google Maps link for a hub: precise pin from coords when we have them,
+  // otherwise a place search on the address. Null when neither is available.
+  function mapsLink(v) {
+    if (!v) return null;
+    if (v.lat != null && v.lng != null) return `https://www.google.com/maps/search/?api=1&query=${v.lat},${v.lng}`;
+    const q = [v.address, v.city, v.region].filter(Boolean).join(', ');
+    return q ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}` : null;
+  }
 
   function toggleItem(req) {
     setItems((curr) => {
@@ -91,6 +102,7 @@ export default function Donate() {
       if (chosenSchool)                           payload.beneficiary_school_id = chosenSchool;
       if (delivery === 'self' && chosenVolunteer) payload.volunteer_school_id   = chosenVolunteer;
       if (delivery === 'courier' && donorAddress) payload.donor_address         = donorAddress;
+      if (delivery === 'courier' && courierNote.trim()) payload.notes            = courierNote.trim();
 
       const created = await apiPost('/api/donations', payload);
       navigate('/' + lang + '/track/' + created.track_token);
@@ -287,6 +299,7 @@ export default function Donate() {
                 </label>
               </div>
 
+              {/* DROP-OFF FLOW — pick a hub, then show exactly where to bring the books. */}
               {delivery === 'self' && (
                 <div style={{ marginTop: 'var(--space-4)' }}>
                   <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>{t('donate.pickVolunteer')}</label>
@@ -297,18 +310,56 @@ export default function Donate() {
                     style={{ marginTop: 'var(--space-2)' }}
                   >
                     <option value="">— {t('donate.pickOne')} —</option>
-                    {volunteers.map((v) => <option key={v.id} value={v.id}>{v.name} {v.address ? '· ' + v.address : ''}</option>)}
+                    {volunteers.map((v) => <option key={v.id} value={v.id}>{v.name}{v.city ? ' · ' + v.city : ''}</option>)}
                   </select>
+
+                  {chosenVolunteerObj ? (
+                    <div style={{
+                      marginTop: 'var(--space-4)', padding: 'var(--space-4)',
+                      background: 'var(--cream-card)', borderRadius: 'var(--r-sm)',
+                      borderLeft: '3px solid var(--forest-600)',
+                    }}>
+                      <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '.04em', color: 'var(--text-subtle)', marginBottom: 'var(--space-1)' }}>
+                        {t('donate.dropoffWhere')}
+                      </div>
+                      <strong>{chosenVolunteerObj.name}</strong>
+                      <p style={{ margin: 'var(--space-1) 0 var(--space-3)', color: 'var(--text-muted)' }}>
+                        {[chosenVolunteerObj.address, chosenVolunteerObj.city, chosenVolunteerObj.region].filter(Boolean).join(', ') || '—'}
+                      </p>
+                      {mapsLink(chosenVolunteerObj) && (
+                        <a href={mapsLink(chosenVolunteerObj)} target="_blank" rel="noreferrer" className="btn btn-ghost btn-sm">
+                          {t('donate.dropoffDirections')} →
+                        </a>
+                      )}
+                    </div>
+                  ) : (
+                    <p style={{ marginTop: 'var(--space-3)', color: 'var(--text-subtle)', fontSize: 'var(--fs-sm)' }}>
+                      {t('donate.dropoffPickFirst')}
+                    </p>
+                  )}
                 </div>
               )}
 
+              {/* COURIER FLOW — collect pickup address + an optional access note. */}
               {delivery === 'courier' && (
                 <div style={{ marginTop: 'var(--space-4)' }}>
                   <label style={{ fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>{t('donate.pickupAddress')}</label>
-                  <input
+                  <textarea
                     className="wizard-select"
+                    rows={2}
                     value={donorAddress}
                     onChange={(e) => setDonorAddress(e.target.value)}
+                    style={{ marginTop: 'var(--space-2)', resize: 'vertical' }}
+                  />
+                  <p style={{ margin: 'var(--space-2) 0 0', color: 'var(--text-subtle)', fontSize: 'var(--fs-sm)' }}>
+                    {t('donate.courierAddressHelp')}
+                  </p>
+                  <label style={{ display: 'block', marginTop: 'var(--space-4)', fontSize: 'var(--fs-sm)', fontWeight: 'var(--fw-semibold)' }}>{t('donate.courierNote')}</label>
+                  <input
+                    className="wizard-select"
+                    value={courierNote}
+                    onChange={(e) => setCourierNote(e.target.value)}
+                    placeholder={t('donate.courierNotePlaceholder')}
                     style={{ marginTop: 'var(--space-2)' }}
                   />
                 </div>
@@ -318,7 +369,7 @@ export default function Donate() {
                 <button className="btn btn-ghost" onClick={() => setStep(2)}>{t('donate.back')}</button>
                 <button
                   className="btn btn-primary"
-                  disabled={delivery === 'courier' && !donorAddress.trim()}
+                  disabled={(delivery === 'courier' && !donorAddress.trim()) || (delivery === 'self' && !chosenVolunteer)}
                   onClick={() => setStep(4)}
                 >
                   {t('donate.next')}
@@ -348,8 +399,19 @@ export default function Donate() {
                   </ul>
                 </li>
                 <li><strong>{t('donate.summaryDelivery')}:</strong> {delivery === 'self' ? t('donate.methodSelf') : t('donate.methodCourier')}</li>
+                {delivery === 'self' && chosenVolunteerObj && (
+                  <li>
+                    <strong>{t('donate.summaryDropoff')}:</strong> {chosenVolunteerObj.name}
+                    {[chosenVolunteerObj.address, chosenVolunteerObj.city].filter(Boolean).length
+                      ? ' — ' + [chosenVolunteerObj.address, chosenVolunteerObj.city].filter(Boolean).join(', ')
+                      : ''}
+                  </li>
+                )}
                 {delivery === 'courier' && donorAddress.trim() && (
                   <li><strong>{t('donate.summaryAddress')}:</strong> {donorAddress.trim()}</li>
+                )}
+                {delivery === 'courier' && courierNote.trim() && (
+                  <li><strong>{t('donate.summaryNote')}:</strong> {courierNote.trim()}</li>
                 )}
               </ul>
               {error && <div className="error" style={{ marginTop: 'var(--space-4)' }}>{error}</div>}

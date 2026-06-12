@@ -1,6 +1,8 @@
 // Maileroo HTTPS API wrapper.
 // DigitalOcean blocks outbound SMTP ports, so we use the REST API, not SMTP.
 
+import { frontendOrigin } from './origins.js';
+
 const ENDPOINT = 'https://smtp.maileroo.com/send';
 
 // True when at least one delivery path is configured (HTTPS API key OR SMTP creds).
@@ -66,7 +68,7 @@ export async function sendEmail({ to, subject, html, text, replyTo } = {}) {
 
 const BRAND = {
   name: 'BookBridge',
-  url: process.env.PUBLIC_FRONTEND_ORIGIN || 'http://localhost:5173',
+  url: frontendOrigin(),
   contactEmail: 'info@bookbridge.ge',
   teal: '#2D8B7A',
   tealDark: '#1A6B5E',

@@ -2339,9 +2339,9 @@ footer {
 
 .school--reveal .school-photo {
   aspect-ratio: auto;
-  height: var(--photo-h);
-  transition: height 0.25s ease-in-out;
+  height: 170px;
 }
+.school--home .school-photo { height: 190px; }
 /* object-fit: cover is inherited from .school-photo img — crops, never squashes. */
 
 .school-photo-chip {
@@ -2363,11 +2363,7 @@ footer {
 .school-details {
   position: relative;
   z-index: 2;
-  height: 0;
-  opacity: 0;
-  overflow: hidden;
-  padding: 0 var(--space-4);
-  transition: height 0.25s ease-in-out, opacity 0.2s ease-in-out;
+  padding: var(--space-3) var(--space-4) 0;
 }
 .school-details-rows {
   margin: 0 0 var(--space-2);
@@ -2395,60 +2391,56 @@ footer {
    animate besides height/opacity. */
 .school-details-cta { min-height: 40px; margin-bottom: var(--space-3); }
 
-/* Reveal on hover AND keyboard focus anywhere inside the card. */
-.school--reveal:hover .school-photo,
-.school--reveal:focus-within .school-photo {
-  height: var(--photo-h-hover);
-}
-.school--reveal:hover .school-details,
-.school--reveal:focus-within .school-details {
-  height: var(--details-h);
-  opacity: 1;
-}
-.school--reveal:focus-within {
-  border-color: var(--honey-500);
-  transform: translateY(-3px);
-  box-shadow: var(--sh-2);
-}
-
-/* Touch devices (no hover): details are simply always visible, no animation.
-   Detected by capability, not screen width. */
-@media (hover: none) {
+/* DESKTOP ONLY — real mouse + fine pointer + wide screen. Collapse the details
+   and reveal them on hover / keyboard focus, with the card footprint kept
+   constant (the photo shrinks by exactly the details height). Gated by pointer
+   CAPABILITY *and* width, so touch and small screens NEVER get the collapse —
+   that capability gate is what makes the card glitch-proof: a touch device that
+   reports hover:hover (iPad + trackpad, Windows touch laptops, some in-app
+   browsers) no longer hides the details behind a hover that a tap can't do. */
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) {
   .school--reveal .school-photo {
-    height: 150px;
-    transition: none;
+    height: var(--photo-h);
+    transition: height 0.25s ease-in-out;
   }
-  .school--reveal .school-details {
-    height: auto;
+  .school-details {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    padding: 0 var(--space-4);
+    transition: height 0.25s ease-in-out, opacity 0.2s ease-in-out;
+  }
+  .school--reveal:hover .school-photo,
+  .school--reveal:focus-within .school-photo {
+    height: var(--photo-h-hover);
+  }
+  .school--reveal:hover .school-details,
+  .school--reveal:focus-within .school-details {
+    height: var(--details-h);
     opacity: 1;
-    transition: none;
   }
+  .school--reveal:focus-within {
+    border-color: var(--honey-500);
+    transform: translateY(-3px);
+    box-shadow: var(--sh-2);
+  }
+  .school--home .school-details .progress { margin: var(--space-3) 0; }
 }
 
-/* Reduced motion: reveal instantly. */
-@media (prefers-reduced-motion: reduce) {
+/* Reduced motion: no transitions on the desktop reveal. */
+@media (hover: hover) and (pointer: fine) and (min-width: 769px) and (prefers-reduced-motion: reduce) {
   .school--reveal .school-photo,
-  .school--reveal .school-details {
-    transition: none;
-  }
+  .school--reveal .school-details { transition: none; }
 }
 
-/* Home variant: keeps the home card identity (green region tag, "Fulfilled"
-   books tag, book-progress stars, gold donate button). The freed photo space
-   (220 - 102 = 118) equals --details-h, so the card footprint is unchanged on
-   hover — zero net height change, neighbors never move. */
+/* Home card identity (region tag, "Fulfilled" books tag, progress, gold CTA).
+   --photo-h-hover/--details-h are only consumed inside the desktop media query. */
 .school--home {
   --photo-h: 220px;
   --photo-h-hover: 102px;
   --details-h: 118px;
 }
-/* Top spacing via margin (not padding) so the collapsed details stay exactly
-   0px — overflow:hidden makes .school-details a BFC, so this margin is clipped
-   while collapsed and never collapses through to shift the card. */
 .school--home .school-details .progress { margin: var(--space-3) 0; }
-@media (hover: none) {
-  .school--home .school-photo { height: 180px; }
-}
 
 /* =============== NOTIFICATION BELL (popover pattern) =============== */
 .notif-bell { position: relative; }

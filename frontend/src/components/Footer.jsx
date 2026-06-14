@@ -46,7 +46,7 @@ export default function Footer() {
         <div className="footer-grid">
           <div className="footer-brand">
             <div className="footer-brand-row">
-              <Logo size={32} wordmarkColor="var(--text-on-dark)" />
+              <Logo size={30} onDark />
             </div>
             <p>{t('footer.tagline')}</p>
             <p className="foot-ka">{t('footer.taglineKa')}</p>

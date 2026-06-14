@@ -1,62 +1,73 @@
-/* BookBridge — storybook earth-tone design system. Kid-readable, warm, friendly. */
+/* BookBridge — brand palette: burgundy + cream (mains), forest green + teal
+   (accents). Cream is the ground; burgundy is the dominant brand color
+   (buttons, nav, footer, progress, focus); teal is the cool interactive accent
+   (links, info, stats, map); green is success + the highland/nature voice.
+   Token NAMES are kept from the prior system so every component re-themes
+   through the variables; the VALUE + role comments below are the source of truth.
+   Palette: 01 #4D1E2E burgundy · 02 #EADFCB cream · 03 #35402E green · 04 #006E91 teal */
 
 :root {
-  /* ============ BRAND — storybook earth tones ============ */
-  --forest-700: #1F4530;   /* deepest green, headings on cream, dark sections */
-  --forest-600: #2D5C3E;   /* primary brand, primary button, active nav, logo tile */
-  --forest-500: #3A6B4A;   /* hover lift / soft green accents */
-  --forest-100: #D9E3DC;   /* tint of forest-50 family — hover wash on light surfaces */
-  --forest-50:  #E8EEE9;   /* subtle green wash (badge bg, step circle) */
+  /* ============ BRAND — burgundy (01) ============ */
+  --forest-700: #3A1623;   /* deep burgundy — footer ground, deep headings/accents */
+  --forest-600: #4D1E2E;   /* BURGUNDY 01 — primary brand, primary button, active nav, logo */
+  --forest-500: #6E3346;   /* lighter burgundy — hover lift, soft accents */
+  --forest-100: #E6D2D7;   /* burgundy tint — hover wash on cream */
+  --forest-50:  #F1E4E6;   /* pale burgundy wash — badge bg, step circle */
 
-  --honey-500: #C9A567;    /* honey gold deep — secondary button, link underlines */
-  --honey-400: #D9B872;    /* honey gold primary accent — pills, highlights, progress */
-  --honey-200: #E8D5A5;    /* pale honey — focus halo, badge bg */
-  --honey-50:  #FAF5E8;    /* warm cream — banner wash, hover bg */
+  /* "honey-*" names retained but re-valued to a brighter wine so the Donate CTA,
+     pills, highlights and progress read as burgundy without colliding with the
+     deeper primary buttons. */
+  --honey-500: #4D1E2E;    /* donate CTA hover / deep wine */
+  --honey-400: #5E2335;    /* donate CTA + pills + highlights + progress (brighter wine) */
+  --honey-200: #EBD3D8;    /* pale burgundy — focus halo, badge bg */
+  --honey-50:  #F4E8EA;    /* faint burgundy wash — hover bg on cream */
 
-  /* ============ SURFACES — parchment/cream ============ */
-  --cream-page:    #F5F0E4;  /* page background */
-  --cream-card:    #F1ECDD;  /* recessed surface (filter rows, summary blocks) */
-  --cream-warm:    #FAF5E8;  /* warm cream wash for hero/banner */
-  --surface:       #FFFEFA;  /* card surface — true-white-but-warm */
-  --surface-elev:  #FFFFFF;  /* elevated overlay (drawer, modal, popover) */
+  /* ============ SURFACES — cream (02) ============ */
+  --cream-page:    #EADFCB;  /* CREAM 02 — page background */
+  --cream-card:    #E1D5BD;  /* recessed surface (filter rows, summary blocks) — darker than page */
+  --cream-warm:    #F1E9D8;  /* warm cream wash for hero/banner */
+  --surface:       #F6F0E4;  /* card surface — lighter than page so cards lift */
+  --surface-elev:  #FBF7EE;  /* elevated overlay (drawer, modal, popover) — lightest */
 
-  /* ============ TEXT — espresso scale ============ */
-  --text-default:  #2A2620;  /* primary text + headings */
-  --text-muted:    #5A5248;  /* body secondary, meta, captions */
-  --text-subtle:   #6F685C;  /* placeholders, timestamps, hints — darkened shade of the old #8A8275 for AA on cream */
-  --text-on-dark:  #FAF5E8;  /* text on forest-600/700 surfaces */
-  --text-on-honey: #2A2620;  /* text on honey-400 */
+  /* ============ TEXT — burgundy-tinted ink on cream ============ */
+  --text-default:  #2E2127;  /* primary text + headings — warm near-black */
+  --text-muted:    #5C4D50;  /* body secondary, meta, captions */
+  --text-subtle:   #6E5E61;  /* placeholders, timestamps, hints (AA on cream) */
+  --text-on-dark:  #F3EBDB;  /* cream text on burgundy/green surfaces */
+  --text-on-honey: #F3EBDB;  /* cream text on the burgundy donate CTA (was dark on gold) */
 
-  /* ============ BORDERS / DIVIDERS ============ */
-  --border-default: #E0D9C5; /* hairline on cream */
-  --border-strong:  #C9BFA5; /* form input + button border (1.5px) */
-  --border-subtle:  #ECE5D2; /* skeleton base, divider on cream */
+  /* ============ BORDERS / DIVIDERS — warm tan on cream ============ */
+  --border-default: #D6C7AB; /* hairline on cream */
+  --border-strong:  #C2AE8C; /* form input + button border (1.5px) */
+  --border-subtle:  #E0D4BC; /* skeleton base, divider on cream */
 
   /* ============ SEMANTIC STATUS ============ */
-  --success:        #4A7C3F; /* moss green — delivered, completed */
-  --success-bg:     #E4EDDC;
-  --success-text:   #2D4F23;
-  --warning:        #B07A1C; /* burnt honey — pending */
-  --warning-bg:     #F5E4C4;
-  --warning-text:   #6B4818;
-  --danger:         #A14B2F; /* rust — error, rejected */
-  --danger-bg:      #F4DDD2;
-  --danger-text:    #6B2F1C;
-  --info:           #3B6A8C; /* muted blue — in-transit */
-  --info-bg:        #DDE7F0;
-  --info-text:      #1F3F5A;
+  --success:        #4A6138; /* forest green (03) — delivered, completed */
+  --success-bg:     #E2E7D5;
+  --success-text:   #33421F;
+  --warning:        #9A6B16; /* muted amber — pending. (Semantic states need a
+                                yellow that isn't in the 4-color brand set; kept
+                                muted + used only on status chips.) */
+  --warning-bg:     #F1E5C8;
+  --warning-text:   #5E4310;
+  --danger:         #A8392A; /* brick red — error/rejected; distinct from the burgundy brand */
+  --danger-bg:      #F1DBD3;
+  --danger-text:    #6E2117;
+  --info:           #006E91; /* teal (04) — in-transit */
+  --info-bg:        #D7E7EC;
+  --info-text:      #0A4E66;
 
-  /* ============ SKY BLUE — calm secondary accent (quiet third voice) ============
-     Highland-sky blue. Use SUBTLY: trust/transparency, info links, tracking. */
-  --sky-700: #2E5570;  /* deep lake blue — text/icon on light */
-  --sky-600: #3B6A8C;  /* primary blue accent (= --info) */
-  --sky-400: #6E9BB8;  /* soft sky */
-  --sky-100: #DDE7F0;  /* pale sky wash — info badge bg */
-  --sky-50:  #EDF3F7;  /* faintest sky tint — section wash */
+  /* ============ TEAL (04) — cool interactive accent ("sky-*" names kept) ============
+     Links, info, stat numbers, tracking, map. The cool counterweight to burgundy. */
+  --sky-700: #0A4E66;  /* deep teal — text/icon, link hover */
+  --sky-600: #006E91;  /* TEAL 04 — links, primary cool accent (= --info) */
+  --sky-400: #3E97B5;  /* soft teal */
+  --sky-100: #D7E7EC;  /* pale teal wash — info badge bg */
+  --sky-50:  #E9F1F4;  /* faintest teal tint — section wash */
 
-  /* ============ LIGHT GREEN — fresh meadow tints ============ */
-  --sage-600: #5E6E54; /* darker sage — readable on cream */
-  --sage-100: #E4E9DF; /* pale meadow wash */
+  /* ============ FOREST GREEN (03) — highland / nature voice ("sage-*" names kept) ============ */
+  --sage-600: #4A6138; /* readable green on cream — regions, "where" accents */
+  --sage-100: #E2E7D5; /* pale green wash */
 
   /* ============ SPACING — 4px ladder, tokenized ============ */
   --space-0:  0;
@@ -84,12 +95,12 @@
 
   /* ============ SHADOWS — soft paper-on-paper, always tinted to the
      espresso/forest ground (never pure black) ============ */
-  --sh-1: 0 1px 2px rgba(42, 38, 32, 0.05), 0 1px 3px rgba(31, 69, 48, 0.04);
-  --sh-2: 0 2px 4px rgba(31, 69, 48, 0.05), 0 8px 20px rgba(42, 38, 32, 0.07);
-  --sh-3: 0 4px 8px rgba(31, 69, 48, 0.06), 0 16px 40px rgba(42, 38, 32, 0.12);
-  --sh-pop: 0 6px 16px rgba(31, 69, 48, 0.08), 0 20px 48px rgba(42, 38, 32, 0.16);
-  --sh-honey: 0 1px 0 rgba(42, 38, 32, 0.04), 0 6px 16px rgba(201, 165, 103, 0.32);
-  --sh-honey-hover: 0 2px 0 rgba(42, 38, 32, 0.05), 0 10px 22px rgba(201, 165, 103, 0.4);
+  --sh-1: 0 1px 2px rgba(45, 20, 28, 0.06), 0 1px 3px rgba(45, 20, 28, 0.05);
+  --sh-2: 0 2px 4px rgba(45, 20, 28, 0.06), 0 8px 20px rgba(45, 20, 28, 0.08);
+  --sh-3: 0 4px 8px rgba(45, 20, 28, 0.07), 0 16px 40px rgba(45, 20, 28, 0.13);
+  --sh-pop: 0 6px 16px rgba(45, 20, 28, 0.10), 0 20px 48px rgba(45, 20, 28, 0.18);
+  --sh-honey: 0 1px 0 rgba(45, 20, 28, 0.05), 0 6px 16px rgba(77, 30, 46, 0.30);
+  --sh-honey-hover: 0 2px 0 rgba(45, 20, 28, 0.06), 0 10px 22px rgba(77, 30, 46, 0.40);
   --sh-focus: 0 0 0 3px var(--honey-200);
   --sh-focus-dark: 0 0 0 3px rgba(217, 184, 114, 0.55);
 
@@ -161,13 +172,13 @@
   /* ============ DIRECTION F — "Trail Journal" tokens ============
      Warm field-notebook palette + motion. forest-600/700, honey-400/500,
      and cream-page already map 1:1 to F's --forest / --honey / --cream. */
-  --cream-warm-F: #FAF5E8;   /* warm cream bands (how / mission) */
-  --sand:         #EFE7D6;   /* kraft/sand card surface */
-  --kraft:        #E6DAC0;   /* progress-bar track, parcel chip */
-  --kraft-edge:   #D8C9A8;   /* dashed/solid card borders */
-  --clay:         #B07A4F;   /* hand-stamp underline + pins (graphical) */
-  --sage:         #7A8B6F;   /* ghost-button border, "where" line */
-  --forest-dark:  #1F4530;   /* footer ground */
+  --cream-warm-F: #F1E9D8;   /* warm cream bands (how / mission) */
+  --sand:         #EFE6D3;   /* kraft/sand card surface */
+  --kraft:        #DCCDB0;   /* progress-bar track, parcel chip */
+  --kraft-edge:   #CDBC9B;   /* dashed/solid card borders */
+  --clay:         #7A3447;   /* hand-stamp underline + pins (graphical) — wine */
+  --sage:         #4A6138;   /* ghost-button border, "where" line — green (03) */
+  --forest-dark:  #3A1623;   /* footer ground — deep burgundy */
   --line:         var(--border-default);
 
   /* motion */
@@ -224,12 +235,12 @@ body::after {
   background-image: repeating-linear-gradient(to bottom, transparent, transparent 31px, rgba(124, 110, 86, 0.05) 31px, rgba(124, 110, 86, 0.05) 32px);
 }
 a {
-  color: var(--forest-600);
+  color: var(--sky-600); /* teal (04) — interactive accent */
   text-decoration: underline;
   text-decoration-thickness: 1.5px;
   text-underline-offset: 3px;
 }
-a:hover { color: var(--forest-700); }
+a:hover { color: var(--sky-700); }
 /* Undecorated link variants used inside components */
 .nav a, .nav-logo, .nav-drawer a,
 .btn, .school, .row-item.link, .footer-col a,
@@ -305,7 +316,7 @@ p  { color: var(--text-muted); text-wrap: pretty; }
    never brand-tinted. */
 .school-photo img, .cover-photo img, .story-photo img, .photo-frame img,
 .about-began-photo img, .team-photo img, .cover-avatar img, .wizard-banner img {
-  outline: 1px solid rgba(42, 38, 32, 0.08);
+  outline: 1px solid rgba(45, 20, 28, 0.10);
   outline-offset: -1px;
 }
 
@@ -334,7 +345,7 @@ p  { color: var(--text-muted); text-wrap: pretty; }
   height: var(--nav-h);
   display: flex; align-items: center; justify-content: space-between;
   padding: var(--space-3) max(var(--space-5), env(safe-area-inset-right)) var(--space-3) max(var(--space-5), env(safe-area-inset-left));
-  background: rgba(245, 240, 228, 0.88);
+  background: rgba(234, 223, 203, 0.88);
   backdrop-filter: blur(12px) saturate(1.2);
   -webkit-backdrop-filter: blur(12px) saturate(1.2);
   border-bottom: 1px solid var(--border-default);
@@ -361,6 +372,7 @@ p  { color: var(--text-muted); text-wrap: pretty; }
 }
 .logo { display: inline-flex; align-items: center; gap: var(--space-2); text-decoration: none; }
 .logo-img { display: block; border-radius: var(--r-sm); object-fit: contain; }
+.logo-lockup { display: block; width: auto; }
 .logo-mark-fallback {
   display: inline-flex;
   align-items: center;
@@ -535,7 +547,7 @@ main {
   border-color: var(--sage);
 }
 .btn-ghost:hover {
-  background: rgba(122, 139, 111, 0.12);
+  background: rgba(110, 51, 70, 0.12);
   color: var(--forest-700);
 }
 
@@ -713,7 +725,7 @@ h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: va
   background-color: var(--forest-700);
   background-image:
     linear-gradient(180deg, rgba(46,85,112,0.34) 0%, rgba(46,85,112,0) 42%),
-    linear-gradient(105deg, rgba(31,69,48,0.92) 0%, rgba(176,122,79,0.45) 55%, rgba(217,184,114,0.35) 100%),
+    linear-gradient(105deg, rgba(77,30,46,0.92) 0%, rgba(110,51,70,0.5) 55%, rgba(0,110,145,0.32) 100%),
     var(--hero-bg, none);
   background-size: cover;
   background-position: center 38%;
@@ -726,32 +738,32 @@ h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: va
   inset: 0;
   z-index: -1;
   background:
-    linear-gradient(90deg, rgba(20,32,24,0.82) 0%, rgba(20,32,24,0.58) 38%, rgba(20,32,24,0.18) 70%, rgba(20,32,24,0.05) 100%),
-    linear-gradient(0deg, rgba(20,32,24,0.45) 0%, rgba(20,32,24,0) 45%);
+    linear-gradient(90deg, rgba(40,18,26,0.82) 0%, rgba(40,18,26,0.58) 38%, rgba(40,18,26,0.18) 70%, rgba(40,18,26,0.05) 100%),
+    linear-gradient(0deg, rgba(40,18,26,0.45) 0%, rgba(40,18,26,0) 45%);
 }
 .hero--bg .hero-grid { grid-template-columns: 1fr; gap: 0; }
 .hero--bg .hero-copy { max-width: 640px; }
-.hero--bg .hero-title { color: var(--text-on-dark); text-shadow: 0 2px 18px rgba(20,32,24,0.45); }
+.hero--bg .hero-title { color: var(--text-on-dark); text-shadow: 0 2px 18px rgba(40,18,26,0.45); }
 .hero--bg .hero-title em { color: var(--honey-200); }
 .hero--bg .hero-lede { color: rgba(250,245,232,0.92); }
 .hero--bg .hero-poetic { color: var(--honey-200); }
 .hero--bg .hero-poetic .ka { color: rgba(250,245,232,0.82); }
 .hero--bg .hero-kicker {
   color: var(--honey-200);
-  background: rgba(31,69,48,0.55);
+  background: rgba(77,30,46,0.55);
   border-color: rgba(250,245,232,0.28);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 6px 18px rgba(20,32,24,0.35);
+  box-shadow: 0 6px 18px rgba(40,18,26,0.35);
 }
 .hero--bg .hero-kicker svg { color: var(--honey-200); }
 .hero--bg .hero-steps {
   color: var(--text-on-dark);
-  background: rgba(31,69,48,0.5);
+  background: rgba(77,30,46,0.5);
   border: 1px dashed rgba(250,245,232,0.35);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
-  box-shadow: 0 8px 22px rgba(20,32,24,0.35);
+  box-shadow: 0 8px 22px rgba(40,18,26,0.35);
 }
 .hero--bg .hero-steps .n { border-color: var(--honey-200); color: var(--honey-200); }
 .hero--bg .hero-steps .arr { color: var(--honey-200); }
@@ -759,8 +771,8 @@ h1.hero-title em { font-style: italic; color: var(--forest-600); font-weight: va
 @media (max-width: 640px) {
   .hero-bg-scrim {
     background:
-      linear-gradient(90deg, rgba(20,32,24,0.86) 0%, rgba(20,32,24,0.66) 55%, rgba(20,32,24,0.3) 100%),
-      linear-gradient(0deg, rgba(20,32,24,0.5) 0%, rgba(20,32,24,0) 50%);
+      linear-gradient(90deg, rgba(40,18,26,0.86) 0%, rgba(40,18,26,0.66) 55%, rgba(40,18,26,0.3) 100%),
+      linear-gradient(0deg, rgba(40,18,26,0.5) 0%, rgba(40,18,26,0) 50%);
   }
   .hero--bg .hero-copy { max-width: 100%; }
 }
@@ -1470,7 +1482,7 @@ footer {
 }
 .wizard-banner-overlay {
   position: absolute; inset: 0;
-  background: linear-gradient(to top, rgba(31, 69, 48, 0.65), rgba(31, 69, 48, 0) 60%);
+  background: linear-gradient(to top, rgba(77, 30, 46, 0.65), rgba(77, 30, 46, 0) 60%);
 }
 .wizard-banner-content {
   position: absolute; left: var(--space-6); right: var(--space-6); bottom: var(--space-5);
@@ -1573,7 +1585,7 @@ footer {
 .stat-number {
   font-size: clamp(28px, 3.5vw, 40px);
   font-weight: var(--fw-bold);
-  color: var(--forest-700);
+  color: var(--sky-600); /* teal (04) — stat numbers give the cool accent a home */
   font-family: var(--font-display);
   line-height: 1;
 }
@@ -1762,7 +1774,7 @@ footer {
 .regions-mountains svg { width: 100%; height: 100%; display: block; }
 .regions-mountains .ridge { stroke: none; }
 .regions-mountains .ridge-far  { fill: rgba(110, 155, 184, 0.20); } /* sky haze on the farthest ridge */
-.regions-mountains .ridge-mid  { fill: rgba(122, 139, 111, 0.30); }
+.regions-mountains .ridge-mid  { fill: rgba(110, 51, 70, 0.30); }
 .regions-mountains .ridge-near { fill: rgba(45, 92, 62, 0.32); }
 .regions .container { position: relative; z-index: 1; }
 

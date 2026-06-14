@@ -1,62 +1,24 @@
-import { useEffect, useState } from 'react';
-
-// Module-level cache so the /logo.png probe runs at most once per page session,
-// even when <Logo /> mounts in multiple places (Nav, Footer, Home hero).
-let _pngStatus = 'checking'; // 'checking' | 'loaded' | 'failed'
-
 /**
- * BookBridge brand mark.
+ * BookBridge brand lockup (mark + "BOOKBRIDGE" wordmark).
  *
- * Asset chain:
- *   1. /logo.svg — always ships in the build (frontend/public/logo.svg). Used
- *      as the default so the first paint shows a real logo and no broken-image
- *      flash ever occurs.
- *   2. /logo.png — optional painterly upgrade. If the user drops a higher-
- *      resolution PNG into frontend/public/, a one-shot background <Image>
- *      probe detects it and swaps in. Status is cached at module scope so
- *      multiple <Logo> mounts share a single probe.
+ * Two color files ship in frontend/public:
+ *   /logo.svg        — dark ink lockup, for light (cream) surfaces (nav, hero)
+ *   /logo-white.svg  — cream lockup, for the dark (burgundy) footer
  *
- * Accessibility:
- *   - When withWordmark is true the visible "BookBridge" text provides the
- *     accessible name — img alt and wrapper aria-label stay empty (avoids
- *     double-announce).
- *   - When withWordmark is false (decorative hero illustration), the img alt
- *     carries the accessible name.
+ * The wordmark is part of the SVG, so the <img alt> carries the accessible
+ * name and there is no separate text span. `size` is the rendered height in px;
+ * width scales from the SVG's intrinsic aspect ratio.
  */
-export default function Logo({ size = 36, withWordmark = true, wordmarkColor, priority = false }) {
-  const [pngStatus, setPngStatus] = useState(_pngStatus);
-
-  useEffect(() => {
-    if (pngStatus !== 'checking') return;
-    const probe = new Image();
-    probe.onload = () => { _pngStatus = 'loaded'; setPngStatus('loaded'); };
-    probe.onerror = () => { _pngStatus = 'failed'; setPngStatus('failed'); };
-    probe.src = '/logo.png';
-  }, [pngStatus]);
-
-  const src = pngStatus === 'loaded' ? '/logo.png' : '/logo.svg';
-  const altText = withWordmark ? '' : 'BookBridge';
-
+export default function Logo({ size = 34, onDark = false, priority = false }) {
   return (
-    <span className="logo">
-      <img
-        src={src}
-        alt={altText}
-        className="logo-img"
-        width={size}
-        height={size}
-        decoding="async"
-        loading={priority ? 'eager' : 'lazy'}
-        fetchpriority={priority ? 'high' : undefined}
-      />
-      {withWordmark && (
-        <span
-          className="logo-text"
-          style={wordmarkColor ? { color: wordmarkColor } : undefined}
-        >
-          BookBridge
-        </span>
-      )}
-    </span>
+    <img
+      src={onDark ? '/logo-white.svg' : '/logo.svg'}
+      alt="BookBridge"
+      className="logo-lockup"
+      height={size}
+      decoding="async"
+      loading={priority ? 'eager' : 'lazy'}
+      fetchpriority={priority ? 'high' : undefined}
+    />
   );
 }

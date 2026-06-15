@@ -37,6 +37,21 @@ export default function SchoolDetail() {
   const prefix = '/' + lang;
   const [school, setSchool] = useState(null);
   const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
+
+  // Share this school: native share sheet on mobile, copy-link fallback elsewhere.
+  async function shareSchool() {
+    const url = window.location.href;
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: school?.name || 'BookBridge', text: t('schools.shareText', { name: school?.name || '' }), url });
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(url);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1800);
+      }
+    } catch { /* user dismissed the share sheet — ignore */ }
+  }
 
   useEffect(() => {
     apiGet('/api/schools/' + id).then(setSchool).catch((e) => setError(e.message));
@@ -115,6 +130,9 @@ export default function SchoolDetail() {
               <Link to={prefix + '/donate?school=' + school.id} className="btn btn-primary btn-lg">
                 {t('home.donateToSchool')}
               </Link>
+              <button type="button" onClick={shareSchool} className="btn btn-ghost btn-sm" style={{ marginTop: 'var(--space-2)' }}>
+                {copied ? t('schools.shareCopied') : '↗ ' + t('schools.share')}
+              </button>
             </div>
           </div>
         </div>

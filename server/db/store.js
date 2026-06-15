@@ -2,6 +2,7 @@
 
 import { supabaseAdmin } from '../lib/supabase.js';
 import { buildIlikeOr } from './queryHelpers.js';
+import { transliterate } from '../lib/translit.js';
 
 // Pure helper, re-exported so existing importers keep getting it from store.js.
 export { buildIlikeOr };
@@ -191,6 +192,13 @@ async function applyFulfillment(donationId) {
     .eq('donation_id', donationId)
     .not('matched_request_id', 'is', null);
   for (const it of items || []) {
+    // Preferred: atomic, race-safe credit via RPC (migration 0012). Falls back
+    // to read-then-write if the function isn't deployed yet, so this is safe to
+    // ship before the migration is applied.
+    const { error } = await supabaseAdmin.rpc('bb_credit_fulfillment', {
+      p_request_id: it.matched_request_id, p_qty: it.quantity || 0,
+    });
+    if (!error) continue;
     const { data: req } = await supabaseAdmin
       .from('book_requests')
       .select('quantity_needed, quantity_fulfilled')
@@ -311,12 +319,18 @@ export async function getPublicStats() {
 export async function search({ q, type }) {
   const results = { schools: [], books: [] };
 
+  // Match the query as typed AND its Latin transliteration, so a Georgian or
+  // Cyrillic query (e.g. "მესტია") also matches Latin-stored data ("Mestia").
+  const translit = transliterate(q);
+  const forms = translit && translit !== String(q).toLowerCase() ? [q, translit] : [q];
+  const ilikeOrForms = (cols) => forms.map((f) => buildIlikeOr(cols, f)).join(',');
+
   if (type === 'all' || type === 'beneficiary' || type === 'volunteer') {
     let query = supabaseAdmin
       .from('schools')
       .select('id, name, type, region, city, photo_url')
       .eq('status', 'approved')
-      .or(buildIlikeOr(['name', 'region', 'city'], q));
+      .or(ilikeOrForms(['name', 'region', 'city']));
     if (type === 'beneficiary' || type === 'volunteer') query = query.eq('type', type);
     const { data, error } = await query;
     if (error) throw error;
@@ -327,7 +341,7 @@ export async function search({ q, type }) {
     const { data, error } = await supabaseAdmin
       .from('book_requests')
       .select('id, title, author, genre, school_id, schools(name, region)')
-      .or(buildIlikeOr(['title', 'author', 'genre'], q));
+      .or(ilikeOrForms(['title', 'author', 'genre']));
     if (error) throw error;
     results.books = data || [];
   }
